@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Data
@@ -20,12 +22,20 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Integer id;
-    private String name;
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
+    private String phone;
     private String password;
-    private String avatarURL;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+    private LocalDateTime lastLogin;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PendingLecturer pendingLecturer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Lecturer lecturer;
 
     @Override
     public String getUsername() {

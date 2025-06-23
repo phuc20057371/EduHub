@@ -18,26 +18,29 @@ public class EduHubVnApplication {
 public CommandLineRunner init(AuthenticationService authenticationService) {
     return args -> {
         var user =  RegisterRequest.builder()
-                .name("user")
                 .email("user")
                 .password("test")
                 .role(Role.USER)
                 .build();
         System.out.println("token user: " + authenticationService.register(user).getAccessToken());
         var lecturer = RegisterRequest.builder()
-                .name("lecturer")
                 .email("lecturer")
                 .password("test")
                 .role(Role.LECTURER)
                 .build();
         System.out.println("token lecturer: " + authenticationService.register(lecturer).getAccessToken());
         var organization = RegisterRequest.builder()
-                .name("organization")
                 .email("organization")
                 .password("test")
                 .role(Role.ORGANIZATION)
                 .build();
         System.out.println("token organization: " + authenticationService.register(organization).getAccessToken());
+        var admin = RegisterRequest.builder()
+                .email("admin")
+                .password("test")
+                .role(Role.ADMIN)
+                .build();
+        System.out.println("token admin: " + authenticationService.register(admin).getAccessToken());
     };
 
 

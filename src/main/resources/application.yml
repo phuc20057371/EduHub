@@ -1,9 +1,30 @@
+
+
 spring:
+  config:
+    import: optional:classpath:application-secret.yml
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+
   datasource:
     url: jdbc:postgresql://localhost:5432/eduHubVN
-    username: postgres
-    password: 12345
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -11,12 +32,30 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+          starttls:
+            enable: true
+            required: true
+        auth: true
+        starttls:
+          enabled: true
+        connection-timeout: 5000
+        timeout: 3000
+        write-timeout: 5000
+
 application:
   security:
     jwt:
-      secret: 254d762d256a3b3f712c3c345c372c5e535a414c2c555e6f315b793c50
       expired:
-        access:  10000000
-        refresh:  2592000000000
+        access: 10000000
+        refresh: 2592000000000
+
 server:
   port: 8080

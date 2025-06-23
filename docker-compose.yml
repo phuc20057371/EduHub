@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: eduhub_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: eduhubvn
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  springboot:
+    build: .
+    container_name: eduhub_springboot
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eduhubvn
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      APPLICATION_SECURITY_JWT_SECRET: 254d762d256a3b3f712c3c345c372c5e535a414c2c555e6f315b793c50
+      APPLICATION_SECURITY_JWT_EXPIRED_ACCESS: 10000000
+      APPLICATION_SECURITY_JWT_EXPIRED_REFRESH: 2592000000000
+
+volumes:
+  pgdata:

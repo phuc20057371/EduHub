@@ -1,7 +1,5 @@
 package com.example.eduhubvn.dtos;
 
-
-import com.example.eduhubvn.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
-    private String phone;
+public class UserProfileDTO {
+    private Integer id;
     private String email;
-    private String password;
-    private Role role;
-    private String otp;
+    private String phone;
+    private String role;
+
+    private LecturerDTO lecturer;
+    private PendingLecturerDTO pendingLecturer;
 }

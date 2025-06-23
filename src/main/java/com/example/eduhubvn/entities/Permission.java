@@ -15,7 +15,13 @@ public enum Permission {
     LECTURER_READ("lecturer:read"),
     LECTURER_CREATE("lecturer:create"),
     LECTURER_UPDATE("lecturer:update"),
-    LECTURER_DELETE("lecturer:delete");
+    LECTURER_DELETE("lecturer:delete"),
+
+    SCHOOL_READ("school:read"),
+    SCHOOL_CREATE("school:create"),
+    SCHOOL_UPDATE("school:update"),
+    SCHOOL_DELETE("school:delete");
+
 
     private final String permission;
 }

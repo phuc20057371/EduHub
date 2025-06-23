@@ -3,6 +3,7 @@ package com.example.eduhubvn.services;
 import com.example.eduhubvn.dtos.AuthenResponse;
 import com.example.eduhubvn.dtos.LoginRequest;
 import com.example.eduhubvn.dtos.RegisterRequest;
+import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +32,11 @@ public class AuthenticationService {
     public AuthenResponse register(RegisterRequest request) {
         try {
             var user = User.builder()
-                    .avatarURL(request.getAvatarURL())
-                    .name(request.getName())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(request.getRole())
-                    .email(request.getEmail())
+                    .phone(request.getPhone())
+                    .role(Role.USER)
+                    .lastLogin(LocalDateTime.now())
                     .build();
             var savedUser = userRepository.save(user);
             var jwtToken = jwtService.generateToken(savedUser);
