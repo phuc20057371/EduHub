@@ -1,8 +1,8 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.AuthenResponse;
-import com.example.eduhubvn.dtos.LoginRequest;
-import com.example.eduhubvn.dtos.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.AuthenResponse;
+import com.example.eduhubvn.dtos.auth.LoginRequest;
+import com.example.eduhubvn.dtos.auth.RegisterRequest;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.UserRepository;
@@ -30,12 +30,15 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenResponse register(RegisterRequest request) {
+        if (request.getRole()==null){
+            request.setRole(Role.USER);
+        }
         try {
             var user = User.builder()
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .phone(request.getPhone())
-                    .role(Role.USER)
+                    .role(request.getRole())
                     .lastLogin(LocalDateTime.now())
                     .build();
             var savedUser = userRepository.save(user);

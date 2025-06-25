@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "lecturer")
 @Data
+@ToString(exclude = {"user", "certifications", "degrees"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

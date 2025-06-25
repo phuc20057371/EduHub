@@ -1,7 +1,7 @@
 package com.example.eduhubvn.controller;
 
 
-import com.example.eduhubvn.dtos.LecturerResponse;
+import com.example.eduhubvn.dtos.lecturer.LecturerResponse;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.services.LecturerService;

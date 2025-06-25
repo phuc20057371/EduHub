@@ -1,6 +1,6 @@
 package com.example.eduhubvn;
 
-import com.example.eduhubvn.dtos.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.RegisterRequest;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.services.AuthenticationService;
 import org.springframework.boot.CommandLineRunner;

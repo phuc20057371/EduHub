@@ -2,14 +2,12 @@ package com.example.eduhubvn.entities;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "degree")
 @Data
+@ToString(exclude = "lecturer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

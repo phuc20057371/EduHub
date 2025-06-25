@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "pending_lecturer")
 @Data
+@ToString(exclude = {"user", "pendingCertifications", "pendingDegrees"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -49,12 +50,11 @@ public class PendingLecturer {
 
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
-
-    private String response; // e.g., "Approved by admin", "Rejected due to missing documents"
+    private String response;
     @Column(name = "created_at")
-    private LocalDateTime createdAt; // Thời gian tạo yêu cầu
+    private LocalDateTime createdAt;
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt; // Thời gian cập nhật yêu cầu
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "pendingLecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PendingCertification> pendingCertifications = new ArrayList<>();

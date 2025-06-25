@@ -1,32 +1,26 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.PendingLecturerRequest;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerRequest;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerResponse;
 import com.example.eduhubvn.entities.*;
+import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.repositories.PendingLecturerRepository;
-import com.example.eduhubvn.repositories.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PendingLecturerService {
     private final PendingLecturerRepository repository;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    @PersistenceContext
-    private final EntityManager entityManager;
 
-    public PendingLecturer createPendingLecturer(PendingLecturerRequest request) {
+    @Transactional
+    public PendingLecturerResponse createPendingLecturer(PendingLecturerRequest request) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!(principal instanceof User user)) {
@@ -95,8 +89,9 @@ public class PendingLecturerService {
                 pending.getPendingCertifications().add(cert);
             });
         }
+        PendingLecturer saved = repository.save(pending);
 
-        return repository.save(pending);
+        return LecturerMapper.toPendingLecturerResponse(saved);
 
     }
     public PendingLecturer getPendingLecturerByEmail(String email) {

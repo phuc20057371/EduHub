@@ -1,9 +1,9 @@
 package com.example.eduhubvn.controller;
 
-import com.example.eduhubvn.dtos.AuthenResponse;
-import com.example.eduhubvn.dtos.Email;
-import com.example.eduhubvn.dtos.LoginRequest;
-import com.example.eduhubvn.dtos.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.AuthenResponse;
+import com.example.eduhubvn.dtos.auth.Email;
+import com.example.eduhubvn.dtos.auth.LoginRequest;
+import com.example.eduhubvn.dtos.auth.RegisterRequest;
 import com.example.eduhubvn.services.AuthenticationService;
 import com.example.eduhubvn.services.OtpService;
 import jakarta.mail.MessagingException;

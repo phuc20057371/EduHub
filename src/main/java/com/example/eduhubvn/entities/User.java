@@ -1,10 +1,8 @@
 package com.example.eduhubvn.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +34,20 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Lecturer lecturer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PendingEducationInstitution pendingEducationInstitution;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private EducationInstitution educationInstitution;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PendingPartnerOrganization pendingPartnerOrganization;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PartnerOrganization partnerOrganization;
+
+
 
     @Override
     public String getUsername() {

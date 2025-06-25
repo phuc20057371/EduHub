@@ -1,10 +1,11 @@
 package com.example.eduhubvn.mapper;
 
-import com.example.eduhubvn.dtos.*;
+import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.PendingLecturer;
 
 import java.util.stream.Collectors;
+
 
 public class LecturerMapper {
     public static PendingLecturerResponse toPendingLecturerResponse(PendingLecturer entity) {

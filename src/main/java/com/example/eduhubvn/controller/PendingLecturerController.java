@@ -1,8 +1,8 @@
 package com.example.eduhubvn.controller;
 
 
-import com.example.eduhubvn.dtos.PendingLecturerRequest;
-import com.example.eduhubvn.dtos.PendingLecturerResponse;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerRequest;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerResponse;
 import com.example.eduhubvn.entities.PendingLecturer;
 import com.example.eduhubvn.services.PendingLecturerService;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,8 @@ public class PendingLecturerController {
 
     @PostMapping("/create")
     public ResponseEntity<PendingLecturerResponse> createPendingLecturer(@RequestBody PendingLecturerRequest request) {
-        PendingLecturer pending = pendingLecturerService.createPendingLecturer(request);
-        PendingLecturerResponse response = toPendingLecturerResponse(pending); // gọi static method
-        return ResponseEntity.ok(response);
+        PendingLecturerResponse pending = pendingLecturerService.createPendingLecturer(request);
+        return ResponseEntity.ok(pending);
     }
 
     @GetMapping("/by-email")

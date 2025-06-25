@@ -1,10 +1,7 @@
 package com.example.eduhubvn.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -12,6 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "certification")
 @Data
+@ToString(exclude = "lecturer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -1,6 +1,6 @@
 package com.example.eduhubvn.config;
 
-import com.example.eduhubvn.dtos.AuthenResponse;
+import com.example.eduhubvn.dtos.auth.AuthenResponse;
 import com.example.eduhubvn.services.Oauth2Service;
 import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;

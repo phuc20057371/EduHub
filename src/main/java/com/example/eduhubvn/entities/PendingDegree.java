@@ -3,16 +3,14 @@ package com.example.eduhubvn.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "pending_degree")
 @Data
+@ToString(exclude = "pendingLecturer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

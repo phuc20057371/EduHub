@@ -4,13 +4,17 @@ package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.*;
 
-import com.example.eduhubvn.entities.Lecturer;
-import com.example.eduhubvn.entities.PendingLecturer;
-import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
+import com.example.eduhubvn.dtos.edu.PendingEducationInstitutionDTO;
+import com.example.eduhubvn.dtos.lecturer.*;
+import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PendingPartnerOrganizationDTO;
+import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -21,6 +25,7 @@ public class UserService {
     public Optional<User> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        System.out.println(principal);
         if (!(principal instanceof User user)) {
             throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
         }
@@ -150,6 +155,87 @@ public class UserService {
                     .build();
 
         }
+        PendingEducationInstitution pendingEducationInstitution = user.getPendingEducationInstitution();
+        PendingEducationInstitutionDTO pendingEducationInstitutionDTO = null;
+        if (pendingEducationInstitution != null) {
+            pendingEducationInstitutionDTO = PendingEducationInstitutionDTO.builder()
+                    .id(pendingEducationInstitution.getId())
+                    .institutionName(pendingEducationInstitution.getInstitutionName())
+                    .institutionType(pendingEducationInstitution.getInstitutionType())
+                    .taxCode(pendingEducationInstitution.getTaxCode())
+                    .phoneNumber(pendingEducationInstitution.getPhoneNumber())
+                    .website(pendingEducationInstitution.getWebsite())
+                    .address(pendingEducationInstitution.getAddress())
+                    .representativeName(pendingEducationInstitution.getRepresentativeName())
+                    .position(pendingEducationInstitution.getPosition())
+                    .description(pendingEducationInstitution.getDescription())
+                    .logoUrl(pendingEducationInstitution.getLogoUrl())
+                    .establishedYear(pendingEducationInstitution.getEstablishedYear())
+                    .status(pendingEducationInstitution.getStatus())
+                    .reason(pendingEducationInstitution.getReason())
+                    .updatedAt(pendingEducationInstitution.getUpdatedAt())
+                    .createdAt(pendingEducationInstitution.getCreatedAt())
+                    .build();
+        }
+        EducationInstitution educationInstitution = user.getEducationInstitution();
+        EducationInstitutionDTO educationInstitutionDTO = null;
+        if (educationInstitution != null) {
+            educationInstitutionDTO = EducationInstitutionDTO.builder()
+                    .id(Math.toIntExact(educationInstitution.getId()))
+                    .institutionName(educationInstitution.getInstitutionName())
+                    .institutionType(educationInstitution.getInstitutionType())
+                    .taxCode(educationInstitution.getTaxCode())
+                    .phoneNumber(educationInstitution.getPhoneNumber())
+                    .website(educationInstitution.getWebsite())
+                    .address(educationInstitution.getAddress())
+                    .representativeName(educationInstitution.getRepresentativeName())
+                    .position(educationInstitution.getPosition())
+                    .description(educationInstitution.getDescription())
+                    .logoUrl(educationInstitution.getLogoUrl())
+                    .establishedYear(educationInstitution.getEstablishedYear())
+                    .build();
+        }
+        PendingPartnerOrganization pendingOrg = user.getPendingPartnerOrganization();
+        PendingPartnerOrganizationDTO pendingOrgDTO = null;
+        if (pendingOrg != null) {
+            pendingOrgDTO = PendingPartnerOrganizationDTO.builder()
+                    .id(pendingOrg.getId())
+                    .organizationName(pendingOrg.getOrganizationName())
+                    .industry(pendingOrg.getIndustry())
+                    .taxCode(pendingOrg.getTaxCode())
+                    .phoneNumber(pendingOrg.getPhoneNumber())
+                    .website(pendingOrg.getWebsite())
+                    .address(pendingOrg.getAddress())
+                    .representativeName(pendingOrg.getRepresentativeName())
+                    .position(pendingOrg.getPosition())
+                    .description(pendingOrg.getDescription())
+                    .logoUrl(pendingOrg.getLogoUrl())
+                    .establishedYear(pendingOrg.getEstablishedYear())
+                    .status(pendingOrg.getStatus().name())
+                    .reason(pendingOrg.getReason())
+                    .createdAt(pendingOrg.getCreatedAt())
+                    .updatedAt(pendingOrg.getUpdatedAt())
+                    .build();
+        }
+
+        PartnerOrganization partnerOrg = user.getPartnerOrganization();
+        PartnerOrganizationDTO partnerOrgDTO = null;
+        if (partnerOrg != null) {
+            partnerOrgDTO = PartnerOrganizationDTO.builder()
+                    .id(partnerOrg.getId())
+                    .organizationName(partnerOrg.getOrganizationName())
+                    .industry(partnerOrg.getIndustry())
+                    .taxCode(partnerOrg.getTaxCode())
+                    .phoneNumber(partnerOrg.getPhoneNumber())
+                    .website(partnerOrg.getWebsite())
+                    .address(partnerOrg.getAddress())
+                    .representativeName(partnerOrg.getRepresentativeName())
+                    .position(partnerOrg.getPosition())
+                    .description(partnerOrg.getDescription())
+                    .logoUrl(partnerOrg.getLogoUrl())
+                    .establishedYear(partnerOrg.getEstablishedYear())
+                    .build();
+        }
 
         return UserProfileDTO.builder()
                 .id(user.getId())
@@ -158,6 +244,10 @@ public class UserService {
                 .role(user.getRole().name())
                 .lecturer(lecturerDTO)
                 .pendingLecturer(pendingDTO)
+                .pendingEducationInstitution(pendingEducationInstitutionDTO)
+                .educationInstitution(educationInstitutionDTO)
+                .pendingPartnerOrganization(pendingOrgDTO)
+                .partnerOrganization(partnerOrgDTO)
                 .build();
     }
 
