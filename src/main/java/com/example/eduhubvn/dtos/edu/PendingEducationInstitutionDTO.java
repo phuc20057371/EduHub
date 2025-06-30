@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PendingEducationInstitutionDTO {
-    private Long id;
+    private Integer id;
+    private String businessRegistrationNumber;
     private String institutionName;
     private EducationInstitutionType institutionType;
-    private String taxCode;
     private String phoneNumber;
     private String website;
     private String address;
@@ -26,6 +26,7 @@ public class PendingEducationInstitutionDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
+
     private PendingStatus status;
     private String reason;
     private LocalDateTime createdAt;

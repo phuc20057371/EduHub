@@ -12,7 +12,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CertificationDTO {
-    private Integer id;
+    private  Integer id;
+    private String referenceId;
     private String name;
     private String issuedBy;
     private Date issueDate;

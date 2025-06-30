@@ -1,5 +1,4 @@
-package com.example.eduhubvn.dtos.lecturer;
-
+package com.example.eduhubvn.dtos.lecturer.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +8,12 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PendingCertificationRequest {
+    private Integer id;
+    private String referenceId;
     private String name;
     private String issuedBy;
     private Date issueDate;

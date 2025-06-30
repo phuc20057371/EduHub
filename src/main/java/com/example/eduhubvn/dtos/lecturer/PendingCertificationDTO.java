@@ -15,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class PendingCertificationDTO {
     private Integer id;
+    private String referenceId;
     private String name;
     private String issuedBy;
     private Date issueDate;
@@ -29,4 +30,6 @@ public class PendingCertificationDTO {
     private LocalDateTime submittedAt;
     private LocalDateTime updatedAt;
     private LocalDateTime reviewedAt;
+
+    private Integer lecturerId;
 }

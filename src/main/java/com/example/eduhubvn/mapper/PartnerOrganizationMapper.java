@@ -13,9 +13,9 @@ public class PartnerOrganizationMapper {
 
         return PartnerOrganizationDTO.builder()
                 .id(partnerOrganization.getId())
+                .businessRegistrationNumber(partnerOrganization.getBusinessRegistrationNumber())
                 .organizationName(partnerOrganization.getOrganizationName())
                 .industry(partnerOrganization.getIndustry())
-                .taxCode(partnerOrganization.getTaxCode())
                 .phoneNumber(partnerOrganization.getPhoneNumber())
                 .website(partnerOrganization.getWebsite())
                 .address(partnerOrganization.getAddress())
@@ -31,9 +31,9 @@ public class PartnerOrganizationMapper {
 
         return PendingPartnerOrganizationDTO.builder()
                 .id(pending.getId())
+                .businessRegistrationNumber(pending.getBusinessRegistrationNumber())
                 .organizationName(pending.getOrganizationName())
                 .industry(pending.getIndustry())
-                .taxCode(pending.getTaxCode())
                 .phoneNumber(pending.getPhoneNumber())
                 .website(pending.getWebsite())
                 .address(pending.getAddress())

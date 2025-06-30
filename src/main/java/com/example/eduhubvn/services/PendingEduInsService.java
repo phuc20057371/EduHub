@@ -1,7 +1,6 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.edu.PendingEducationInstitutionDTO;
-import com.example.eduhubvn.dtos.edu.PendingEducationInstitutionReq;
 import com.example.eduhubvn.entities.PendingEducationInstitution;
 import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.User;
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
 public class PendingEduInsService {
     private final PendingEducationInstitutionRepository pendingEducationInstitutionRepository;
 
-    public PendingEducationInstitutionDTO createPendingEduIns(PendingEducationInstitutionReq request){
+    public PendingEducationInstitutionDTO createPendingEduIns(PendingEducationInstitutionDTO request){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!(principal instanceof User user)) {
@@ -26,20 +25,20 @@ public class PendingEduInsService {
         }
 
         if (user.getPendingEducationInstitution() != null) {
-            throw new IllegalStateException("Profile already exists for this user.");
+            throw new IllegalStateException("Profile đã tồn tại.");
         }
         PendingEducationInstitution pendingEducationInstitution = PendingEducationInstitution.builder()
+                .businessRegistrationNumber(request.getBusinessRegistrationNumber())
                 .user(user)
                 .institutionName(request.getInstitutionName())
                 .institutionType(request.getInstitutionType())
-                .taxCode(request.getTaxCode())
                 .phoneNumber(request.getPhoneNumber())
                 .website(request.getWebsite())
                 .address(request.getAddress())
                 .representativeName(request.getRepresentativeName())
                 .position(request.getPosition())
                 .description(request.getDescription())
-                .logoUrl(request.getLogoUrl())
+                .logoUrl("https://picsum.photos/200")
                 .establishedYear(request.getEstablishedYear())
                 .status(PendingStatus.PENDING)
                 .reason("")

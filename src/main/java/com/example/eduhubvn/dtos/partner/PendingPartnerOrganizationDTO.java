@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Builder
 public class PendingPartnerOrganizationDTO {
     private Integer id;
+    private String businessRegistrationNumber;
     private String organizationName;
     private String industry;
-    private String taxCode;
     private String phoneNumber;
     private String website;
     private String address;
@@ -20,6 +20,7 @@ public class PendingPartnerOrganizationDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
+
     private String reason;
     private String status;
     private LocalDateTime createdAt;

@@ -15,6 +15,9 @@ public class PartnerOrganization {
     @GeneratedValue
     private Integer id;
 
+    @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
+    private String businessRegistrationNumber;
+
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
@@ -22,8 +25,6 @@ public class PartnerOrganization {
     @Column(name = "organization_name")
     private String organizationName;
     private String industry;
-    @Column(name = "tax_code")
-    private String taxCode;
     @Column(name = "phone_number")
     private String phoneNumber;
     private String website;

@@ -10,10 +10,11 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class PendingLecturerRequest {
-    private String citizenID;
+@AllArgsConstructor
+public class LecturerCourseDTO {
+    private Integer lecturerId;
+    private String citizenId;
     private String fullName;
     private Date dateOfBirth;
     private Boolean gender;
@@ -24,6 +25,11 @@ public class PendingLecturerRequest {
     private String specialization;
     private Integer experienceYears;
 
-    private List<PendingDegreeRequest> pendingDegrees;
-    private List<PendingCertificationRequest> pendingCertifications;
+    private List<OwnedTrainingCourseDTO> ownedCourses;
+    private List<AttendedTrainingCourseDTO> attendedCourses;
+    private List<ResearchProjectDTO> researchProjects;
+
+    private List<PendingOwnedTrainingCourseDTO> pendingOwnedCourses;
+    private List<PendingAttendedTrainingCourseDTO> pendingAttendedCourses;
+    private List<PendingResearchProjectDTO> pendingResearchProjects;
 }

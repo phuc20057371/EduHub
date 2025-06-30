@@ -1,7 +1,7 @@
 package com.example.eduhubvn.dtos.admin;
 
 import com.example.eduhubvn.dtos.edu.PendingEducationInstitutionDTO;
-import com.example.eduhubvn.dtos.lecturer.PendingLecturerResponse;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
 import com.example.eduhubvn.dtos.partner.PendingPartnerOrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AllPendingApplicationsDTO {
-    private List<PendingLecturerResponse> lecturers;
+    private List<PendingLecturerDTO> lecturers;
     private List<PendingEducationInstitutionDTO> educationInstitutions;
     private List<PendingPartnerOrganizationDTO> partnerOrganizations;
 }

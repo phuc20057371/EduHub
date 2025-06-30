@@ -11,10 +11,10 @@ public class EducationInstitutionMapper {
         if (entity == null) return null;
 
         EducationInstitutionDTO dto = new EducationInstitutionDTO();
-        dto.setId(Math.toIntExact(entity.getId()));
+        dto.setId(entity.getId());
+        dto.setBusinessRegistrationNumber(entity.getBusinessRegistrationNumber());
         dto.setInstitutionName(entity.getInstitutionName());
         dto.setInstitutionType(entity.getInstitutionType());
-        dto.setTaxCode(entity.getTaxCode());
         dto.setPhoneNumber(entity.getPhoneNumber());
         dto.setWebsite(entity.getWebsite());
         dto.setAddress(entity.getAddress());
@@ -31,9 +31,9 @@ public class EducationInstitutionMapper {
 
         PendingEducationInstitutionDTO dto = new PendingEducationInstitutionDTO();
         dto.setId(entity.getId());
+        dto.setBusinessRegistrationNumber(entity.getBusinessRegistrationNumber());
         dto.setInstitutionName(entity.getInstitutionName());
         dto.setInstitutionType(entity.getInstitutionType());
-        dto.setTaxCode(entity.getTaxCode());
         dto.setPhoneNumber(entity.getPhoneNumber());
         dto.setWebsite(entity.getWebsite());
         dto.setAddress(entity.getAddress());

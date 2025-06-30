@@ -1,5 +1,4 @@
-package com.example.eduhubvn.dtos.lecturer;
-
+package com.example.eduhubvn.dtos.lecturer.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,16 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class LecturerResponse {
+public class PendingLecturerUpdateResponse {
     private Integer id;
+    private String citizenId;
     private String fullName;
-    private String citizenID;
     private Date dateOfBirth;
     private Boolean gender;
     private String bio;
@@ -25,7 +23,4 @@ public class LecturerResponse {
     private String academicRank;
     private String specialization;
     private Integer experienceYears;
-
-    private List<CertificationResponse> certifications;
-    private List<DegreeResponse> degrees;
 }

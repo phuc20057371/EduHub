@@ -14,30 +14,30 @@ public class EduHubVnApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduHubVnApplication.class, args);
     }
-@Bean
+//@Bean
 public CommandLineRunner init(AuthenticationService authenticationService) {
     return args -> {
         var user =  RegisterRequest.builder()
-                .email("user")
-                .password("test")
+                .email("user@gmail.com")
+                .password("123")
                 .role(Role.USER)
                 .build();
         System.out.println("token user: " + authenticationService.register(user).getAccessToken());
         var lecturer = RegisterRequest.builder()
-                .email("lecturer")
-                .password("test")
+                .email("lecturer@gmail.com")
+                .password("123")
                 .role(Role.LECTURER)
                 .build();
         System.out.println("token lecturer: " + authenticationService.register(lecturer).getAccessToken());
         var organization = RegisterRequest.builder()
-                .email("organization")
-                .password("test")
+                .email("organization@gmail.com")
+                .password("123")
                 .role(Role.ORGANIZATION)
                 .build();
         System.out.println("token organization: " + authenticationService.register(organization).getAccessToken());
         var admin = RegisterRequest.builder()
-                .email("admin")
-                .password("test")
+                .email("admin@gmail.com")
+                .password("123")
                 .role(Role.ADMIN)
                 .build();
         System.out.println("token admin: " + authenticationService.register(admin).getAccessToken());

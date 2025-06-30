@@ -1,4 +1,4 @@
-package com.example.eduhubvn.dtos.lecturer;
+package com.example.eduhubvn.dtos.lecturer.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DegreeResponse {
+public class PendingDegreeRequest {
+    private Integer id;
+    private String referenceId;
     private String name;
     private String major;
     private String institution;
@@ -17,6 +19,5 @@ public class DegreeResponse {
     private Integer graduationYear;
     private String level;
     private String url;
-    private String referenceID;
     private String description;
 }

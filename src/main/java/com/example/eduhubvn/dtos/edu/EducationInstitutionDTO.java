@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EducationInstitutionDTO {
     private Integer id;
+    private String businessRegistrationNumber;
     private String institutionName;
     private EducationInstitutionType institutionType;
-    private String taxCode;
     private String phoneNumber;
     private String website;
     private String address;

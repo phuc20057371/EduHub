@@ -7,9 +7,9 @@ import lombok.Data;
 @Builder
 public class PartnerOrganizationDTO {
     private Integer id;
+    private String businessRegistrationNumber;
     private String organizationName;
     private String industry;
-    private String taxCode;
     private String phoneNumber;
     private String website;
     private String address;

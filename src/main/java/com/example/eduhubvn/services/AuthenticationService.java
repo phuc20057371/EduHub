@@ -37,7 +37,6 @@ public class AuthenticationService {
             var user = User.builder()
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .phone(request.getPhone())
                     .role(request.getRole())
                     .lastLogin(LocalDateTime.now())
                     .build();
@@ -59,7 +58,10 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         try {
+
             User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
             var jwtToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
             return AuthenResponse.builder()

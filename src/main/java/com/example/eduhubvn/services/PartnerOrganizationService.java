@@ -1,6 +1,7 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PartnerOrganizationReq;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
 import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
@@ -20,9 +21,9 @@ public class PartnerOrganizationService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PartnerOrganizationDTO approvePendingPartnerOrganization(Long pendingId) {
-        PendingPartnerOrganization pending = pendingPartnerOrganizationRepository.findById(Math.toIntExact(pendingId))
-                .orElseThrow(() -> new IllegalArgumentException("PendingPartnerOrganization không tồn tại với id: " + pendingId));
+    public PartnerOrganizationDTO approvePartnerOrganization(PartnerOrganizationReq req) {
+        PendingPartnerOrganization pending = pendingPartnerOrganizationRepository.findById(req.getId())
+                .orElseThrow(() -> new IllegalArgumentException("PendingPartnerOrganization không tồn tại với id: " + req.getId()));
 
         if (pending.getStatus() == PendingStatus.APPROVED) {
             throw new IllegalStateException("Pending đã được duyệt trước đó.");
@@ -35,17 +36,17 @@ public class PartnerOrganizationService {
         }
 
         PartnerOrganization partner = PartnerOrganization.builder()
+                .businessRegistrationNumber(pending.getBusinessRegistrationNumber())
                 .user(user)
                 .organizationName(pending.getOrganizationName())
                 .industry(pending.getIndustry())
-                .taxCode(pending.getTaxCode())
                 .phoneNumber(pending.getPhoneNumber())
                 .website(pending.getWebsite())
                 .address(pending.getAddress())
                 .representativeName(pending.getRepresentativeName())
                 .position(pending.getPosition())
                 .description(pending.getDescription())
-                .logoUrl(pending.getLogoUrl())
+                .logoUrl("https://picsum.photos/200")
                 .establishedYear(pending.getEstablishedYear())
                 .build();
 

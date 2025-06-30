@@ -11,8 +11,13 @@ import lombok.*;
 @Entity
 @Table(name = "education_institution")
 public class EducationInstitution {
+
     @Id
-    private Long id;
+    @GeneratedValue
+    private Integer id;
+
+    @Column(name = "business_registration_number", length = 10, nullable = false)
+    private String businessRegistrationNumber;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -23,8 +28,7 @@ public class EducationInstitution {
     @Column(name = "institution_type")
     @Enumerated(EnumType.STRING)
     private EducationInstitutionType institutionType;
-    @Column(name = "tax_code")
-    private String taxCode;
+
     @Column(name = "phone_number")
     private String phoneNumber;
     private String website;
@@ -37,7 +41,4 @@ public class EducationInstitution {
     private String logoUrl;
     @Column(name = "established_year")
     private Integer establishedYear;
-
-
-
 }

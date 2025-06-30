@@ -15,10 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PendingLecturerDTO {
-
     private Integer id;
+    private String citizenId;
     private String fullName;
-    private String citizenID;
     private Date dateOfBirth;
     private Boolean gender;
     private String bio;
@@ -27,6 +26,7 @@ public class PendingLecturerDTO {
     private String academicRank;
     private String specialization;
     private Integer experienceYears;
+
     private PendingStatus status;
     private String response;
     private LocalDateTime createdAt;

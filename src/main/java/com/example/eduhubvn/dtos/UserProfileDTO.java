@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,8 +20,8 @@ import lombok.NoArgsConstructor;
 public class UserProfileDTO {
     private Integer id;
     private String email;
-    private String phone;
     private String role;
+    private LocalDateTime lastLogin;
 
     private LecturerDTO lecturer;
     private PendingLecturerDTO pendingLecturer;

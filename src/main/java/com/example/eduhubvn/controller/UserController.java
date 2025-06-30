@@ -22,7 +22,6 @@ public class UserController {
     private final GoogleDriveService googleDriveService;
     private final UserService userService;
 
-
     @PostMapping("/upload")
     public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -33,17 +32,11 @@ public class UserController {
             FileResponse fileResponse = googleDriveService.uploadFileToGoogleDrive(tempFile);
             System.out.println(fileResponse);
             return fileResponse;
-
         }
     }
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser() {
         return ResponseEntity.ok(userService.getUserProfile());
     }
-
-
-
-
-
 
 }

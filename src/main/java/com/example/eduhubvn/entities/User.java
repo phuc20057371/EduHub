@@ -22,7 +22,6 @@ public class User implements UserDetails {
     private Integer id;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    private String phone;
     private String password;
 
     @Enumerated(EnumType.STRING)

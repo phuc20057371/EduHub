@@ -22,12 +22,13 @@ public class PendingLecturer {
     @GeneratedValue
     private Integer id;
 
+    @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
+    private String citizenId;
+
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "citizen_id", unique = true, nullable = false)
-    private String citizenID;
     @Column(name = "full_name", nullable = false)
     private String fullName;
     @Column(name = "date_of_birth")

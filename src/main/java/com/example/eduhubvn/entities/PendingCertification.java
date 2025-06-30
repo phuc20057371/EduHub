@@ -16,8 +16,12 @@ import java.util.Date;
 @Builder
 public class PendingCertification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
+
+    @Column(name = "reference_id", nullable = false)
+    private String referenceId;
+
     private String name;
     private String issuedBy;
     @Column(name = "issue_date")
@@ -26,21 +30,21 @@ public class PendingCertification {
     private Date expiryDate;
     @Column(name = "certificate_url")
     private String certificateUrl;
-    private String level; // e.g., Beginner, Intermediate, Advanced
+    private String level;
     @Column(name = "description")
     private String description;
 
     @Column(name = "original_id")
-    private Integer originalId; // ID of the original certification if this is a pending request
+    private Integer originalId;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
-    private String reason; // Reason for rejection or additional information
+    private String reason;
     @Column(name = "submitted_at")
-    private LocalDateTime submittedAt; // Time when the request was submitted
+    private LocalDateTime submittedAt;
     @Column(name = "update_at")
-    private LocalDateTime updatedAt; // Time when the request was last updated
+    private LocalDateTime updatedAt;
     @Column(name = "reviewed_at")
-    private LocalDateTime reviewedAt; // Time when the request was reviewed
+    private LocalDateTime reviewedAt;
     @ManyToOne
     @JoinColumn(name = "pending_lecturer_id")
     @JsonIgnore

@@ -15,9 +15,14 @@ import java.util.Date;
 @Builder
 public class Certification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
+
+    @Column(name = "reference_id", nullable = false)
+    private String referenceId;
+
     private String name;
+    @Column(name = "issued_by")
     private String issuedBy;
     @Column(name = "issue_date")
     private Date issueDate;
@@ -25,7 +30,7 @@ public class Certification {
     private Date expiryDate;
     @Column(name = "certificate_url")
     private String certificateUrl;
-    private String level; // e.g., Beginner, Intermediate, Advanced
+    private String level;
     @Column(name = "description")
     private String description;
 

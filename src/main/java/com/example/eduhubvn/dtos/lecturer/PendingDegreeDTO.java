@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PendingDegreeDTO {
     private Integer id;
+    private String referenceId;
     private String name;
     private String major;
     private String institution;
@@ -21,8 +22,6 @@ public class PendingDegreeDTO {
     private Integer graduationYear;
     private String level;
     private String url;
-    private String referenceID;
-    private String reqNo;
     private String description;
 
     private Integer originalId;

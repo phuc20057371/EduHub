@@ -2,6 +2,7 @@ package com.example.eduhubvn.services;
 
 
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
+import com.example.eduhubvn.dtos.edu.EducationInstitutionReq;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.EducationInstitutionMapper;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
@@ -21,9 +22,9 @@ public class EducationInstitutionService {
     private final UserRepository userRepository;
 
     @Transactional
-    public EducationInstitutionDTO approvePendingInstitution(Integer pendingId) {
-        PendingEducationInstitution pending = pendingEducationInstitutionRepository.findById(pendingId)
-                .orElseThrow(() -> new IllegalArgumentException("PendingEducationInstitution không tồn tại với id: " + pendingId));
+    public EducationInstitutionDTO approvePendingInstitution(EducationInstitutionReq req) {
+        PendingEducationInstitution pending = pendingEducationInstitutionRepository.findById(req.getId())
+                .orElseThrow(() -> new IllegalArgumentException("PendingEducationInstitution không tồn tại với id: " + req.getId()));
 
         if (pending.getStatus() == PendingStatus.APPROVED) {
             throw new IllegalStateException("Pending đã được duyệt trước đó.");
@@ -36,24 +37,22 @@ public class EducationInstitutionService {
         }
 
         EducationInstitution edu = EducationInstitution.builder()
+                .businessRegistrationNumber(pending.getBusinessRegistrationNumber())
                 .user(user)
                 .institutionName(pending.getInstitutionName())
                 .institutionType(pending.getInstitutionType())
-                .taxCode(pending.getTaxCode())
                 .phoneNumber(pending.getPhoneNumber())
                 .website(pending.getWebsite())
                 .address(pending.getAddress())
                 .representativeName(pending.getRepresentativeName())
                 .position(pending.getPosition())
                 .description(pending.getDescription())
-                .logoUrl(pending.getLogoUrl())
+                .logoUrl("https://picsum.photos/200")
                 .establishedYear(pending.getEstablishedYear())
                 .build();
 
-        // Save new EducationInstitution
-        EducationInstitution saved = educationInstitutionRepository.save(edu);
+        educationInstitutionRepository.save(edu);
 
-        // Update PendingEducationInstitution status
         pending.setStatus(PendingStatus.APPROVED);
         pending.setUpdatedAt(LocalDateTime.now());
         pendingEducationInstitutionRepository.save(pending);

@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class LecturerDTO {
     private Integer id;
+    private String citizenId;
     private String fullName;
-    private String citizenID;
     private Date dateOfBirth;
     private Boolean gender;
     private String bio;
