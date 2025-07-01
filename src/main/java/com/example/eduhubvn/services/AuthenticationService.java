@@ -9,11 +9,11 @@ import com.example.eduhubvn.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,70 +30,78 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenResponse register(RegisterRequest request) {
-        if (request.getRole()==null){
+        if (request.getRole() == null) {
             request.setRole(Role.USER);
         }
-        try {
-            var user = User.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(request.getRole())
-                    .lastLogin(LocalDateTime.now())
-                    .build();
-            var savedUser = userRepository.save(user);
-            var jwtToken = jwtService.generateToken(savedUser);
-            var refreshToken = jwtService.generateRefreshToken(savedUser);
 
-            return AuthenResponse.builder()
-                    .accessToken(jwtToken)
-                    .refreshToken(refreshToken)
-                    .build();
-        }catch (Exception e){
-            return null;
+        if (userRepository.existsByEmail((request.getEmail()))){
+            throw new IllegalArgumentException("Email đã tồn tại");
         }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .lastLogin(LocalDateTime.now())
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(savedUser);
+        String refreshToken = jwtService.generateRefreshToken(savedUser);
+
+        return AuthenResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public AuthenResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        try {
 
-            User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-            user.setLastLogin(LocalDateTime.now());
-            userRepository.save(user);
-            var jwtToken = jwtService.generateToken(user);
-            var refreshToken = jwtService.generateRefreshToken(user);
-            return AuthenResponse.builder()
-                    .accessToken(jwtToken)
-                    .refreshToken(refreshToken)
-                    .build();
-        } catch (Exception e) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Người dùng không tồn tại"));
 
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        return AuthenResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public AuthenResponse refreshToken(HttpServletRequest request) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Missing or invalid Authorization header");
+        }
+
+        final String refreshToken = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(refreshToken);
+
+        if (userEmail == null) {
             return null;
         }
 
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!jwtService.isTokenValid(refreshToken)) {
+            return null;
+        }
+
+        String newAccessToken = jwtService.generateToken(user);
+
+        return AuthenResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
-        }
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        if(userEmail != null) {
-            var user = this.userRepository.findByEmail(userEmail).orElseThrow();
-            if (jwtService.isTokenValid(refreshToken)) {
-              var accessToken = jwtService.generateToken(user);
-              var authenResponse = AuthenResponse.builder()
-                      .accessToken(accessToken)
-                      .refreshToken(refreshToken)
-                      .build();
-              new ObjectMapper().writeValue(response.getOutputStream(), authenResponse);
-            }
-        }
-    }
 }

@@ -42,70 +42,6 @@ public class AdminController {
     private final LecturerService lecturerService;
     private final PendingLecturerService pendingLecturerService;
 
-//    @GetMapping("/all-pending")
-////    public ResponseEntity<AllPendingApplicationsDTO> getAllPendingApplications() {
-////        List<PendingLecturer> lecturers = pendingLecturerRepository.findByStatus(PendingStatus.PENDING);
-////        List<PendingEducationInstitution> institutions = pendingEduRepo.findByStatus(PendingStatus.PENDING);
-////        List<PendingPartnerOrganization> partners = pendingPartnerRepo.findByStatus(PendingStatus.PENDING);
-////
-////        AllPendingApplicationsDTO result = new AllPendingApplicationsDTO();
-////        result.setLecturers(lecturers.stream().map(LecturerMapper::toPendingLecturerDTO).toList());
-////        result.setEducationInstitutions(institutions.stream().map(EducationInstitutionMapper::toDTO).toList());
-////        result.setPartnerOrganizations(partners.stream().map(PartnerOrganizationMapper::toPendingDTO).toList());
-////
-////        return ResponseEntity.ok(result);
-////    }
-////    @PostMapping("/approve-edu-ins")
-////    public ResponseEntity<EducationInstitutionDTO> approveEduInstitution(@RequestBody EducationInstitutionReq req) {
-////        EducationInstitutionDTO approved = educationInstitutionService.approvePendingInstitution(req);
-////        return ResponseEntity.ok(approved);
-////    }
-////    @PostMapping("/approve-p-org")
-////    public ResponseEntity<PartnerOrganizationDTO> approvePartnerOrganization(@RequestBody PartnerOrganizationReq req) {
-////        PartnerOrganizationDTO approved = partnerOrganizationService.approvePartnerOrganization(req);
-////        return ResponseEntity.ok(approved);
-////    }
-////    //
-////    @PostMapping("/approve-lecturer")
-////    public ResponseEntity<LecturerDTO> approvedLecturer(@RequestBody LecturerReq req) {
-////        LecturerDTO lecturer = lecturerService.approveLecturer(req);
-////        return ResponseEntity.ok(lecturer);
-////    }
-////    @PostMapping("/reject-pending-lecturer")
-////    public ResponseEntity<String> rejectPendingLecturer(@RequestBody RejectPendingLecturerRequest request) {
-////        lecturerService.rejectPendingLecturer(request);
-////        return ResponseEntity.ok("Bản cập nhật đã bị từ chối");
-////    }
-////    @PostMapping("/approve-lecturer-profile")
-////    public ResponseEntity<LecturerDTO> approvedLecturerProfile(@RequestBody LecturerReq req) {
-////        LecturerDTO lecturer = lecturerService.approvePendingLecturerUpdate(req);
-////        return ResponseEntity.ok(lecturer);
-////    }
-////    @PostMapping("/reject-lecturer-update")
-////    public ResponseEntity<String> rejectPendingLecturerUpdate(@RequestBody ApplicationPendingReject req) {
-////        lecturerService.rejectPendingLecturerUpdate(req);
-////        return ResponseEntity.ok("Bản cập nhật đã bị từ chối: "+ req.getReason());
-////    }
-////    @PostMapping("/approve-pending-certification")
-////    public ResponseEntity<CertificationDTO> approvePendingCertification(@RequestBody ApproveRequest req) {
-////        CertificationDTO result = lecturerService.approvePendingCertification(req.getId());
-////        return ResponseEntity.ok(result);
-////    }
-////    @PostMapping("/approve-pending-degree")
-////    public ResponseEntity<DegreeDTO> approvePendingDegree(@RequestBody ApproveRequest req) {
-////        DegreeDTO result = lecturerService.approvePendingDegree(req.getId());
-////        return ResponseEntity.ok(result);
-////    }
-////    @PostMapping("/reject-certification")
-////    public ResponseEntity<String> rejectCertification(@RequestBody ApplicationPendingReject req) {
-////        lecturerService.rejectPendingCertification(req);
-////        return ResponseEntity.ok("Bản cập nhật đã bị từ chối: "+ req.getReason());
-////    }
-////    @PostMapping("/reject-degree")
-////    public ResponseEntity<String> rejectDegree(@RequestBody ApplicationPendingReject req) {
-////        lecturerService.rejectPendingDegree(req);
-////        return ResponseEntity.ok("Bản cập nhật đã bị từ chối: "+ req.getReason());
-////    }
     @GetMapping("/all-pending")
     public ResponseEntity<ApiResponse<AllPendingApplicationsDTO>> getAllPendingApplications() {
         List<PendingLecturer> lecturers = pendingLecturerRepository.findByStatus(PendingStatus.PENDING);
@@ -141,7 +77,7 @@ public class AdminController {
     @PostMapping("/reject-pending-lecturer")
     public ResponseEntity<ApiResponse<String>> rejectPendingLecturer(@RequestBody RejectPendingLecturerRequest request) {
         lecturerService.rejectPendingLecturer(request);
-        return ResponseEntity.ok(ApiResponse.success("Từ chối hồ sơ đăng ký giảng viên thành công", null));
+        return ResponseEntity.ok(ApiResponse.success("Từ chối hồ sơ đăng ký giảng viên thành công", request.getResponse()));
     }
 
     @PostMapping("/approve-lecturer-profile")
@@ -153,7 +89,7 @@ public class AdminController {
     @PostMapping("/reject-lecturer-update")
     public ResponseEntity<ApiResponse<String>> rejectPendingLecturerUpdate(@RequestBody ApplicationPendingReject req) {
         lecturerService.rejectPendingLecturerUpdate(req);
-        return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật hồ sơ giảng viên: " + req.getReason(), null));
+        return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật hồ sơ giảng viên: " + req.getId(), req.getReason()));
     }
 
     @PostMapping("/approve-pending-certification")
@@ -171,13 +107,41 @@ public class AdminController {
     @PostMapping("/reject-certification")
     public ResponseEntity<ApiResponse<String>> rejectCertification(@RequestBody ApplicationPendingReject req) {
         lecturerService.rejectPendingCertification(req);
-        return ResponseEntity.ok(ApiResponse.success("Từ chối chứng chỉ: " + req.getReason(), null));
+        return ResponseEntity.ok(ApiResponse.success("Từ chối chứng chỉ " + req.getId(), req.getReason()));
     }
 
     @PostMapping("/reject-degree")
     public ResponseEntity<ApiResponse<String>> rejectDegree(@RequestBody ApplicationPendingReject req) {
         lecturerService.rejectPendingDegree(req);
-        return ResponseEntity.ok(ApiResponse.success("Từ chối bằng cấp: " + req.getReason(), null));
+        return ResponseEntity.ok(ApiResponse.success("Từ chối bằng cấp " + req.getId(), req.getReason()));
     }
+
+    @PostMapping("/approve-owned-course")
+    public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourse(@RequestBody ApproveRequest req) {
+        OwnedTrainingCourseDTO result = lecturerService.approveOwnedCourse(req.getId());
+        return ResponseEntity.ok(ApiResponse.success("Phê duyệt khóa đạo tạo thành công", result));
+    }
+
+    @PostMapping("/approve-attended-course")
+    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourse(@RequestBody ApproveRequest req) {
+        AttendedTrainingCourseDTO result = lecturerService.approveAttendedCourse(req.getId());
+        return ResponseEntity.ok(ApiResponse.success("Phê duyệt khóa đạo tạo thành công", result));
+    }
+    @PostMapping("/approve-research-project")
+    public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProject(@RequestBody ApproveRequest req) {
+        ResearchProjectDTO result = lecturerService.approveResearchProject(req.getId());
+        return ResponseEntity.ok(ApiResponse.success("Phê duyệt khóa đạo tạo thành công", result));
+    }
+
+    @PostMapping("/reject-owned-course")
+    public ResponseEntity<ApiResponse<String>> rejectOwnedCourse(@RequestBody ApplicationPendingReject req) {
+        lecturerService.rejectOwnedCourse(req);
+        return ResponseEntity.ok(ApiResponse.success("Từ chối khóa đào tạo " + req.getId(), req.getReason()));
+    }
+
+
+
+
+
 
 }

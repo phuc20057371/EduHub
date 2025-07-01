@@ -316,4 +316,61 @@ public class LecturerMapper {
                 .build();
     }
 
+    public static OwnedTrainingCourseDTO toOwnedTrainingCourseDTO(OwnedTrainingCourse course) {
+        if (course == null) return null;
+
+        return OwnedTrainingCourseDTO.builder()
+                .id(course.getId())
+                .title(course.getTitle())
+                .topic(course.getTopic())
+                .courseType(course.getCourseType())
+                .scale(course.getScale())
+                .startDate(course.getStartDate())
+                .endDate(course.getEndDate())
+                .numberOfHour(course.getNumberOfHour())
+                .status(course.getStatus())
+                .location(course.getLocation())
+                .description(course.getDescription())
+                .courseUrl(course.getCourseUrl())
+                .build();
+    }
+
+    public static AttendedTrainingCourseDTO toAttendedTrainingCourseDTO(AttendedTrainingCourse course) {
+        if (course == null) return null;
+
+        return AttendedTrainingCourseDTO.builder()
+                .id(course.getId())
+                .title(course.getTitle())
+                .topic(course.getTopic())
+                .organizer(course.getOrganizer())
+                .courseType(course.getCourseType())
+                .scale(course.getScale())
+                .startDate(course.getStartDate())
+                .endDate(course.getEndDate())
+                .numberOfHour(course.getNumberOfHour())
+                .location(course.getLocation())
+                .description(course.getDescription())
+                .courseUrl(course.getCourseUrl())
+                .build();
+    }
+
+    public static ResearchProjectDTO toResearchProjectDTO(ResearchProject project) {
+        if (project == null) return null;
+
+        return ResearchProjectDTO.builder()
+                .id(project.getId())
+                .title(project.getTitle())
+                .researchArea(project.getResearchArea())
+                .scale(project.getScale())
+                .startDate(project.getStartDate())
+                .endDate(project.getEndDate())
+                .foundingAmount(project.getFoundingAmount())
+                .foundingSource(project.getFoundingSource())
+                .projectType(project.getProjectType())
+                .roleInProject(project.getRoleInProject())
+                .publishedUrl(project.getPublishedUrl())
+                .status(project.getStatus())
+                .description(project.getDescription())
+                .build();
+    }
 }

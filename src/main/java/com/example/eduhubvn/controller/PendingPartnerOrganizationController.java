@@ -1,5 +1,6 @@
 package com.example.eduhubvn.controller;
 
+import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PendingPartnerOrganizationDTO;
 import com.example.eduhubvn.services.PendingPartnerOrganizationService;
@@ -17,8 +18,8 @@ public class PendingPartnerOrganizationController {
     private final PendingPartnerOrganizationService partnerOrganizationService;
 
     @PostMapping("/create")
-    public ResponseEntity<PendingPartnerOrganizationDTO> registerPartnerOrg(@RequestBody PartnerOrganizationDTO req) {
+    public ResponseEntity<ApiResponse<PendingPartnerOrganizationDTO>> registerPartnerOrg(@RequestBody PartnerOrganizationDTO req) {
         PendingPartnerOrganizationDTO created = partnerOrganizationService.createPendingOrganization(req);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.ok(ApiResponse.success("Đăng ký tổ chức thành công", created));
     }
 }

@@ -18,13 +18,22 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LecturerService {
-    private  final LecturerRepository lecturerRepository;
+    private final LecturerRepository lecturerRepository;
     private final PendingLecturerRepository pendingLecturerRepository;
+
     private final PendingDegreeRepository pendingDegreeRepository;
     private final PendingCertificationRepository pendingCertificationRepository;
 
     private final CertificationRepository certificationRepository;
     private final DegreeRepository degreeRepository;
+
+    private final PendingOwnedTrainingCourseRepository pendingOwnedTrainingCourseRepository;
+    private final PendingAttendedTrainingCourseRepository pendingAttendedTrainingCourseRepository;
+    private final PendingResearchProjectRepository pendingResearchProjectRepository;
+
+    private final OwnedTrainingCourseRepository ownedTrainingCourseRepository;
+    private final AttendedTrainingCourseRepository attendedTrainingCourseRepository;
+    private final ResearchProjectRepository researchProjectRepository;
 
 
     @Transactional
@@ -525,4 +534,205 @@ public class LecturerService {
         pendingLecturerRepository.save(pending);
     }
 
+    @Transactional
+    public OwnedTrainingCourseDTO approveOwnedCourse(Integer id) {
+        PendingOwnedTrainingCourse pending = pendingOwnedTrainingCourseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PendingOwnedTrainingCourse not found"));
+
+        if (pending.getPendingStatus() != PendingStatus.PENDING) {
+            throw new IllegalStateException("Chỉ được duyệt khóa học ở trạng thái PENDING");
+        }
+
+        Lecturer lecturer = pending.getLecturer();
+        if (lecturer == null) {
+            throw new RuntimeException("Không tìm thấy Lecturer tương ứng");
+        }
+
+        OwnedTrainingCourse course;
+
+        if (pending.getOriginalId() != null) {
+            course = ownedTrainingCourseRepository.findById(pending.getOriginalId())
+                    .orElseThrow(() -> new RuntimeException("Original OwnedTrainingCourse not found"));
+
+            course.setTitle(pending.getTitle());
+            course.setTopic(pending.getTopic());
+            course.setCourseType(pending.getCourseType());
+            course.setScale(pending.getScale());
+            course.setStartDate(pending.getStartDate());
+            course.setEndDate(pending.getEndDate());
+            course.setNumberOfHour(pending.getNumberOfHour());
+            course.setLocation(pending.getLocation());
+            course.setStatus(pending.getStatus());
+            course.setDescription(pending.getDescription());
+            course.setCourseUrl(pending.getCourseUrl());
+        } else {
+            course = OwnedTrainingCourse.builder()
+                    .title(pending.getTitle())
+                    .topic(pending.getTopic())
+                    .courseType(pending.getCourseType())
+                    .scale(pending.getScale())
+                    .startDate(pending.getStartDate())
+                    .endDate(pending.getEndDate())
+                    .numberOfHour(pending.getNumberOfHour())
+                    .location(pending.getLocation())
+                    .status(pending.getStatus())
+                    .description(pending.getDescription())
+                    .courseUrl(pending.getCourseUrl())
+                    .lecturer(lecturer)
+                    .build();
+
+            course = ownedTrainingCourseRepository.save(course);
+            pending.setOriginalId(course.getId());
+        }
+
+        // Cập nhật trạng thái
+        pending.setPendingStatus(PendingStatus.APPROVED);
+        pending.setUpdatedAt(LocalDateTime.now());
+        pending.setReason("");
+        pendingOwnedTrainingCourseRepository.save(pending);
+        return LecturerMapper.toOwnedTrainingCourseDTO(course);
+    }
+    @Transactional
+    public AttendedTrainingCourseDTO approveAttendedCourse(Integer id) {
+        PendingAttendedTrainingCourse pending = pendingAttendedTrainingCourseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PendingAttendedTrainingCourse not found"));
+
+        if (pending.getPendingStatus() != PendingStatus.PENDING) {
+            throw new IllegalStateException("Chỉ được duyệt khóa học ở trạng thái PENDING");
+        }
+
+        Lecturer lecturer = pending.getLecturer();
+        if (lecturer == null) {
+            throw new RuntimeException("Không tìm thấy Lecturer tương ứng");
+        }
+
+        AttendedTrainingCourse course;
+
+        if (pending.getOriginalId() != null) {
+            course = attendedTrainingCourseRepository.findById(pending.getOriginalId())
+                    .orElseThrow(() -> new RuntimeException("Original AttendedTrainingCourse not found"));
+
+            course.setTitle(pending.getTitle());
+            course.setTopic(pending.getTopic());
+            course.setOrganizer(pending.getOrganizer());
+            course.setCourseType(pending.getCourseType());
+            course.setScale(pending.getScale());
+            course.setStartDate(pending.getStartDate());
+            course.setEndDate(pending.getEndDate());
+            course.setNumberOfHour(pending.getNumberOfHour());
+            course.setLocation(pending.getLocation());
+            course.setDescription(pending.getDescription());
+            course.setCourseUrl(pending.getCourseUrl());
+        } else {
+            course = AttendedTrainingCourse.builder()
+                    .title(pending.getTitle())
+                    .topic(pending.getTopic())
+                    .organizer(pending.getOrganizer())
+                    .courseType(pending.getCourseType())
+                    .scale(pending.getScale())
+                    .startDate(pending.getStartDate())
+                    .endDate(pending.getEndDate())
+                    .numberOfHour(pending.getNumberOfHour())
+                    .location(pending.getLocation())
+                    .description(pending.getDescription())
+                    .courseUrl(pending.getCourseUrl())
+                    .lecturer(lecturer)
+                    .build();
+
+            course = attendedTrainingCourseRepository.save(course);
+            pending.setOriginalId(course.getId());
+        }
+
+        pending.setPendingStatus(PendingStatus.APPROVED);
+        pending.setUpdatedAt(LocalDateTime.now());
+        pending.setReason("");
+        pendingAttendedTrainingCourseRepository.save(pending);
+
+        return LecturerMapper.toAttendedTrainingCourseDTO(course);
+    }
+
+    @Transactional
+    public ResearchProjectDTO approveResearchProject(Integer id) {
+        PendingResearchProject pending = pendingResearchProjectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PendingResearchProject not found"));
+
+        if (pending.getPendingStatus() != PendingStatus.PENDING) {
+            throw new IllegalStateException("Chỉ được duyệt đề tài ở trạng thái PENDING");
+        }
+
+        Lecturer lecturer = pending.getLecturer();
+        if (lecturer == null) {
+            throw new RuntimeException("Không tìm thấy Lecturer tương ứng");
+        }
+
+        ResearchProject project;
+
+        if (pending.getOriginalId() != null) {
+            project = researchProjectRepository.findById(pending.getOriginalId())
+                    .orElseThrow(() -> new RuntimeException("Original ResearchProject not found"));
+
+            project.setTitle(pending.getTitle());
+            project.setResearchArea(pending.getResearchArea());
+            project.setScale(pending.getScale());
+            project.setStartDate(pending.getStartDate());
+            project.setEndDate(pending.getEndDate());
+            project.setFoundingAmount(pending.getFoundingAmount());
+            project.setFoundingSource(pending.getFoundingSource());
+            project.setProjectType(pending.getProjectType());
+            project.setRoleInProject(pending.getRoleInProject());
+            project.setPublishedUrl(pending.getPublishedUrl());
+            project.setStatus(pending.getStatus());
+            project.setDescription(pending.getDescription());
+        } else {
+            project = ResearchProject.builder()
+                    .title(pending.getTitle())
+                    .researchArea(pending.getResearchArea())
+                    .scale(pending.getScale())
+                    .startDate(pending.getStartDate())
+                    .endDate(pending.getEndDate())
+                    .foundingAmount(pending.getFoundingAmount())
+                    .foundingSource(pending.getFoundingSource())
+                    .projectType(pending.getProjectType())
+                    .roleInProject(pending.getRoleInProject())
+                    .publishedUrl(pending.getPublishedUrl())
+                    .status(pending.getStatus())
+                    .description(pending.getDescription())
+                    .lecturer(lecturer)
+                    .build();
+
+            project = researchProjectRepository.save(project);
+            pending.setOriginalId(project.getId());
+        }
+
+        pending.setPendingStatus(PendingStatus.APPROVED);
+        pending.setUpdatedAt(LocalDateTime.now());
+        pending.setReason("");
+        pendingResearchProjectRepository.save(pending);
+
+        return LecturerMapper.toResearchProjectDTO(project);
+    }
+
+    @Transactional
+    public void rejectOwnedCourse(ApplicationPendingReject req) {
+        PendingOwnedTrainingCourse pendingOwnedTrainingCourse = pendingOwnedTrainingCourseRepository.findById(req.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khóa học"));
+
+        if (pendingOwnedTrainingCourse.getPendingStatus() != PendingStatus.PENDING) {
+            throw new IllegalStateException("Chỉ được từ chối bản cập nhật đang chờ duyệt");
+        }
+        pendingOwnedTrainingCourse.setPendingStatus(PendingStatus.REJECTED);
+        pendingOwnedTrainingCourse.setReason(req.getReason());
+        pendingOwnedTrainingCourse.setUpdatedAt(LocalDateTime.now());
+        pendingOwnedTrainingCourseRepository.save(pendingOwnedTrainingCourse);
+//        PendingCertification pendingCertification = pendingCertificationRepository.findById(req.getId())
+//                .orElseThrow(() -> new RuntimeException("PendingLecturer not found"));
+//        if(pendingCertification.getStatus() != PendingStatus.PENDING) {
+//            throw new IllegalStateException("Chỉ được từ chối bản cập nhật đang chờ duyệt");
+//        }
+//        pendingCertification.setStatus(PendingStatus.REJECTED);
+//        pendingCertification.setReason(req.getReason());
+//        pendingCertification.setUpdatedAt(LocalDateTime.now());
+//
+//        pendingCertificationRepository.save(pendingCertification);
+    }
 }

@@ -1,7 +1,9 @@
 package com.example.eduhubvn.controller;
 
 
+import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.FileResponse;
+import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.services.GoogleDriveService;
 import com.example.eduhubvn.services.PartnerOrganizationService;
@@ -35,8 +37,9 @@ public class UserController {
         }
     }
     @GetMapping("/current-user")
-    public ResponseEntity<?> getCurrentUser() {
-        return ResponseEntity.ok(userService.getUserProfile());
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getCurrentUser() {
+        UserProfileDTO profile = userService.getUserProfile();
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin người dùng thành công", profile));
     }
 
 }

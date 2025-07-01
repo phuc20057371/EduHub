@@ -1,6 +1,7 @@
 package com.example.eduhubvn.controller;
 
 
+import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.edu.PendingEducationInstitutionDTO;
 import com.example.eduhubvn.services.PendingEduInsService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,9 @@ public class PendingEduInsController {
     private final PendingEduInsService pendingEduInsService;
 
     @PostMapping("/create")
-    public ResponseEntity<PendingEducationInstitutionDTO> createPenEduIns(@RequestBody PendingEducationInstitutionDTO request) {
-        return ResponseEntity.ok(pendingEduInsService.createPendingEduIns(request));
+    public ResponseEntity<ApiResponse<PendingEducationInstitutionDTO>> createPenEduIns(@RequestBody PendingEducationInstitutionDTO request) {
+        PendingEducationInstitutionDTO result = pendingEduInsService.createPendingEduIns(request);
+        return ResponseEntity.ok(ApiResponse.success("Tạo cơ sở giáo dục thành công", result));
     }
+
 }

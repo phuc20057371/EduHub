@@ -1,6 +1,7 @@
 package com.example.eduhubvn.controller;
 
 
+import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.lecturer.PendingCertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.PendingDegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
@@ -23,61 +24,55 @@ import org.springframework.web.bind.annotation.*;
 public class PendingLecturerController {
     private final PendingLecturerService pendingLecturerService;
 
-    @PostMapping("/create")
-    public ResponseEntity<PendingLecturerDTO> createPendingLecturer(@RequestBody PendingLecturerDTO request) {
-        PendingLecturerDTO pending = pendingLecturerService.createPendingLecturer(request);
-        return ResponseEntity.ok(pending);
-    }
-    @PostMapping("/update")
-    public ResponseEntity<PendingLecturerUpdateResponse> updatePendingLecturer(@RequestBody PendingLecturerUpdateRequest request) {
-        PendingLecturerDTO pending = pendingLecturerService.updatePendingLecturer(request);
-        PendingLecturerUpdateResponse pendingLecturerUpdateResponse = LecturerMapper.toPendingLecturerUpdateResponse(pending);
-        return ResponseEntity.ok(pendingLecturerUpdateResponse);
-    }
-    @PostMapping("/pending-certification/create")
-    public ResponseEntity<PendingCertificationDTO> createPendingCertification(@RequestBody PendingCertificationRequest request) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        PendingCertificationDTO result = pendingLecturerService.createPendingCertification(request, user);
-        return ResponseEntity.ok(result);
-    }
-    @PostMapping("/pending-certification/update")
-    public ResponseEntity<PendingCertificationDTO> updatePendingCertification(@RequestBody PendingCertificationRequest request) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        PendingCertificationDTO updated = pendingLecturerService.updatePendingCertification(request, user);
-        return ResponseEntity.ok(updated);
-    }
-    @PostMapping("/pending-degree/create")
-    public ResponseEntity<PendingDegreeDTO> createPendingDegree(@RequestBody PendingDegreeRequest request) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        PendingDegreeDTO result = pendingLecturerService.createPendingDegree(request, user);
-        return ResponseEntity.ok(result);
-    }
-    @PostMapping("/pending-degree/update")
-    public ResponseEntity<PendingDegreeDTO> updatePendingDegree(@RequestBody PendingDegreeRequest request) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        PendingDegreeDTO updated = pendingLecturerService.updatePendingDegree(request, user);
-        return ResponseEntity.ok(updated);
-    }
-    @PostMapping("/resubmit-pending-lecturer")
-    public ResponseEntity<PendingLecturerDTO> resubmitPendingLecturer(@RequestBody PendingLecturerDTO request) {
+    private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof User user)) {
             throw new IllegalStateException("Không tìm thấy người dùng đang đăng nhập");
         }
-        PendingLecturerDTO updated = pendingLecturerService.resubmitPendingLecturer(request, user);
-        return ResponseEntity.ok(updated);
+        return user;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<PendingLecturerDTO>> createPendingLecturer(@RequestBody PendingLecturerDTO request) {
+        PendingLecturerDTO pending = pendingLecturerService.createPendingLecturer(request);
+        return ResponseEntity.ok(ApiResponse.success("Tạo hồ sơ thành công", pending));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<ApiResponse<PendingLecturerUpdateResponse>> updatePendingLecturer(@RequestBody PendingLecturerUpdateRequest request) {
+        PendingLecturerDTO pending = pendingLecturerService.updatePendingLecturer(request);
+        PendingLecturerUpdateResponse response = LecturerMapper.toPendingLecturerUpdateResponse(pending);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật hồ sơ thành công", response));
+    }
+
+    @PostMapping("/resubmit-pending-lecturer")
+    public ResponseEntity<ApiResponse<PendingLecturerDTO>> resubmitPendingLecturer(@RequestBody PendingLecturerDTO request) {
+        PendingLecturerDTO updated = pendingLecturerService.resubmitPendingLecturer(request, getCurrentUser());
+        return ResponseEntity.ok(ApiResponse.success("Gửi lại hồ sơ thành công", updated));
+    }
+
+    @PostMapping("/pending-degree/create")
+    public ResponseEntity<ApiResponse<PendingDegreeDTO>> createPendingDegree(@RequestBody PendingDegreeRequest request) {
+        PendingDegreeDTO result = pendingLecturerService.createPendingDegree(request, getCurrentUser());
+        return ResponseEntity.ok(ApiResponse.success("Tạo bằng cấp thành công", result));
+    }
+
+    @PostMapping("/pending-degree/update")
+    public ResponseEntity<ApiResponse<PendingDegreeDTO>> updatePendingDegree(@RequestBody PendingDegreeRequest request) {
+        PendingDegreeDTO updated = pendingLecturerService.updatePendingDegree(request, getCurrentUser());
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật bằng cấp thành công", updated));
+    }
+
+    @PostMapping("/pending-certification/create")
+    public ResponseEntity<ApiResponse<PendingCertificationDTO>> createPendingCertification(@RequestBody PendingCertificationRequest request) {
+        PendingCertificationDTO result = pendingLecturerService.createPendingCertification(request, getCurrentUser());
+        return ResponseEntity.ok(ApiResponse.success("Tạo chứng chỉ thành công", result));
+    }
+
+    @PostMapping("/pending-certification/update")
+    public ResponseEntity<ApiResponse<PendingCertificationDTO>> updatePendingCertification(@RequestBody PendingCertificationRequest request) {
+        PendingCertificationDTO updated = pendingLecturerService.updatePendingCertification(request, getCurrentUser());
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật chứng chỉ thành công", updated));
     }
 
 

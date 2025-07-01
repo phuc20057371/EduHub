@@ -26,6 +26,4 @@ public class OwnedTrainingCourseDTO {
     private String status;
     private String description;
     private String courseUrl;
-
-    private Integer lecturerId;
 }

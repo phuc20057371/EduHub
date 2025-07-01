@@ -10,6 +10,7 @@ import com.example.eduhubvn.dtos.lecturer.request.PendingLecturerUpdateRequest;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.repositories.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,7 +19,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,19 +43,16 @@ public class PendingLecturerService {
 
     @Transactional
     public PendingLecturerDTO createPendingLecturer(PendingLecturerDTO request) {
-        if(request.getCitizenId().length()!=11){
-            throw new IllegalStateException("id phải có chính xác 11 số");
-        }
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
+            throw new IllegalStateException("Không tìm thấy người dùng đang đăng nhập.");
         }
-
+        if (request.getCitizenId() == null || request.getCitizenId().length() != 11) {
+            throw new IllegalArgumentException("Số CCCD phải có chính xác 11 chữ số.");
+        }
         if (user.getPendingLecturer() != null) {
-            throw new IllegalStateException("PendingLecturer profile already exists for this user.");
+            throw new IllegalStateException("Bạn đã có hồ sơ PendingLecturer rồi.");
         }
-
         PendingLecturer pending = PendingLecturer.builder()
                 .citizenId(request.getCitizenId())
                 .user(user)
@@ -60,87 +61,42 @@ public class PendingLecturerService {
                 .gender(request.getGender())
                 .bio(request.getBio())
                 .address(request.getAddress())
-                .avatarUrl("https://picsum.photos/200")
+                .avatarUrl(request.getAvatarUrl() != null ? request.getAvatarUrl() : "https://picsum.photos/200")
                 .academicRank(request.getAcademicRank())
                 .specialization(request.getSpecialization())
                 .experienceYears(request.getExperienceYears())
-
                 .status(PendingStatus.PENDING)
                 .createdAt(LocalDateTime.now())
-//                .updatedAt(LocalDateTime.now())
                 .pendingCertifications(new ArrayList<>())
                 .pendingDegrees(new ArrayList<>())
                 .build();
 
-        // Gán degrees
-        if (request.getPendingDegrees() != null) {
-            request.getPendingDegrees().forEach(degreeReq -> {
-                PendingDegree degree = PendingDegree.builder()
-                        .referenceId(degreeReq.getReferenceId())
-                        .name(degreeReq.getName())
-                        .major(degreeReq.getMajor())
-                        .institution(degreeReq.getInstitution())
-                        .startYear(degreeReq.getStartYear())
-                        .graduationYear(degreeReq.getGraduationYear())
-                        .level(degreeReq.getLevel())
-                        .url(degreeReq.getUrl())
-                        .description(degreeReq.getDescription())
+        mapPendingDegrees(request, pending);
+        mapPendingCertifications(request, pending);
 
-                        .status(PendingStatus.PENDING)
-                        .submittedAt(LocalDateTime.now())
-
-                        .pendingLecturer(pending)
-                        .build();
-                pending.getPendingDegrees().add(degree);
-            });
-        }
-
-        // Gán certifications
-        if (request.getPendingCertifications() != null) {
-            request.getPendingCertifications().forEach(certReq -> {
-                PendingCertification cert = PendingCertification.builder()
-                        .referenceId(certReq.getReferenceId())
-                        .name(certReq.getName())
-                        .issuedBy(certReq.getIssuedBy())
-                        .issueDate(certReq.getIssueDate())
-                        .expiryDate(certReq.getExpiryDate())
-                        .certificateUrl(certReq.getCertificateUrl())
-                        .level(certReq.getLevel())
-                        .description(certReq.getDescription())
-
-                        .status(PendingStatus.PENDING)
-                        .submittedAt(LocalDateTime.now())
-
-                        .pendingLecturer(pending)
-                        .build();
-                pending.getPendingCertifications().add(cert);
-            });
-        }
         PendingLecturer saved = repository.save(pending);
-
         return LecturerMapper.toPendingLecturerDTO(saved);
-
     }
 
+
+    @Transactional
     public PendingOwnedTrainingCourseDTO addOwnedCourse(PendingOwnedTrainingCourseRequest request, User currentUser) {
-        Integer lecturerId;
-
-        // Determine lecturer ID based on role
-        if (currentUser.getRole() == Role.LECTURER) {
-            // Giảng viên chỉ được thêm cho chính mình
-//            Lecturer lecturer = lecturerRepository.findByUserId(currentUser.getId())
-            Lecturer lecturer = lecturerRepository.findById(currentUser.getLecturer().getId())
-                    .orElseThrow(() -> new RuntimeException("Lecturer not found for current user"));
-            lecturerId = lecturer.getId();
-        }  else {
-            throw new AccessDeniedException("Only ADMIN or LECTURER can add owned training course");
+        if (request == null) {
+            throw new IllegalArgumentException("Request không được để trống");
         }
-
-        // Tìm Lecturer từ ID
-        Lecturer lecturer = lecturerRepository.findById(lecturerId)
-                .orElseThrow(() -> new RuntimeException("Lecturer not found"));
-
-        // Ánh xạ từ DTO sang Entity
+        if (currentUser.getRole() != Role.LECTURER) {
+            throw new AccessDeniedException("Chỉ giảng viên mới có thể thêm khóa học sở hữu");
+        }
+        Lecturer lecturerRef = currentUser.getLecturer();
+        if (lecturerRef == null) {
+            throw new EntityNotFoundException("Không tìm thấy hồ sơ giảng viên");
+        }
+        Lecturer lecturer = lecturerRepository.findById(lecturerRef.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên trong hệ thống"));
+//        // Validate dữ liệu đầu vào (tùy mức độ bạn muốn kiểm tra)
+//        if (request.getTitle() == null || request.getTitle().isBlank()) {
+//            throw new IllegalArgumentException("Tiêu đề khóa học không được để trống");
+//        }
         PendingOwnedTrainingCourse course = PendingOwnedTrainingCourse.builder()
                 .title(request.getTitle())
                 .topic(request.getTopic())
@@ -154,7 +110,6 @@ public class PendingLecturerService {
                 .description(request.getDescription())
                 .courseUrl(request.getCourseUrl())
                 .lecturer(lecturer)
-
                 .pendingStatus(PendingStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -162,19 +117,25 @@ public class PendingLecturerService {
         return LecturerMapper.pendingOwnedTrainingCourseDTO(course);
     }
 
+
+    @Transactional
     public PendingAttendedTrainingCourseDTO addAttendedCourse(PendingAttendedTrainingCourseRequest request, User currentUser) {
-        Integer lecturerId;
-
-        if (currentUser.getRole() == Role.LECTURER) {
-            Lecturer lecturer = lecturerRepository.findById(currentUser.getLecturer().getId())
-                    .orElseThrow(() -> new RuntimeException("Lecturer not found for current user"));
-            lecturerId = lecturer.getId();
-        } else {
-            throw new AccessDeniedException("Only ADMIN or LECTURER can add attended training course");
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu không được để trống");
         }
-
-        Lecturer lecturer = lecturerRepository.findById(lecturerId)
-                .orElseThrow(() -> new RuntimeException("Lecturer not found"));
+        if (currentUser.getRole() != Role.LECTURER) {
+            throw new AccessDeniedException("Chỉ giảng viên mới có thể thêm khóa học đã tham gia");
+        }
+        Lecturer lecturerRef = currentUser.getLecturer();
+        if (lecturerRef == null) {
+            throw new EntityNotFoundException("Không tìm thấy hồ sơ giảng viên");
+        }
+        Lecturer lecturer = lecturerRepository.findById(lecturerRef.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên trong hệ thống"));
+//        // Validate các field quan trọng (tùy yêu cầu nghiệp vụ)
+//        if (request.getTitle() == null || request.getTitle().isBlank()) {
+//            throw new IllegalArgumentException("Tiêu đề không được để trống");
+//        }
 
         PendingAttendedTrainingCourse course = PendingAttendedTrainingCourse.builder()
                 .title(request.getTitle())
@@ -193,26 +154,29 @@ public class PendingLecturerService {
                 .createdAt(LocalDateTime.now())
                 .lecturer(lecturer)
                 .build();
-
-
         pendingAttendedTrainingCourseRepository.save(course);
         return LecturerMapper.mapToAttendedDTO(course);
     }
 
+
+    @Transactional
     public PendingResearchProjectDTO addResearchProject(PendingResearchProjectRequest request, User currentUser) {
-        Integer lecturerId;
-
-        if (currentUser.getRole() == Role.LECTURER) {
-            Lecturer lecturer = lecturerRepository.findById(currentUser.getLecturer().getId())
-                    .orElseThrow(() -> new RuntimeException("Lecturer not found for current user"));
-            lecturerId = lecturer.getId();
-        }  else {
-            throw new AccessDeniedException("Only ADMIN or LECTURER can add research project");
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu không được để trống");
         }
-
-        Lecturer lecturer = lecturerRepository.findById(lecturerId)
-                .orElseThrow(() -> new RuntimeException("Lecturer not found"));
-
+        if (currentUser.getRole() != Role.LECTURER) {
+            throw new AccessDeniedException("Chỉ giảng viên mới có thể thêm đề tài nghiên cứu");
+        }
+        Lecturer lecturerRef = currentUser.getLecturer();
+        if (lecturerRef == null) {
+            throw new EntityNotFoundException("Không tìm thấy hồ sơ giảng viên");
+        }
+        Lecturer lecturer = lecturerRepository.findById(lecturerRef.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên trong hệ thống"));
+        // validate dữ liệu)
+        // if (request.getTitle() == null || request.getTitle().isBlank()) {
+        //     throw new IllegalArgumentException("Tên đề tài không được để trống");
+        // }
         PendingResearchProject project = PendingResearchProject.builder()
                 .title(request.getTitle())
                 .researchArea(request.getResearchArea())
@@ -231,31 +195,29 @@ public class PendingLecturerService {
                 .createdAt(LocalDateTime.now())
                 .lecturer(lecturer)
                 .build();
-
         pendingResearchProjectRepository.save(project);
         return LecturerMapper.mapToResearchProjectDTO(project);
     }
 
-    public PendingLecturerDTO updatePendingLecturer(PendingLecturerUpdateRequest request) {
-        if (request.getCitizenId() == null || request.getCitizenId().length() != 11) {
-            throw new IllegalStateException("Số CCCD phải có chính xác 11 số");
-        }
 
+
+    @Transactional
+    public PendingLecturerDTO updatePendingLecturer(PendingLecturerUpdateRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không được để trống");
+        }
+        if (request.getCitizenId() == null || request.getCitizenId().length() != 11) {
+            throw new IllegalArgumentException("Số CCCD phải có chính xác 11 số");
+        }
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
+            throw new IllegalStateException("Không tìm thấy người dùng đang đăng nhập");
         }
-
-        // Tìm hồ sơ pending của người dùng hiện tại
         PendingLecturer pending = repository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("PendingLecturer not found"));
-
-        // Đảm bảo chỉ chính chủ được chỉnh sửa hồ sơ của họ
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ PendingLecturer"));
         if (!pending.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Bạn không có quyền cập nhật hồ sơ này");
         }
-
-        // Cập nhật các trường thông tin cơ bản
         pending.setCitizenId(request.getCitizenId());
         pending.setFullName(request.getFullName());
         pending.setDateOfBirth(request.getDateOfBirth());
@@ -266,27 +228,33 @@ public class PendingLecturerService {
         pending.setAcademicRank(request.getAcademicRank());
         pending.setSpecialization(request.getSpecialization());
         pending.setExperienceYears(request.getExperienceYears());
+
         pending.setResponse("");
-        // Reset trạng thái để admin duyệt lại
         pending.setStatus(PendingStatus.PENDING);
         pending.setUpdatedAt(LocalDateTime.now());
 
         PendingLecturer updated = repository.save(pending);
-
         return LecturerMapper.toPendingLecturerDTO(updated);
     }
 
 
+
     @Transactional
     public PendingCertificationDTO updatePendingCertification(PendingCertificationRequest request, User user) {
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu cập nhật chứng chỉ không được để trống");
+        }
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("ID của chứng chỉ cần cập nhật không được để trống");
+        }
         PendingCertification cert = pendingCertificationRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("PendingCertification not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chứng chỉ cần cập nhật"));
 
-        if (!cert.getPendingLecturer().getUser().getId().equals(user.getId())) {
+        if (cert.getPendingLecturer() == null || cert.getPendingLecturer().getUser() == null
+                || !cert.getPendingLecturer().getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Bạn không có quyền chỉnh sửa chứng chỉ này");
         }
 
-        // Cập nhật thông tin
         cert.setReferenceId(request.getReferenceId());
         cert.setName(request.getName());
         cert.setIssuedBy(request.getIssuedBy());
@@ -305,16 +273,21 @@ public class PendingLecturerService {
 
     @Transactional
     public PendingDegreeDTO updatePendingDegree(PendingDegreeRequest request, User user) {
-//        Degree original = degreeRepository.findById(dto.getOriginalId())
-//                .orElseThrow(() -> new RuntimeException("Degree not found"));
-
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu cập nhật bằng cấp không được để trống");
+        }
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("ID của bằng cấp cần cập nhật không được để trống");
+        }
         PendingDegree pending = pendingDegreeRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("PendingDegree not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bằng cấp cần cập nhật"));
+        User owner = Optional.ofNullable(pending.getPendingLecturer())
+                .map(PendingLecturer::getUser)
+                .orElseThrow(() -> new AccessDeniedException("Bằng cấp không liên kết với người dùng hợp lệ"));
 
-        if (!pending.getPendingLecturer().getUser().getId().equals(user.getId())) {
+        if (!owner.getId().equals(user.getId())) {
             throw new AccessDeniedException("Bạn không có quyền chỉnh sửa bằng cấp này");
         }
-
         pending.setReferenceId(request.getReferenceId());
         pending.setName(request.getName());
         pending.setMajor(request.getMajor());
@@ -324,6 +297,7 @@ public class PendingLecturerService {
         pending.setLevel(request.getLevel());
         pending.setUrl(request.getUrl());
         pending.setDescription(request.getDescription());
+
         pending.setStatus(PendingStatus.PENDING);
         pending.setReason("");
         pending.setUpdatedAt(LocalDateTime.now());
@@ -333,9 +307,14 @@ public class PendingLecturerService {
 
     @Transactional
     public PendingDegreeDTO createPendingDegree(PendingDegreeRequest request, User user) {
-        PendingLecturer pendingLecturer = repository.findById(user.getPendingLecturer().getId())
-                .orElseThrow(() -> new RuntimeException("PendingLecturer not found for user"));
-
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu tạo bằng cấp không được để trống");
+        }
+        Integer pendingLecturerId = Optional.ofNullable(user.getPendingLecturer())
+                .map(PendingLecturer::getId)
+                .orElseThrow(() -> new IllegalStateException("Người dùng chưa có hồ sơ giảng viên đang xét duyệt"));
+        PendingLecturer pendingLecturer = repository.findById(pendingLecturerId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ giảng viên đang xét duyệt"));
         PendingDegree degree = PendingDegree.builder()
                 .referenceId(request.getReferenceId())
                 .name(request.getName())
@@ -347,7 +326,6 @@ public class PendingLecturerService {
                 .url(request.getUrl())
                 .description(request.getDescription())
                 .status(PendingStatus.PENDING)
-//                .originalId(dto.getOriginalId())
                 .submittedAt(LocalDateTime.now())
                 .pendingLecturer(pendingLecturer)
                 .build();
@@ -356,11 +334,18 @@ public class PendingLecturerService {
         return LecturerMapper.toPendingDegreeDTO(saved);
     }
 
+
     @Transactional
     public PendingCertificationDTO createPendingCertification(PendingCertificationRequest request, User user) {
-        PendingLecturer pendingLecturer = repository.findById(user.getPendingLecturer().getId())
-                .orElseThrow(() -> new RuntimeException("PendingLecturer not found for user"));
+        if (request == null) {
+            throw new IllegalArgumentException("Yêu cầu tạo chứng chỉ không được để trống");
+        }
+        Integer pendingLecturerId = Optional.ofNullable(user.getPendingLecturer())
+                .map(PendingLecturer::getId)
+                .orElseThrow(() -> new IllegalStateException("Người dùng chưa có hồ sơ giảng viên đang xét duyệt"));
 
+        PendingLecturer pendingLecturer = repository.findById(pendingLecturerId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ giảng viên đang xét duyệt"));
         PendingCertification cert = PendingCertification.builder()
                 .referenceId(request.getReferenceId())
                 .name(request.getName())
@@ -371,7 +356,6 @@ public class PendingLecturerService {
                 .level(request.getLevel())
                 .description(request.getDescription())
                 .status(PendingStatus.PENDING)
-//                .originalId(dto.getOriginalId())
                 .submittedAt(LocalDateTime.now())
                 .pendingLecturer(pendingLecturer)
                 .build();
@@ -380,25 +364,26 @@ public class PendingLecturerService {
         return LecturerMapper.toPendingCertificationDTO(saved);
     }
 
+
     @Transactional
     public PendingLecturerDTO resubmitPendingLecturer(PendingLecturerDTO request, User user) {
-        if (request.getCitizenId().length() != 11) {
-            throw new IllegalStateException("Citizen ID phải có 11 số");
+        if (request == null) {
+            throw new IllegalArgumentException("Dữ liệu gửi lên không được để trống");
+        }
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("ID của hồ sơ pending không được để trống");
+        }
+        if (request.getCitizenId() == null || request.getCitizenId().length() != 11) {
+            throw new IllegalStateException("Citizen ID phải có chính xác 11 số");
         }
 
         PendingLecturer pending = repository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("PendingLecturer không tồn tại"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ PendingLecturer"));
 
         if (!pending.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Bạn không có quyền sửa hồ sơ này");
         }
 
-        // ✅ Reset lại trạng thái để xét duyệt lại
-        pending.setStatus(PendingStatus.PENDING);
-        pending.setResponse(null);
-        pending.setUpdatedAt(LocalDateTime.now());
-
-        // ✅ Cập nhật thông tin cơ bản
         pending.setCitizenId(request.getCitizenId());
         pending.setFullName(request.getFullName());
         pending.setDateOfBirth(request.getDateOfBirth());
@@ -410,11 +395,32 @@ public class PendingLecturerService {
         pending.setSpecialization(request.getSpecialization());
         pending.setExperienceYears(request.getExperienceYears());
 
-        // ✅ Xử lý degree mới: tạo lại danh sách
+        pending.setStatus(PendingStatus.PENDING);
+        pending.setResponse(null);
+        pending.setUpdatedAt(LocalDateTime.now());
+
         pending.getPendingDegrees().clear();
-        if (request.getPendingDegrees() != null) {
-            for (PendingDegreeDTO d : request.getPendingDegrees()) {
-                pending.getPendingDegrees().add(PendingDegree.builder()
+        pending.getPendingDegrees().addAll(mapPendingDegrees(request, pending));
+
+        pending.getPendingCertifications().clear();
+        pending.getPendingCertifications().addAll(mapPendingCertifications(request, pending));
+
+        PendingLecturer updated = repository.save(pending);
+        return LecturerMapper.toPendingLecturerDTO(updated);
+    }
+
+
+
+
+
+
+
+
+    private List<PendingDegree> mapPendingDegrees(PendingLecturerDTO request, PendingLecturer pending) {
+        if (request.getPendingDegrees() == null) return Collections.emptyList();
+
+        return request.getPendingDegrees().stream()
+                .map(d -> PendingDegree.builder()
                         .referenceId(d.getReferenceId())
                         .name(d.getName())
                         .major(d.getMajor())
@@ -427,15 +433,15 @@ public class PendingLecturerService {
                         .status(PendingStatus.PENDING)
                         .submittedAt(LocalDateTime.now())
                         .pendingLecturer(pending)
-                        .build());
-            }
-        }
+                        .build())
+                .collect(Collectors.toList());
+    }
 
-        // ✅ Xử lý certification mới
-        pending.getPendingCertifications().clear();
-        if (request.getPendingCertifications() != null) {
-            for (PendingCertificationDTO c : request.getPendingCertifications()) {
-                pending.getPendingCertifications().add(PendingCertification.builder()
+    private List<PendingCertification> mapPendingCertifications(PendingLecturerDTO request, PendingLecturer pending) {
+        if (request.getPendingCertifications() == null) return Collections.emptyList();
+
+        return request.getPendingCertifications().stream()
+                .map(c -> PendingCertification.builder()
                         .referenceId(c.getReferenceId())
                         .name(c.getName())
                         .issuedBy(c.getIssuedBy())
@@ -447,11 +453,8 @@ public class PendingLecturerService {
                         .status(PendingStatus.PENDING)
                         .submittedAt(LocalDateTime.now())
                         .pendingLecturer(pending)
-                        .build());
-            }
-        }
-
-        PendingLecturer updated = repository.save(pending);
-        return LecturerMapper.toPendingLecturerDTO(updated);
+                        .build())
+                .collect(Collectors.toList());
     }
+
 }

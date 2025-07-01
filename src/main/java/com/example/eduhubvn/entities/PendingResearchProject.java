@@ -49,6 +49,7 @@ public class PendingResearchProject {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;

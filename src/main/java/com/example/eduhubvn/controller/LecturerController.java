@@ -1,6 +1,7 @@
 package com.example.eduhubvn.controller;
 
 
+import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.pendingCourse.PendingAttendedTrainingCourseRequest;
 import com.example.eduhubvn.dtos.lecturer.pendingCourse.PendingOwnedTrainingCourseRequest;
@@ -28,32 +29,39 @@ public class LecturerController {
     private final PendingLecturerService pendingLecturerService;
 
     @GetMapping("/{lecturerId}/courses")
-    public ResponseEntity<LecturerCourseDTO> getLecturerCourses(@PathVariable Integer lecturerId) {
-        return ResponseEntity.ok(lecturerService.getLecturerCourses(lecturerId));
+    public ResponseEntity<ApiResponse<LecturerCourseDTO>> getLecturerCourses(@PathVariable Integer lecturerId) {
+        LecturerCourseDTO dto = lecturerService.getLecturerCourses(lecturerId);
+        return ResponseEntity.ok(ApiResponse.success("Lấy khóa học thành công", dto));
     }
+
     @PostMapping("/add-owned-course")
-    public ResponseEntity<PendingOwnedTrainingCourseDTO> addPendingOwnedTrainingCourse(@RequestBody PendingOwnedTrainingCourseRequest request) {
+    public ResponseEntity<ApiResponse<PendingOwnedTrainingCourseDTO>> addPendingOwnedTrainingCourse(
+            @RequestBody PendingOwnedTrainingCourseRequest request) {
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof User user)) {
             throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
         }
-        PendingOwnedTrainingCourseDTO dto  = pendingLecturerService.addOwnedCourse(request, user);
-        return ResponseEntity.ok(dto);
+
+        PendingOwnedTrainingCourseDTO dto = pendingLecturerService.addOwnedCourse(request, user);
+        return ResponseEntity.ok(ApiResponse.success("Thêm khóa học giảng dạy thành công", dto));
     }
+
     @PostMapping("/add-attended-course")
-    public ResponseEntity<PendingAttendedTrainingCourseDTO> addPendingAttendedTrainingCourseResponse( @RequestBody PendingAttendedTrainingCourseRequest request) {
+    public ResponseEntity<ApiResponse<PendingAttendedTrainingCourseDTO>> addPendingAttendedTrainingCourse(
+            @RequestBody PendingAttendedTrainingCourseRequest request) {
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof User user)) {
             throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
         }
 
-        PendingAttendedTrainingCourseDTO responseDTO = pendingLecturerService.addAttendedCourse(request, user);
-
-        return ResponseEntity.ok(responseDTO);
+        PendingAttendedTrainingCourseDTO dto = pendingLecturerService.addAttendedCourse(request, user);
+        return ResponseEntity.ok(ApiResponse.success("Thêm khóa học tham gia thành công", dto));
     }
 
     @PostMapping("/add-research-project")
-    public ResponseEntity<PendingResearchProjectDTO> addPendingResearchProjectResponse(
+    public ResponseEntity<ApiResponse<PendingResearchProjectDTO>> addPendingResearchProject(
             @RequestBody PendingResearchProjectRequest request) {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -62,7 +70,7 @@ public class LecturerController {
         }
 
         PendingResearchProjectDTO dto = pendingLecturerService.addResearchProject(request, user);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(ApiResponse.success("Thêm đề tài nghiên cứu thành công", dto));
     }
 
 
