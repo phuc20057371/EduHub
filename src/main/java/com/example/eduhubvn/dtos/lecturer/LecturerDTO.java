@@ -1,12 +1,14 @@
 package com.example.eduhubvn.dtos.lecturer;
 
+import com.example.eduhubvn.entities.PendingStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -16,7 +18,8 @@ public class LecturerDTO {
     private Integer id;
     private String citizenId;
     private String fullName;
-    private Date dateOfBirth;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateOfBirth;
     private Boolean gender;
     private String bio;
     private String address;
@@ -25,6 +28,7 @@ public class LecturerDTO {
     private String specialization;
     private Integer experienceYears;
 
-    private List<CertificationDTO> certifications;
-    private List<DegreeDTO> degrees;
+    private PendingStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

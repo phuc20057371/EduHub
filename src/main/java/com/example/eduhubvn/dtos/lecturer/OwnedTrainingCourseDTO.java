@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -19,11 +20,14 @@ public class OwnedTrainingCourseDTO {
     private String topic;
     private CourseType courseType;
     private Scale scale;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer numberOfHour;
     private String location;
     private String status;
     private String description;
     private String courseUrl;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

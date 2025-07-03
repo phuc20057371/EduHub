@@ -1,20 +1,16 @@
-package com.example.eduhubvn.dtos.edu;
+package com.example.eduhubvn.dtos.edu.request;
 
 import com.example.eduhubvn.entities.EducationInstitutionType;
-import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class PendingEducationInstitutionDTO {
-    private Integer id;
+@NoArgsConstructor
+public class EducationInstitutionReq {
     private String businessRegistrationNumber;
     private String institutionName;
     private EducationInstitutionType institutionType;
@@ -26,9 +22,4 @@ public class PendingEducationInstitutionDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
-
-    private PendingStatus status;
-    private String reason;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

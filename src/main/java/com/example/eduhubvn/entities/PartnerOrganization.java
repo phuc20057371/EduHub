@@ -2,6 +2,10 @@ package com.example.eduhubvn.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "partner_organization")
@@ -37,5 +41,13 @@ public class PartnerOrganization {
     private String logoUrl;
     @Column(name = "established_year")
     private Integer establishedYear;
+
+    private PendingStatus status;
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updatedAt;
 
 }

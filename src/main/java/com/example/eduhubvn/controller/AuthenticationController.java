@@ -9,7 +9,6 @@ import com.example.eduhubvn.services.AuthenticationService;
 import com.example.eduhubvn.services.OtpService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,7 +31,6 @@ public class AuthenticationController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("OTP không hợp lệ", null));
         }
-
         AuthenResponse response = authenticationService.register(request);
         if (response == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -42,7 +39,6 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(ApiResponse.success("Đăng ký thành công", response));
     }
-
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthenResponse>> login(@RequestBody LoginRequest request) {
         AuthenResponse response = authenticationService.login(request);
@@ -52,7 +48,6 @@ public class AuthenticationController {
         }
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
     }
-
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthenResponse>> refreshToken(
             HttpServletRequest request
@@ -64,7 +59,6 @@ public class AuthenticationController {
         }
         return ResponseEntity.ok(ApiResponse.success("Làm mới token thành công", response));
     }
-
     @PostMapping("/send-otp")
     public ResponseEntity<String> sendOtp(
             @RequestBody Email email

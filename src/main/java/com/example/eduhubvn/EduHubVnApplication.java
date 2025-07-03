@@ -14,7 +14,7 @@ public class EduHubVnApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduHubVnApplication.class, args);
     }
-//@Bean
+@Bean
 public CommandLineRunner init(AuthenticationService authenticationService) {
     return args -> {
         var user =  RegisterRequest.builder()

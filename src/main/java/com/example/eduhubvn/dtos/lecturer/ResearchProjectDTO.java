@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -18,8 +19,8 @@ public class ResearchProjectDTO {
     private String title;
     private String researchArea;
     private Scale scale;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Double foundingAmount;
     private String foundingSource;
     private ProjectType projectType;
@@ -27,4 +28,7 @@ public class ResearchProjectDTO {
     private String publishedUrl;
     private String status;
     private String description;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

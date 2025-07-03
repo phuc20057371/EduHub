@@ -5,19 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class PendingDegreeRequest {
-    private Integer id;
+@NoArgsConstructor
+@AllArgsConstructor
+public class CertificationReq {
     private String referenceId;
     private String name;
-    private String major;
-    private String institution;
-    private Integer startYear;
-    private Integer graduationYear;
+    private String issuedBy;
+    private LocalDate issueDate;
+    private LocalDate  expiryDate;
+    private String certificateUrl;
     private String level;
-    private String url;
     private String description;
 }

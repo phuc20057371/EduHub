@@ -2,8 +2,11 @@ package com.example.eduhubvn.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "research_project")
@@ -22,9 +25,9 @@ public class ResearchProject {
     @Enumerated(EnumType.STRING)
     private Scale scale;
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
     @Column(name = "founding_amount")
     private Double foundingAmount;
     @Column(name = "founding_source")
@@ -36,8 +39,17 @@ public class ResearchProject {
     private String roleInProject;
     @Column(name = "published_url")
     private String publishedUrl;
-    private String status;
+    @Column(name = "course_status")
+    private String courseStatus;
     private String description;
+
+    private PendingStatus status;
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")

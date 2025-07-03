@@ -1,10 +1,13 @@
 package com.example.eduhubvn.dtos.edu;
 
 import com.example.eduhubvn.entities.EducationInstitutionType;
+import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -23,4 +26,8 @@ public class EducationInstitutionDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
+
+    private PendingStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

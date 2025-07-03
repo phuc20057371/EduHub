@@ -1,14 +1,11 @@
-package com.example.eduhubvn.dtos.partner;
+package com.example.eduhubvn.dtos.partner.request;
 
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
-public class PendingPartnerOrganizationDTO {
-    private Integer id;
+public class PartnerOrganizationReq {
     private String businessRegistrationNumber;
     private String organizationName;
     private String industry;
@@ -20,9 +17,4 @@ public class PendingPartnerOrganizationDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
-
-    private String reason;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

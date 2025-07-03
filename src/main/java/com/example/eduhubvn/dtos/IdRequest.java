@@ -1,5 +1,4 @@
-package com.example.eduhubvn.dtos.lecturer;
-
+package com.example.eduhubvn.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LecturerReq {
+public class IdRequest {
     private Integer id;
 }

@@ -2,23 +2,24 @@ package com.example.eduhubvn.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "lecturer")
 @Data
 @ToString(exclude = {"user", "certifications", "degrees",
-        "researchProjects" ,"attendedTrainingCourses", "ownedTrainingCourses",
-        "pendingResearchProjects","pendingAttendedTrainingCourses", "pendingOwnedTrainingCourses"
+        "researchProjects" ,"attendedTrainingCourses", "ownedTrainingCourses"
 })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Lecturer {
-
     @Id
     @GeneratedValue
     private Integer id;
@@ -33,8 +34,7 @@ public class Lecturer {
     @Column(name = "full_name", nullable = false)
     private String fullName;
     @Column(name = "date_of_birth")
-    @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     @Column (name ="gender" , nullable = false)
     private Boolean gender;
     @Column(name = "bio")
@@ -50,6 +50,14 @@ public class Lecturer {
     @Column(name = "experience_years")
     private Integer experienceYears;
 
+    private PendingStatus status;
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certification> certifications = new ArrayList<>();
 
@@ -64,15 +72,6 @@ public class Lecturer {
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OwnedTrainingCourse> ownedTrainingCourses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PendingResearchProject> pendingResearchProjects = new ArrayList<>();
-
-    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PendingAttendedTrainingCourse> pendingAttendedTrainingCourses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PendingOwnedTrainingCourse> pendingOwnedTrainingCourses = new ArrayList<>();
 
 
 }

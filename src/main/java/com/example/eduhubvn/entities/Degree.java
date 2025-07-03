@@ -3,6 +3,10 @@ package com.example.eduhubvn.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "degree")
@@ -30,6 +34,13 @@ public class Degree {
     private String url;
     private String description;
 
+    private PendingStatus status;
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")

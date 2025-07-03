@@ -1,7 +1,10 @@
 package com.example.eduhubvn.dtos.partner;
 
+import com.example.eduhubvn.entities.PendingStatus;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -18,4 +21,8 @@ public class PartnerOrganizationDTO {
     private String description;
     private String logoUrl;
     private Integer establishedYear;
+
+    private PendingStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

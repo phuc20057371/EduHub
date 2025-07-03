@@ -1,21 +1,22 @@
 package com.example.eduhubvn.dtos.lecturer.request;
 
+import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class PendingLecturerUpdateRequest {
-    private Integer id;
+@AllArgsConstructor
+public class LecturerReq {
     private String citizenId;
     private String fullName;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private Boolean gender;
     private String bio;
     private String address;
