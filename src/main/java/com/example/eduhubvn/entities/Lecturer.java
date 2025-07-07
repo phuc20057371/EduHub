@@ -50,6 +50,7 @@ public class Lecturer {
     @Column(name = "experience_years")
     private Integer experienceYears;
 
+    @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)

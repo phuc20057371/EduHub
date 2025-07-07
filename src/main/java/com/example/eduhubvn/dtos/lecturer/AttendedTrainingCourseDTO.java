@@ -3,6 +3,8 @@ package com.example.eduhubvn.dtos.lecturer;
 import com.example.eduhubvn.entities.CourseType;
 import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.Scale;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +22,7 @@ public class AttendedTrainingCourseDTO {
     private String title;
     private String topic;
     private String organizer;
+    @Enumerated(EnumType.STRING)
     private CourseType courseType;
     private Scale scale;
     private LocalDate startDate;
@@ -29,7 +32,9 @@ public class AttendedTrainingCourseDTO {
     private String description;
     private String courseUrl;
 
+    @Enumerated(EnumType.STRING)
     private PendingStatus status;
+    private String adminNote;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

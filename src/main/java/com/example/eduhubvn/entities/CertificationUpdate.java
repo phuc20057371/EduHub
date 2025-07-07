@@ -8,18 +8,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name = "certification")
+@Table(name = "certification_update")
 @Data
 @ToString(exclude = "lecturer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Certification {
+public class CertificationUpdate {
     @Id
     @GeneratedValue
     private Integer id;
+
+    @OneToOne
+    @JoinColumn(name = "certification_id", nullable = false)
+    private Certification certification;
 
     @Column(name = "reference_id", nullable = false)
     private String referenceId;
@@ -47,9 +50,4 @@ public class Certification {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "lecturer_id")
-    private Lecturer lecturer;
-
 }

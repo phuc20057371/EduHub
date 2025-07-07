@@ -1,18 +1,15 @@
-package com.example.eduhubvn.dtos.lecturer;
+package com.example.eduhubvn.dtos.lecturer.request;
 
-import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class DegreeDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class DegreeUpdateReq {
     private Integer id;
     private String referenceId;
     private String name;
@@ -23,9 +20,4 @@ public class DegreeDTO {
     private String level;
     private String url;
     private String description;
-
-    private String adminNote;
-    private PendingStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

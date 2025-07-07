@@ -1,6 +1,5 @@
-package com.example.eduhubvn.dtos.lecturer;
+package com.example.eduhubvn.dtos.lecturer.request;
 
-import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.ProjectType;
 import com.example.eduhubvn.entities.Scale;
 import lombok.AllArgsConstructor;
@@ -9,14 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResearchProjectDTO {
-    private Integer id;
+public class ResearchProjectReq {
     private String title;
     private String researchArea;
     private Scale scale;
@@ -29,9 +26,4 @@ public class ResearchProjectDTO {
     private String publishedUrl;
     private String courseStatus;
     private String description;
-
-    private PendingStatus status;
-    private String adminNote;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

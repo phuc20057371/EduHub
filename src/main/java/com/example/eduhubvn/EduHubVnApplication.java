@@ -23,16 +23,28 @@ public CommandLineRunner init(AuthenticationService authenticationService) {
                 .role(Role.USER)
                 .build();
         System.out.println("token user: " + authenticationService.register(user).getAccessToken());
+        var user1 =  RegisterRequest.builder()
+                .email("user1@gmail.com")
+                .password("123")
+                .role(Role.USER)
+                .build();
+        System.out.println("token user: " + authenticationService.register(user1).getAccessToken());
+        var user2 =  RegisterRequest.builder()
+                .email("user2@gmail.com")
+                .password("123")
+                .role(Role.USER)
+                .build();
+        System.out.println("token user: " + authenticationService.register(user2).getAccessToken());
         var lecturer = RegisterRequest.builder()
                 .email("lecturer@gmail.com")
                 .password("123")
-                .role(Role.LECTURER)
+                .role(Role.USER)
                 .build();
         System.out.println("token lecturer: " + authenticationService.register(lecturer).getAccessToken());
         var organization = RegisterRequest.builder()
                 .email("organization@gmail.com")
                 .password("123")
-                .role(Role.ORGANIZATION)
+                .role(Role.USER)
                 .build();
         System.out.println("token organization: " + authenticationService.register(organization).getAccessToken());
         var admin = RegisterRequest.builder()

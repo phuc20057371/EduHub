@@ -1,7 +1,6 @@
-package com.example.eduhubvn.dtos.lecturer;
+package com.example.eduhubvn.dtos.lecturer.request;
 
 import com.example.eduhubvn.entities.CourseType;
-import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.Scale;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,14 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OwnedTrainingCourseDTO {
-    private Integer id;
+public class OwnedTrainingCourseReq {
     private String title;
     private String topic;
     private CourseType courseType;
@@ -28,9 +25,4 @@ public class OwnedTrainingCourseDTO {
     private String courseStatus;
     private String description;
     private String courseUrl;
-
-    private PendingStatus status;
-    private String adminNote;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

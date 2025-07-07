@@ -1,30 +1,32 @@
 package com.example.eduhubvn.entities;
 
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "partner_organization")
+@Table(name = "partner_organization_update")
 @Data
-@ToString(exclude = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PartnerOrganization {
+public class PartnerOrganizationUpdate {
     @Id
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
-    private String businessRegistrationNumber;
+
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @JoinColumn(name = "partner_organization_id", nullable = false)
+    private PartnerOrganization partnerOrganization;
 
     @Column(name = "organization_name")
     private String organizationName;
@@ -41,7 +43,8 @@ public class PartnerOrganization {
     private String logoUrl;
     @Column(name = "established_year")
     private Integer establishedYear;
-
+    @Column(name = "admin_note")
+    private String adminNote;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp
@@ -50,5 +53,6 @@ public class PartnerOrganization {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
 
 }

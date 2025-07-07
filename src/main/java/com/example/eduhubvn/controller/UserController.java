@@ -3,6 +3,7 @@ package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.FileResponse;
+import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
@@ -49,6 +50,12 @@ public class UserController {
             return fileResponse;
         }
     }
+    @GetMapping("/user-profile")
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfile(@AuthenticationPrincipal User user) {
+        UserProfileDTO dto = userService.getCurrentUserProfile(user);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thành công thông tin người dùng hiện tại", dto));
+
+    }
 
     @PostMapping("/register-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> createLecturerFromUser(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
@@ -70,11 +77,11 @@ public class UserController {
     @PostMapping("/add-degree")
     public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req, @AuthenticationPrincipal User user) {
         List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Đối tác thành công", dto));
+        return ResponseEntity.ok(ApiResponse.success("Tạo Bằng cấp thành công", dto));
     }
     @PostMapping("/add-certification")
     public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req, @AuthenticationPrincipal User user) {
         List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Đối tác thành công", dto));
+        return ResponseEntity.ok(ApiResponse.success("Tạo Chứng chỉ thành công", dto));
     }
 }

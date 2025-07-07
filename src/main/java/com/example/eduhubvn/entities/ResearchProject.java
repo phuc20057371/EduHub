@@ -43,7 +43,10 @@ public class ResearchProject {
     private String courseStatus;
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private PendingStatus status;
+    @Column(name = "admin_note")
+    private String adminNote;
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createdAt;

@@ -34,6 +34,9 @@ public class Degree {
     private String url;
     private String description;
 
+    @Column(name = "admin_note")
+    private String adminNote;
+    @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)

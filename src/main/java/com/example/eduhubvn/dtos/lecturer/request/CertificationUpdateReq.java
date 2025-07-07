@@ -1,21 +1,18 @@
-package com.example.eduhubvn.dtos.lecturer;
+package com.example.eduhubvn.dtos.lecturer.request;
 
-import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class CertificationDTO {
-    private  Integer id;
+@AllArgsConstructor
+public class CertificationUpdateReq {
+    private Integer id;
     private String referenceId;
     private String name;
     private String issuedBy;
@@ -24,9 +21,4 @@ public class CertificationDTO {
     private String certificateUrl;
     private String level;
     private String description;
-
-    private String adminNote;
-    private PendingStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
