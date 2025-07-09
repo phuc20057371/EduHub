@@ -33,7 +33,6 @@ public class UserController {
 
     private final GoogleDriveService googleDriveService;
     private final UserService userService;
-
     private final LecturerService lecturerService;
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
@@ -53,35 +52,52 @@ public class UserController {
     @GetMapping("/user-profile")
     public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfile(@AuthenticationPrincipal User user) {
         UserProfileDTO dto = userService.getCurrentUserProfile(user);
-        return ResponseEntity.ok(ApiResponse.success("Lấy thành công thông tin người dùng hiện tại", dto));
-
+        return ResponseEntity.ok(ApiResponse.success("Thông tin người dùng hiện tại", dto));
     }
-
+/// Lecturer
     @PostMapping("/register-lecturer")
-    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturerFromUser(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
-        LecturerDTO dto = lecturerService.createLecturerFromUser(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo giảng viên thành công", dto));
+    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
+        LecturerDTO dto = lecturerService.createLecturer(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
-    @PostMapping("/register-eduins")
+    @PostMapping("/update-lecturer")
+    public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
+        LecturerDTO request = lecturerService.updateLecturer(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
+    }
+/// Degree
+    @PostMapping("/create-degree")
+    public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req, @AuthenticationPrincipal User user) {
+        List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
+/// Certification
+    @PostMapping("/create-certification")
+    public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req, @AuthenticationPrincipal User user) {
+        List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
+/// Education Institution
+    @PostMapping("/register-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> createEduInsFromUser(@RequestBody EducationInstitutionReq req, @AuthenticationPrincipal User user) {
         EducationInstitutionDTO dto = educationInstitutionService.createEduInsFromUser(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Trung tâm đào tạo thành công", dto));
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
-
+    @PostMapping("/update-institution")
+    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateEduins(@RequestBody EducationInstitutionReq req, @AuthenticationPrincipal User user) {
+        EducationInstitutionDTO dto = educationInstitutionService.updateEduins(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
+    }
+/// Partner Organization
     @PostMapping("/register-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> createEduInsFromUser(@RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
         PartnerOrganizationDTO dto = partnerOrganizationService.createPartnerFromUser(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Đối tác thành công", dto));
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
+    @PostMapping("/update-partner")
+    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(@RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
+        PartnerOrganizationDTO dto = partnerOrganizationService.updatePartner(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
-    @PostMapping("/add-degree")
-    public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req, @AuthenticationPrincipal User user) {
-        List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Bằng cấp thành công", dto));
-    }
-    @PostMapping("/add-certification")
-    public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req, @AuthenticationPrincipal User user) {
-        List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Tạo Chứng chỉ thành công", dto));
-    }
 }

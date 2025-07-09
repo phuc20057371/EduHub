@@ -27,6 +27,8 @@ public class LecturerUpdate {
     @JoinColumn(name = "lecturer_id", nullable = false)
     private Lecturer lecturer;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
     @Column(name = "full_name")
     private String fullName;
     @Column(name = "date_of_birth")

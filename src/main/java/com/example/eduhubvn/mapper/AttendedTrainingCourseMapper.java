@@ -4,16 +4,37 @@ import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseReq;
 import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseUpdateReq;
 import com.example.eduhubvn.entities.AttendedTrainingCourse;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface AttendedTrainingCourseMapper {
     AttendedTrainingCourse toEntity(AttendedTrainingCourseReq req);
-    AttendedTrainingCourseDTO toDTO(AttendedTrainingCourse course);
 
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    AttendedTrainingCourseUpdate toUpdate(AttendedTrainingCourseUpdateReq req);
+
+    AttendedTrainingCourseDTO toDTO(AttendedTrainingCourse course);
+    AttendedTrainingCourseDTO toDTO(AttendedTrainingCourseUpdate course);
+
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromReq(AttendedTrainingCourseUpdateReq req,@MappingTarget AttendedTrainingCourse course);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromUpdate(AttendedTrainingCourseUpdate update,@MappingTarget AttendedTrainingCourse original);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUpdateFromRequest(AttendedTrainingCourseUpdateReq req,@MappingTarget AttendedTrainingCourseUpdate update);
 }

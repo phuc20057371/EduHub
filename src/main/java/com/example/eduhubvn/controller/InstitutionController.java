@@ -11,10 +11,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/edu-ins")
+@RequestMapping("/api/v1/institution")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('SCHOOL') or hasRole('ADMIN')")
-public class EduInsController {
+public class InstitutionController {
 
     private final EducationInstitutionService educationInstitutionService;
 

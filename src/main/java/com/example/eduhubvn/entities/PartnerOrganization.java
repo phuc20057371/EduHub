@@ -42,6 +42,8 @@ public class PartnerOrganization {
     @Column(name = "established_year")
     private Integer establishedYear;
 
+    @Column(name = "admin_note")
+    private String adminNote;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp

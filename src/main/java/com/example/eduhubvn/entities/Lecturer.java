@@ -31,6 +31,8 @@ public class Lecturer {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
     @Column(name = "full_name", nullable = false)
     private String fullName;
     @Column(name = "date_of_birth")
@@ -50,6 +52,7 @@ public class Lecturer {
     @Column(name = "experience_years")
     private Integer experienceYears;
 
+    private String adminNote;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp

@@ -46,6 +46,7 @@ public class EducationInstitution {
     @Column(name = "established_year")
     private Integer establishedYear;
 
+    private String adminNote;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
     @CreationTimestamp

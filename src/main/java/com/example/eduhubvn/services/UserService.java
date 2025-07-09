@@ -26,27 +26,31 @@ public class UserService {
     private final EducationInstitutionMapper educationInstitutionMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
 
-    public Optional<User> getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User user)) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        Optional<User> u = userRepository.findById(user.getId());
-        if (u.isEmpty()) {
-            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
-        }
-        return u;
-    }
+//    public Optional<User> getCurrentUser() {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (!(principal instanceof User user)) {
+//            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
+//        }
+//        Optional<User> u = userRepository.findById(user.getId());
+//        if (u.isEmpty()) {
+//            throw new IllegalStateException("Không tìm thấy user đang đăng nhập");
+//        }
+//        return u;
+//    }
 
     public UserProfileDTO getCurrentUserProfile(User user) {
-        return  UserProfileDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .role(String.valueOf(user.getRole()))
-                .lastLogin(user.getLastLogin())
-                .lecturer(lecturerMapper.toDTO(user.getLecturer()))
-                .educationInstitution(educationInstitutionMapper.toDTO(user.getEducationInstitution()))
-                .partnerOrganization(partnerOrganizationMapper.toDTO(user.getPartnerOrganization()))
-                .build();
+        try {
+            return  UserProfileDTO.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .role(String.valueOf(user.getRole()))
+                    .lastLogin(user.getLastLogin())
+                    .lecturer(lecturerMapper.toDTO(user.getLecturer()))
+                    .educationInstitution(educationInstitutionMapper.toDTO(user.getEducationInstitution()))
+                    .partnerOrganization(partnerOrganizationMapper.toDTO(user.getPartnerOrganization()))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

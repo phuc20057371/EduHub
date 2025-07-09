@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class LecturerReq {
     private String citizenId;
+    private String phoneNumber;
     private String fullName;
     private LocalDate dateOfBirth;
     private Boolean gender;

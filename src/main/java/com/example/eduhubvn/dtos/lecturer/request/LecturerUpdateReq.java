@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LecturerUpdateReq {
+    private String citizenId;
+    private String phoneNumber;
     private String fullName;
     private LocalDate dateOfBirth;
     private Boolean gender;

@@ -38,19 +38,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .cors(httpSecurityCorsConfigurer -> {
-//                    httpSecurityCorsConfigurer.configurationSource(request -> {
-//                        var cors = new CorsConfiguration();
-//                        cors.setAllowedOrigins(List.of("*"));
-//                        cors.setAllowedMethods(List.of("*"));
-//                        cors.setAllowedHeaders(List.of("*"));
-//                        return cors;
-//                    });
-//                })
                 .cors(httpSecurityCorsConfigurer -> {
                     httpSecurityCorsConfigurer.configurationSource(request -> {
                         var cors = new CorsConfiguration();
-                        cors.setAllowedOrigins(List.of("http://localhost:3000")); // Chỉ định rõ origin
+                        cors.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:5173")); // Chỉ định rõ origin
                         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         cors.setAllowedHeaders(List.of("*"));
                         cors.setAllowCredentials(true); // Bắt buộc nếu frontend gửi token/cookie
@@ -60,7 +51,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // ✅ Public endpoints
                         .requestMatchers(
-//                                "/api/v1/pending-lecturer/**",
                                 "/login/**",
                                 "/oauth2/authorization/**",
                                 "/oauth2/**",
@@ -90,8 +80,6 @@ public class SecurityConfig {
                         .hasAuthority(LECTURER_UPDATE.getPermission())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lecturer/**")
                         .hasAuthority(LECTURER_DELETE.getPermission())
-
-                        // ✅ Any other request must be authenticated
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
@@ -99,21 +87,19 @@ public class SecurityConfig {
                             .successHandler((request, response, authentication) -> {
                                 OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
                                 OAuth2User oAuth2User = oAuth2AuthenticationToken.getPrincipal();
-
                                 AuthenResponse authResponse = oauth2Service.authenticate(oAuth2User);
-
                                 String script = "<script>" +
-                                        "window.opener.postMessage({authResponse: " + Json.pretty(authResponse) + "}, 'http://localhost:3000');" +
+                                        "window.opener.postMessage({authResponse: " + Json.pretty(authResponse) +
+//                                        "}, 'http://localhost:3000');" +
+                                        "}, 'http://localhost:5173');" +
                                         "window.close();" +
                                         "</script>";
-
-                                // Write the script to the response
                                 response.setContentType("text/html");
                                 response.getWriter().write(script);
-
                             })
                             .failureHandler((request, response, exception) -> {
-                                response.sendRedirect("http://localhost:3000");
+//                                response.sendRedirect("http://localhost:3000");
+                                response.sendRedirect("http://localhost:5173");
                             });
                 })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

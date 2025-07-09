@@ -21,6 +21,7 @@ public class PartnerOrganizationUpdateDTO {
     private String logoUrl;
     private Integer establishedYear;
 
+    private String adminNote;
     private PendingStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

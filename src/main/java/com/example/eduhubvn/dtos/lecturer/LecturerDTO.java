@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class LecturerDTO {
     private Integer id;
     private String citizenId;
+    private String phoneNumber;
     private String fullName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
@@ -28,6 +29,7 @@ public class LecturerDTO {
     private String specialization;
     private Integer experienceYears;
 
+    private String adminNote;
     private PendingStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

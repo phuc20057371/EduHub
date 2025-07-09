@@ -17,11 +17,10 @@ import java.io.IOException;
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
 public class TestController {
-        private  final GoogleDriveService googleDriveService;
 
-        @RequestMapping("/hello")
-        public String hello(){
-            return "Hello World";
-        }
+    @RequestMapping("/hello")
+    public String hello() {
+        return "Hello World";
+    }
 
 }
