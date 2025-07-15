@@ -514,4 +514,85 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
+    @Transactional
+    public List<LecturerCreateDTO> getPendingLecturerCreate() {
+        try {
+            List<Lecturer> pending = lecturerRepository.findByStatus(PendingStatus.PENDING);
+            return pending.stream()
+                    .map(lecturer -> LecturerCreateDTO.builder()
+                            .lecturer(lecturerMapper.toDTO(lecturer))
+                            //degree with status pending
+                            .degrees(degreeMapper.toDTOs(degreeRepository.findByLecturerAndStatus(lecturer, PendingStatus.PENDING)))
+                            .certificates(certificationMapper.toDTOs(certificationRepository.findByLecturerAndStatus(lecturer, PendingStatus.PENDING)))
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public DegreeDTO createDegreeFromUser(DegreeReq req, User user) {
+        if (req == null) {
+            throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            Degree degree = degreeMapper.toEntity(req);
+            degree.setLecturer(lecturer);
+            degree.setStatus(PendingStatus.PENDING);
+            degree.setAdminNote("");
+            degreeRepository.save(degree);
+            degreeRepository.flush();
+            return degreeMapper.toDTO(degree);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public DegreeDTO updateDegree(DegreeUpdateReq req, User user) {
+        if (req == null) {
+            throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        Degree degree = degreeRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
+        try {
+            degreeMapper.updateEntityFromReq(req, degree);
+            degree.setStatus(PendingStatus.PENDING);
+            degree.setAdminNote("");
+            degreeRepository.save(degree);
+            degreeRepository.flush();
+            return degreeMapper.toDTO(degree);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public CertificationDTO createCertificationFromUser(CertificationReq req, User user) {
+        if (req == null) {
+            throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            Certification certification = certificationMapper.toEntity(req);
+            certification.setLecturer(lecturer);
+            certification.setStatus(PendingStatus.PENDING);
+            certification.setAdminNote("");
+            certificationRepository.save(certification);
+            certificationRepository.flush();
+            return certificationMapper.toDTO(certification);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

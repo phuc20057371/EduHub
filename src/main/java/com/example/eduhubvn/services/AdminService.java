@@ -456,7 +456,7 @@ public class AdminService {
         }
         DegreeUpdate update = degreeUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() != PendingStatus.REJECTED) {
+        if (update.getStatus() == PendingStatus.REJECTED) {
             throw new IllegalStateException("Đã bị từ chối trước đó");
         }
         try {
@@ -819,6 +819,38 @@ public class AdminService {
             return researchProjectMapper.toDTO(project);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public List<DegreePendingDTO> getPendingDegreeUpdates() {
+        try {
+            List<DegreeUpdate> pendingUpdates = degreeUpdateRepository.findByStatus(PendingStatus.PENDING);
+            return pendingUpdates.stream()
+                    .filter(update -> update.getDegree() != null
+                            && update.getDegree().getStatus() == PendingStatus.APPROVED)
+                    .map(update -> DegreePendingDTO.builder()
+                            .degree(degreeMapper.toDTO(update.getDegree()))
+                            .updatedDegree(degreeMapper.toDTO(update))
+                            .lecturer(lecturerMapper.toDTO(update.getDegree().getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending degree updates.", e);
+        }
+    }
+    @Transactional
+    public List<DegreePendingCreateDTO> getPendingDegreeCreate() {
+        try {
+            List<Degree> pending = degreeRepository.findByStatus(PendingStatus.PENDING);
+            return pending.stream()
+                    .filter(d -> d.getLecturer() != null && d.getLecturer().getStatus() == PendingStatus.APPROVED)
+                    .map(d -> DegreePendingCreateDTO.builder()
+                            .degree(degreeMapper.toDTO(d))
+                            .lecturer(lecturerMapper.toDTO(d.getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending degree creates.", e);
         }
     }
 }

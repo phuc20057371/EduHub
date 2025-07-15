@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EduInsUpdateReq {
+    private String businessRegistrationNumber;
     private String institutionName;
     private EducationInstitutionType institutionType;
     private String phoneNumber;

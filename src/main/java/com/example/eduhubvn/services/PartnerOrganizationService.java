@@ -120,6 +120,17 @@ public class PartnerOrganizationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<PartnerOrganizationDTO> getPendingPartnerOrganizationCreate() {
+        try {
+            List<PartnerOrganization> pendingOrganizations =
+                    partnerOrganizationRepository.findByStatus(PendingStatus.PENDING);
 
-
+            return pendingOrganizations.stream()
+                    .map(partnerOrganizationMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

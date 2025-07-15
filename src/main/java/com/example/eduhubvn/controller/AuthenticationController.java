@@ -52,12 +52,17 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse<AuthenResponse>> refreshToken(
             HttpServletRequest request
     ) {
-        AuthenResponse response = authenticationService.refreshToken(request);
-        if (response == null) {
+        try {
+            AuthenResponse response = authenticationService.refreshToken(request);
+            if (response == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Refresh token không hợp lệ hoặc hết hạn", null));
+            }
+            return ResponseEntity.ok(ApiResponse.success("Làm mới token thành công", response));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Refresh token không hợp lệ hoặc hết hạn", null));
         }
-        return ResponseEntity.ok(ApiResponse.success("Làm mới token thành công", response));
     }
     @PostMapping("/send-otp")
     public ResponseEntity<String> sendOtp(

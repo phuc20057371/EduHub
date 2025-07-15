@@ -83,6 +83,7 @@ public class AuthenticationService {
         }
 
         final String refreshToken = authHeader.substring(7);
+
         final String userEmail = jwtService.extractUsername(refreshToken);
 
         if (userEmail == null) {

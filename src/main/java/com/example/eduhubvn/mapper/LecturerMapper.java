@@ -9,6 +9,8 @@ import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.LecturerUpdate;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface LecturerMapper {
 
@@ -18,6 +20,13 @@ public interface LecturerMapper {
 
 
     Lecturer toEntity(LecturerDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Lecturer toEntity(LecturerReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -41,4 +50,7 @@ public interface LecturerMapper {
     @Mapping(target = "adminNote", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(LecturerReq req, @MappingTarget  Lecturer lecturer);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    List<LecturerDTO> toDTOs(List<Lecturer> pending);
 }

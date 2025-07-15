@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LecturerUpdateDTO {
     private Long id;
+    private String citizenId;
     private String phoneNumber;
     private String fullName;
     private LocalDate dateOfBirth;

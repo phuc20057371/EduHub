@@ -116,5 +116,17 @@ public class EducationInstitutionService {
         }
     }
 
+    @Transactional
+    public List<EducationInstitutionDTO> getPendingEducationInstitutionCreate() {
+        try {
+            List<EducationInstitution> pendingInstitutions =
+                    educationInstitutionRepository.findByStatus(PendingStatus.PENDING);
 
+            return pendingInstitutions.stream()
+                    .map(educationInstitutionMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

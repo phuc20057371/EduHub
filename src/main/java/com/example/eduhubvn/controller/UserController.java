@@ -11,6 +11,7 @@ import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
 import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
@@ -70,6 +71,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req, @AuthenticationPrincipal User user) {
         List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
+    @PostMapping("/update-degree")
+    public ResponseEntity<ApiResponse<DegreeDTO>> updateDegree(@RequestBody DegreeUpdateReq req, @AuthenticationPrincipal User user) {
+        DegreeDTO dto = lecturerService.updateDegree(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 /// Certification
     @PostMapping("/create-certification")

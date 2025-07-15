@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/lecturer")
 @PreAuthorize("hasRole('LECTURER') or hasRole('ADMIN')")
 @RequiredArgsConstructor
-public class LecturerController {
+public class    LecturerController {
 
     private final LecturerService lecturerService;
 
@@ -28,6 +28,11 @@ public class LecturerController {
     }
 
 /// Certification
+    @PostMapping("/create-certification")
+    public ResponseEntity<ApiResponse<CertificationDTO>> createCertificationFromUser(@RequestBody CertificationReq req, @AuthenticationPrincipal User user) {
+        CertificationDTO dto = lecturerService.createCertificationFromUser(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
     @PostMapping("/update-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> updateCertificationFromUser(@RequestBody CertificationUpdateReq req, @AuthenticationPrincipal User user) {
         CertificationDTO dto = lecturerService.updateCertificationFromUser(req, user);
@@ -39,6 +44,12 @@ public class LecturerController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 /// Degree
+
+    @PostMapping("/create-degree")
+    public ResponseEntity<ApiResponse<DegreeDTO>> createDegreeFromUser(@RequestBody DegreeReq req, @AuthenticationPrincipal User user) {
+        DegreeDTO dto = lecturerService.createDegreeFromUser(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
     @PostMapping("/update-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> updateDegreeFromUser(@RequestBody DegreeUpdateReq req, @AuthenticationPrincipal User user) {
         DegreeDTO dto = lecturerService.updateDegreeFromUser(req, user);

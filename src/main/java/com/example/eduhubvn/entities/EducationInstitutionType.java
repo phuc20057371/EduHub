@@ -1,6 +1,6 @@
 package com.example.eduhubvn.entities;
 
 public enum EducationInstitutionType {
-    SCHOOL,
+    UNIVERSITY,
     TRAINING_CENTER
 }

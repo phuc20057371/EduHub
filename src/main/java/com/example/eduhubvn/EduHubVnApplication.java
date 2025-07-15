@@ -14,48 +14,60 @@ public class EduHubVnApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduHubVnApplication.class, args);
     }
-@Bean
-public CommandLineRunner init(AuthenticationService authenticationService) {
-    return args -> {
-        var user =  RegisterRequest.builder()
-                .email("user@gmail.com")
-                .password("123")
-                .role(Role.USER)
-                .build();
-        System.out.println("token user: " + authenticationService.register(user).getAccessToken());
-        var user1 =  RegisterRequest.builder()
-                .email("user1@gmail.com")
-                .password("123")
-                .role(Role.USER)
-                .build();
-        System.out.println("token user: " + authenticationService.register(user1).getAccessToken());
-        var user2 =  RegisterRequest.builder()
-                .email("user2@gmail.com")
-                .password("123")
-                .role(Role.USER)
-                .build();
-        System.out.println("token user: " + authenticationService.register(user2).getAccessToken());
-        var lecturer = RegisterRequest.builder()
-                .email("lecturer@gmail.com")
-                .password("123")
-                .role(Role.USER)
-                .build();
-        System.out.println("token lecturer: " + authenticationService.register(lecturer).getAccessToken());
-        var organization = RegisterRequest.builder()
-                .email("organization@gmail.com")
-                .password("123")
-                .role(Role.USER)
-                .build();
-        System.out.println("token organization: " + authenticationService.register(organization).getAccessToken());
-        var admin = RegisterRequest.builder()
-                .email("admin@gmail.com")
-                .password("123")
-                .role(Role.ADMIN)
-                .build();
-        System.out.println("token admin: " + authenticationService.register(admin).getAccessToken());
-    };
+
+    //@Bean
+    public CommandLineRunner init(AuthenticationService authenticationService) {
+        return args -> {
+            // Create 1 ADMIN user
+            var admin = RegisterRequest.builder()
+                    .email("admin@gmail.com")
+                    .password("123")
+                    .role(Role.ADMIN)
+                    .build();
+            System.out.println("token admin: " + authenticationService.register(admin).getAccessToken());
+
+            // Create 20 USER accounts
+            for (int i = 1; i <= 20; i++) {
+                var user = RegisterRequest.builder()
+                        .email("user" + i + "@gmail.com")
+                        .password("123")
+                        .role(Role.USER)
+                        .build();
+                System.out.println("token user" + i + ": " + authenticationService.register(user).getAccessToken());
+            }
+
+            // Create 10 LECTURER accounts
+            for (int i = 1; i <= 10; i++) {
+                var lecturer = RegisterRequest.builder()
+                        .email("lecturer" + i + "@gmail.com")
+                        .password("123")
+                        .role(Role.LECTURER)
+                        .build();
+                System.out.println("token lecturer" + i + ": " + authenticationService.register(lecturer).getAccessToken());
+            }
+
+            // Create 10 SCHOOL accounts
+            for (int i = 1; i <= 10; i++) {
+                var school = RegisterRequest.builder()
+                        .email("school" + i + "@gmail.com")
+                        .password("123")
+                        .role(Role.SCHOOL)
+                        .build();
+                System.out.println("token school" + i + ": " + authenticationService.register(school).getAccessToken());
+            }
+
+            // Create 10 ORGANIZATION accounts
+            for (int i = 1; i <= 10; i++) {
+                var organization = RegisterRequest.builder()
+                        .email("organization" + i + "@gmail.com")
+                        .password("123")
+                        .role(Role.ORGANIZATION)
+                        .build();
+                System.out.println("token organization" + i + ": " + authenticationService.register(organization).getAccessToken());
+            }
+
+            System.out.println("Total users created: 51 (1 admin + 20 users + 10 lecturers + 10 schools + 10 organizations)");
+        };
+    };}
 
 
-}
-
-}
