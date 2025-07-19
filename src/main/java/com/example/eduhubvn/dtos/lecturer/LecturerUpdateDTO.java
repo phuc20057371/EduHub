@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LecturerUpdateDTO {
-    private Long id;
+    private Integer id;
     private String citizenId;
     private String phoneNumber;
     private String fullName;

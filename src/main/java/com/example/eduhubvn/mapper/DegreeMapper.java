@@ -20,6 +20,9 @@ public interface DegreeMapper {
     List<Degree> toEntities(List<DegreeReq> reqs);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    List<Degree> toEntitiesFromDtos(List<DegreeDTO> dtos);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     List<DegreeDTO> toDTOs(List<Degree> entities);
 
     @Mapping(target = "id", ignore = true)

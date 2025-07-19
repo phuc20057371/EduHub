@@ -47,4 +47,6 @@ public interface CertificationMapper {
     void updateUpdateFromRequest(CertificationUpdateReq req,@MappingTarget CertificationUpdate update);
 
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    List<Certification> toEntitiesFromDtos(List<CertificationDTO> certifications);
 }

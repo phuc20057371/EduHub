@@ -389,9 +389,6 @@ public class AdminService {
         }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (degree.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
         try {
             degree.setStatus(PendingStatus.APPROVED);
             Degree saved = degreeRepository.save(degree);
@@ -409,9 +406,6 @@ public class AdminService {
         }
         DegreeUpdate update = degreeUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
         try {
             Degree degree = update.getDegree();
             degreeMapper.updateEntityFromUpdate(update, degree);
@@ -478,9 +472,7 @@ public class AdminService {
         }
         Certification certification = certificationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (certification.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+
         try {
             certification.setStatus(PendingStatus.APPROVED);
             Certification saved = certificationRepository.save(certification);
@@ -567,9 +559,7 @@ public class AdminService {
         }
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (course.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+
         try {
             course.setStatus(PendingStatus.APPROVED);
             course.setAdminNote("");
@@ -654,9 +644,7 @@ public class AdminService {
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (course.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+
         try {
             course.setStatus(PendingStatus.APPROVED);
             course.setAdminNote("");
@@ -743,9 +731,7 @@ public class AdminService {
         }
         ResearchProject project = researchProjectRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (project.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+
         try {
             project.setStatus(PendingStatus.APPROVED);
             project.setAdminNote("");
@@ -851,6 +837,34 @@ public class AdminService {
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching pending degree creates.", e);
+        }
+    }
+    @Transactional
+    public List<LecturerDTO> getAllLecturers() {
+        try {
+            List<Lecturer> lecturers = lecturerRepository.findAll();
+            return lecturers.stream()
+//                    .filter(lecturer -> lecturer.getStatus() == PendingStatus.APPROVED)
+                    .map(lecturerMapper::toDTO)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching all lecturers.", e);
+        }
+    }
+    @Transactional
+    public LecturerDTO updateLecturer(LecturerUpdateDTO req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Lecturer lecturer = lecturerRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
+        try {
+            lecturerMapper.updateEntityFromUpdate(req, lecturer);
+            lecturerRepository.save(lecturer);
+            lecturerRepository.flush();
+            return lecturerMapper.toDTO(lecturer);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

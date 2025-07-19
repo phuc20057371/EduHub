@@ -9,6 +9,7 @@ import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
@@ -65,6 +66,16 @@ public class UserController {
     public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
         LecturerDTO request = lecturerService.updateLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
+    }
+    @GetMapping("/pending-lecturer-profile")
+    public ResponseEntity<ApiResponse<PendingLecturerDTO>> getPendingLecturerProfile(@AuthenticationPrincipal User user) {
+        PendingLecturerDTO pending = lecturerService.getPendingLecturerProfile(user);
+        return ResponseEntity.ok(ApiResponse.success("Danh sách hồ sơ đang chờ duyệt", pending));
+    }
+    @PostMapping("/resubmit-lecturer")
+    public ResponseEntity<ApiResponse<PendingLecturerDTO>> updatePendingLecturer(@RequestBody PendingLecturerDTO req, @AuthenticationPrincipal User user) {
+        PendingLecturerDTO pending = lecturerService.updatePendingLecturer(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", pending));
     }
 /// Degree
     @PostMapping("/create-degree")

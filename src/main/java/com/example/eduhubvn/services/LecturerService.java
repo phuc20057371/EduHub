@@ -523,8 +523,8 @@ public class LecturerService {
                     .map(lecturer -> LecturerCreateDTO.builder()
                             .lecturer(lecturerMapper.toDTO(lecturer))
                             //degree with status pending
-                            .degrees(degreeMapper.toDTOs(degreeRepository.findByLecturerAndStatus(lecturer, PendingStatus.PENDING)))
-                            .certificates(certificationMapper.toDTOs(certificationRepository.findByLecturerAndStatus(lecturer, PendingStatus.PENDING)))
+                            .degrees(degreeMapper.toDTOs(degreeRepository.findByLecturer(lecturer)))
+                            .certificates(certificationMapper.toDTOs(certificationRepository.findByLecturer(lecturer)))
                             .build())
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -594,5 +594,69 @@ public class LecturerService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    @Transactional
+    public PendingLecturerDTO getPendingLecturerProfile(User user) {
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            List<Degree> degrees = degreeRepository.findByLecturer(lecturer);
+            List<Certification> certifications = certificationRepository.findByLecturer(lecturer);
+            return PendingLecturerDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(lecturer))
+                    .degrees(degreeMapper.toDTOs(degrees))
+                    .certifications(certificationMapper.toDTOs(certifications))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public PendingLecturerDTO updatePendingLecturer(PendingLecturerDTO req, User user) {
+        if (req == null) {
+            throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
+                throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
+
+            }
+            lecturerMapper.updateEntityFromDTO(req.getLecturer(), lecturer);
+            lecturer.setStatus(PendingStatus.PENDING);
+            lecturer.setAdminNote("");
+            lecturerRepository.save(lecturer);
+            lecturerRepository.flush();
+
+            List<Degree> degrees = degreeMapper.toEntitiesFromDtos(req.getDegrees());
+            degrees.forEach(degree -> {
+                degree.setLecturer(lecturer);
+                degree.setAdminNote("");
+            });
+            List<Degree> savedDegrees = degreeRepository.saveAll(degrees);
+            degreeRepository.flush();
+
+            List<Certification> certifications = certificationMapper.toEntitiesFromDtos(req.getCertifications());
+            certifications.forEach(certification -> {
+                certification.setLecturer(lecturer);
+                certification.setAdminNote("");
+            });
+            List<Certification> savedCertifications = certificationRepository.saveAll(certifications);
+            certificationRepository.flush();
+
+            return PendingLecturerDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(lecturer))
+                    .degrees(degreeMapper.toDTOs(savedDegrees))
+                    .certifications(certificationMapper.toDTOs(savedCertifications))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

@@ -12,4 +12,6 @@ public interface CertificationRepository extends JpaRepository<Certification, In
     Optional<Certification> findByIdAndStatus(Integer certificationId, PendingStatus pendingStatus);
 
     List<Certification> findByLecturerAndStatus(Lecturer lecturer, PendingStatus pendingStatus);
+
+    List<Certification> findByLecturer(Lecturer lecturer);
 }

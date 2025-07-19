@@ -81,6 +81,12 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Danh sách tất cả yêu cầu tạo mới chờ duyệt", result));
     }
 
+    @GetMapping("/get-all-lecturers")
+    public ResponseEntity<ApiResponse<List<LecturerDTO>>> getAllLecturers() {
+        List<LecturerDTO> lecturers = adminService.getAllLecturers();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
+    }
+
 /// Lecturer
         @PostMapping("/approve-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturer(@RequestBody IdRequest req) {
@@ -102,6 +108,13 @@ public class AdminController {
         LecturerUpdateDTO dto = adminService.rejectLecturerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+    @PostMapping("/update-lecturer")
+    public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerUpdateDTO req) {
+        LecturerDTO dto = adminService.updateLecturer(req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
+    }
+
+
 
 /// Education Institution
     @PostMapping("/approve-institution")
