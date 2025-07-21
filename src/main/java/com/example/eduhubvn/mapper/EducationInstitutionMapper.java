@@ -11,7 +11,9 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface EducationInstitutionMapper {
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     EducationInstitutionDTO toDTO(EducationInstitution entity);
+
     EducationInstitutionUpdateDTO toDTO(EducationInstitutionUpdate entity);
 
     EducationInstitution toEntity(EducationInstitutionDTO dto);
@@ -28,8 +30,17 @@ public interface EducationInstitutionMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(EducationInstitutionUpdate update, @MappingTarget EducationInstitution educationInstitution);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromUpdate(EducationInstitutionUpdateDTO update, @MappingTarget EducationInstitution educationInstitution);
 
     @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

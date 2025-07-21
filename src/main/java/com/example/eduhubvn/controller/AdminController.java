@@ -86,6 +86,16 @@ public class AdminController {
         List<LecturerDTO> lecturers = adminService.getAllLecturers();
         return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
     }
+    @GetMapping("/get-all-institutions")
+    public ResponseEntity<ApiResponse<List<EducationInstitutionDTO>>> getAllInstitutions() {
+        List<EducationInstitutionDTO> institutions = adminService.getAllInstitutions();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách cơ sở giáo dục", institutions));
+    }
+    @GetMapping("/get-all-partners")
+    public ResponseEntity<ApiResponse<List<PartnerOrganizationDTO>>> getAllPartners() {
+        List<PartnerOrganizationDTO> partners = adminService.getAllPartners();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách tổ chức đối tác", partners));
+    }
 
 /// Lecturer
         @PostMapping("/approve-lecturer")
@@ -138,6 +148,12 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
+    @PostMapping("/update-institution")
+    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateInstitution(@RequestBody EducationInstitutionUpdateDTO req) {
+        EducationInstitutionDTO dto = adminService.updateInstitution(req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
+    }
+
 /// Partner Organization
     @PostMapping("/approve-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartner(@RequestBody IdRequest req) {
@@ -159,6 +175,12 @@ public class AdminController {
         PartnerOrganizationUpdateDTO dto = adminService.rejectPartnerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+    @PostMapping("/update-partner")
+    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(@RequestBody PartnerOrganizationUpdateDTO req) {
+        PartnerOrganizationDTO dto = adminService.updatePartner(req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
+    }
+
 /// Certification
     @PostMapping("/approve-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> approveCertification(@RequestBody IdRequest req) {

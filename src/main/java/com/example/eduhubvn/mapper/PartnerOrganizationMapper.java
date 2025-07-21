@@ -27,6 +27,14 @@ public interface PartnerOrganizationMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(PartnerOrganizationUpdate update,@MappingTarget PartnerOrganization partnerOrganization);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,@MappingTarget PartnerOrganization partnerOrganization);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     PartnerOrganizationUpdate toUpdate(PartnerUpdateReq req);
 

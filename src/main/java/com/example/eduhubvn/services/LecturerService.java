@@ -88,6 +88,9 @@ public class LecturerService {
         if (lecturer == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
+        if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
+        }
         try {
             lecturerMapper.updateEntityFromRequest(req, lecturer);
             lecturer.setStatus(PendingStatus.PENDING);
@@ -560,6 +563,9 @@ public class LecturerService {
         Lecturer lecturer = user.getLecturer();
         if (lecturer == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
         }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));

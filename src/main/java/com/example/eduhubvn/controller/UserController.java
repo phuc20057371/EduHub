@@ -105,6 +105,11 @@ public class UserController {
         EducationInstitutionDTO dto = educationInstitutionService.updateEduins(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+    @GetMapping("/pending-institution-profile")
+    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> getPendingEduinsProfile(@AuthenticationPrincipal User user) {
+        EducationInstitutionDTO pending = educationInstitutionService.getPendingEduinsProfile(user);
+        return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
+    }
 /// Partner Organization
     @PostMapping("/register-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> createEduInsFromUser(@RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
@@ -117,4 +122,9 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
+    @GetMapping("/pending-partner-profile")
+    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> getPendingPartnerProfile(@AuthenticationPrincipal User user) {
+        PartnerOrganizationDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
+        return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
+    }
 }

@@ -75,6 +75,10 @@ public class EducationInstitutionService {
         if (institution == null) {
             throw new EntityNotFoundException("Không có quyền truy cập");
         }
+        System.out.println(user);
+        if (user.getRole()== Role.SCHOOL && institution.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
+        }
         try {
             educationInstitutionMapper.updateEntityFromRequest(req, institution);
             institution.setStatus(PendingStatus.PENDING);
@@ -126,6 +130,19 @@ public class EducationInstitutionService {
                     .map(educationInstitutionMapper::toDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public EducationInstitutionDTO getPendingEduinsProfile(User user) {
+        try {
+            EducationInstitution institution = user.getEducationInstitution();
+            if (institution == null) {
+                throw new EntityNotFoundException("Không có quyền truy cập");
+            }
+            return educationInstitutionMapper.toDTO(institution);
+        } catch (EntityNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

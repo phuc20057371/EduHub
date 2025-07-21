@@ -867,4 +867,60 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+    @Transactional
+    public List<EducationInstitutionDTO> getAllInstitutions() {
+        try {
+            List<EducationInstitution> institutions = educationInstitutionRepository.findAll();
+            return institutions.stream()
+//                    .filter(institution -> institution.getStatus() == PendingStatus.APPROVED)
+                    .map(educationInstitutionMapper::toDTO)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching all institutions.", e);
+        }
+    }
+    @Transactional
+    public EducationInstitutionDTO updateInstitution(EducationInstitutionUpdateDTO req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        EducationInstitution institution = educationInstitutionRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
+        try {
+            educationInstitutionMapper.updateEntityFromUpdate(req, institution);
+            educationInstitutionRepository.save(institution);
+            educationInstitutionRepository.flush();
+            return educationInstitutionMapper.toDTO(institution);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public PartnerOrganizationDTO updatePartner(PartnerOrganizationUpdateDTO req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        PartnerOrganization organization = partnerOrganizationRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
+        try {
+            partnerOrganizationMapper.updateEntityFromUpdate(req, organization);
+            partnerOrganizationRepository.save(organization);
+            partnerOrganizationRepository.flush();
+            return partnerOrganizationMapper.toDTO(organization);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public List<PartnerOrganizationDTO> getAllPartners() {
+        try {
+            List<PartnerOrganization> partners = partnerOrganizationRepository.findAll();
+            return partners.stream()
+//                    .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
+                    .map(partnerOrganizationMapper::toDTO)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching all partners.", e);
+        }
+    }
 }

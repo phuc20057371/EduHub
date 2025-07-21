@@ -57,6 +57,9 @@ public class PartnerOrganizationService {
         if (organization == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
+        if (user.getRole() == Role.ORGANIZATION && organization.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không có quyền cập nhật thông tin đối tác này.");
+        }
         try {
             partnerOrganizationMapper.updateEntityFromRequest(req, organization);
             organization.setStatus(PendingStatus.PENDING);
@@ -129,6 +132,18 @@ public class PartnerOrganizationService {
             return pendingOrganizations.stream()
                     .map(partnerOrganizationMapper::toDTO)
                     .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public PartnerOrganizationDTO getPendingPartnerProfile(User user) {
+        PartnerOrganization partnerOrganization = user.getPartnerOrganization();
+        if (partnerOrganization == null) {
+            throw new EntityNotFoundException("Không có quyền truy cập");
+        }
+        try {
+            return partnerOrganizationMapper.toDTO(partnerOrganization);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
