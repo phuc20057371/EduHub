@@ -38,13 +38,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+//                .cors(httpSecurityCorsConfigurer -> {
+//                    httpSecurityCorsConfigurer.configurationSource(request -> {
+//                        var cors = new CorsConfiguration();
+//                        cors.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:5173","http://http://172.16.10.25/:8080")); // Chỉ định rõ origin
+//                        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//                        cors.setAllowedHeaders(List.of("*"));
+//                        cors.setAllowCredentials(true); // Bắt buộc nếu frontend gửi token/cookie
+//                        return cors;
+//                    });
+//                })
                 .cors(httpSecurityCorsConfigurer -> {
                     httpSecurityCorsConfigurer.configurationSource(request -> {
                         var cors = new CorsConfiguration();
-                        cors.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:5173")); // Chỉ định rõ origin
+                        cors.setAllowedOrigins(List.of("*"));
+//                        cors.setAllowedMethods(List.of("*"));
                         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         cors.setAllowedHeaders(List.of("*"));
-                        cors.setAllowCredentials(true); // Bắt buộc nếu frontend gửi token/cookie
                         return cors;
                     });
                 })

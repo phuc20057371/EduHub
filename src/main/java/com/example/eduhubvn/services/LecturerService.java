@@ -665,4 +665,33 @@ public class LecturerService {
         }
 
     }
+    @Transactional
+    public LecturerProfileDTO getLecturerProfile(Integer idRequest) {
+        if (idRequest == null) {
+            throw new IllegalArgumentException("ID không được trống.");
+        }
+        Lecturer lecturer = lecturerRepository.findById(idRequest)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
+        try {
+
+            List<Degree> degrees = degreeRepository.findByLecturer(lecturer);
+            List<Certification> certifications = certificationRepository.findByLecturer(lecturer);
+            List<OwnedTrainingCourse> ownedTrainingCourses = ownedTrainingCourseRepository.findByLecturer(lecturer);
+            List<AttendedTrainingCourse> attendedTrainingCourses = attendedTrainingCourseRepository.findByLecturer(lecturer);
+            List<ResearchProject> researchProjects = researchProjectRepository.findByLecturer(lecturer);
+
+            return LecturerProfileDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(lecturer))
+                    .lecturerUpdate(lecturerMapper.toDTOFromUpdate(lecturerUpdateRequestRepository.findByLecturer(lecturer).orElse(null)))
+                    .degrees(degreeMapper.toDTOs(degrees))
+                    .certificates(certificationMapper.toDTOs(certifications))
+                    .ownedTrainingCourses(ownedTrainingCourseMapper.toDTOs(ownedTrainingCourses))
+                    .attendedTrainingCourses(attendedTrainingCourseMapper.toDTOs(attendedTrainingCourses))
+                    .researchProjects(researchProjectMapper.toDTOs(researchProjects))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

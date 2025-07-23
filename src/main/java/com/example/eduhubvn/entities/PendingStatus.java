@@ -4,5 +4,4 @@ public enum PendingStatus {
     PENDING,
     APPROVED,
     REJECTED,
-    RESUBMITTED,
 }

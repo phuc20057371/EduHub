@@ -1,7 +1,11 @@
 package com.example.eduhubvn.dtos.lecturer;
 
+import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.PendingStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +29,10 @@ public class LecturerDTO {
     private String bio;
     private String address;
     private String avatarUrl;
-    private String academicRank;
+    private AcademicRank academicRank;
     private String specialization;
     private Integer experienceYears;
+    private String jobField;
 
     private String adminNote;
     private PendingStatus status;

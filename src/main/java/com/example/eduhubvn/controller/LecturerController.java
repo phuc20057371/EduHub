@@ -2,6 +2,7 @@ package com.example.eduhubvn.controller;
 
 
 import com.example.eduhubvn.dtos.ApiResponse;
+import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.entities.User;
@@ -19,6 +20,12 @@ import org.springframework.web.bind.annotation.*;
 public class    LecturerController {
 
     private final LecturerService lecturerService;
+
+    @GetMapping("/lecturer-profile")
+    public ResponseEntity<ApiResponse<LecturerProfileDTO>> getLecturerProfile(@AuthenticationPrincipal User user) {
+        LecturerProfileDTO lecturer = lecturerService.getLecturerProfile(user.getLecturer().getId());
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
+    }
 
 /// Lecturer
     @PostMapping("/update-profile")

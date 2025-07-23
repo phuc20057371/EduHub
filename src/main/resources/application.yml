@@ -22,7 +22,7 @@ spring:
             user-name-attribute: sub
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/eduHubVN
+    url: jdbc:postgresql://localhost:5432/eduhubvn
     driver-class-name: org.postgresql.Driver
 
   jpa:

@@ -82,8 +82,8 @@ public class AdminController {
     }
 
     @GetMapping("/get-all-lecturers")
-    public ResponseEntity<ApiResponse<List<LecturerDTO>>> getAllLecturers() {
-        List<LecturerDTO> lecturers = adminService.getAllLecturers();
+    public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
+        List<LecturerInfoDTO> lecturers = adminService.getAllLecturers();
         return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
     }
     @GetMapping("/get-all-institutions")

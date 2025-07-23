@@ -6,10 +6,7 @@ import com.example.eduhubvn.dtos.FileResponse;
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
-import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
-import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
-import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
-import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
+import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
@@ -20,6 +17,7 @@ import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +36,7 @@ public class UserController {
     private final LecturerService lecturerService;
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
+    private final AdminService adminService;
 
     @PostMapping("/upload")
     public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
@@ -127,4 +126,20 @@ public class UserController {
         PartnerOrganizationDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
     }
+
+
+    @GetMapping("/find-lecturers")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
+    public ResponseEntity<ApiResponse<List<LecturerDTO>>> findLecturers(@RequestParam String academicRank, @RequestParam String specialization) {
+        List<LecturerDTO> lecturers = userService.findLecturers(academicRank, specialization);
+        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách giảng viên thành công", lecturers));
+    }
+
+    @GetMapping("/lecturer-profile/{lecturerId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
+    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable Integer lecturerId) {
+        LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
+    }
+
 }

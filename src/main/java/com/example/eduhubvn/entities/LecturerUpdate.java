@@ -42,11 +42,14 @@ public class LecturerUpdate {
     @Column(name = "avatar_url")
     private String avatarUrl;
     @Column (name = "academic_rank")
-    private String academicRank;
+    @Enumerated(EnumType.STRING)
+    private AcademicRank academicRank;
     @Column(name = "specialization")
     private String specialization;
     @Column(name = "experience_years")
     private Integer experienceYears;
+    @Column(name = "job_field")
+    private String jobField;
 
     @Column(name = "admin_note")
     private String adminNote;

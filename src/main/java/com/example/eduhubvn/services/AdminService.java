@@ -14,6 +14,7 @@ import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.*;
 import com.example.eduhubvn.repositories.*;
+import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -839,18 +840,42 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending degree creates.", e);
         }
     }
+
     @Transactional
-    public List<LecturerDTO> getAllLecturers() {
+    public List<LecturerInfoDTO> getAllLecturers() {
         try {
             List<Lecturer> lecturers = lecturerRepository.findAll();
             return lecturers.stream()
-//                    .filter(lecturer -> lecturer.getStatus() == PendingStatus.APPROVED)
-                    .map(lecturerMapper::toDTO)
+                    .map(this::mapToLecturerInfoDTO)
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching all lecturers.", e);
         }
     }
+
+    private LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
+        return LecturerInfoDTO.builder()
+                .id(lecturer.getId())
+                .citizenId(lecturer.getCitizenId())
+                .email(lecturer.getUser() != null ? lecturer.getUser().getEmail() : null)
+                .phoneNumber(lecturer.getPhoneNumber())
+                .fullName(lecturer.getFullName())
+                .dateOfBirth(lecturer.getDateOfBirth())
+                .gender(lecturer.getGender())
+                .bio(lecturer.getBio())
+                .address(lecturer.getAddress())
+                .avatarUrl(lecturer.getAvatarUrl())
+                .academicRank(lecturer.getAcademicRank())
+                .specialization(lecturer.getSpecialization())
+                .experienceYears(lecturer.getExperienceYears())
+                .jobField(lecturer.getJobField())
+                .adminNote(lecturer.getAdminNote())
+                .status(lecturer.getStatus())
+                .createdAt(lecturer.getCreatedAt())
+                .updatedAt(lecturer.getUpdatedAt())
+                .build();
+    }
+
     @Transactional
     public LecturerDTO updateLecturer(LecturerUpdateDTO req) {
         if (req == null || req.getId() == null) {
@@ -923,4 +948,40 @@ public class AdminService {
             throw new RuntimeException("Error fetching all partners.", e);
         }
     }
+
+    @Transactional
+    public LecturerAllInfoDTO getLecturerProfile(Integer lecturerId) {
+        try {
+            Lecturer lecturer = lecturerRepository.findById(lecturerId)
+                    .orElseThrow(() -> new IllegalStateException("Không tìm thấy giảng viên với ID: " + lecturerId));
+            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+            List <CertificationDTO> certifications = lecturer.getCertifications().stream()
+                    .map(certificationMapper::toDTO)
+                    .toList();
+            List<DegreeDTO> degrees = lecturer.getDegrees().stream()
+                    .map(degreeMapper::toDTO)
+                    .toList();
+            List<AttendedTrainingCourseDTO> attendedCourses = lecturer.getAttendedTrainingCourses().stream()
+                    .map(attendedTrainingCourseMapper::toDTO)
+                    .toList();
+            List<OwnedTrainingCourseDTO> ownedCourses = lecturer.getOwnedTrainingCourses().stream()
+                    .map(ownedTrainingCourseMapper::toDTO)
+                    .toList();
+            List<ResearchProjectDTO> researchProjects = lecturer.getResearchProjects().stream()
+                    .map(researchProjectMapper::toDTO)
+                    .toList();
+            return LecturerAllInfoDTO.builder()
+                    .lecturer(lecturerInfo)
+                    .certifications(certifications)
+                    .degrees(degrees)
+                    .attendedTrainingCourses(attendedCourses)
+                    .ownedTrainingCourses(ownedCourses)
+                    .researchProjects(researchProjects)
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }

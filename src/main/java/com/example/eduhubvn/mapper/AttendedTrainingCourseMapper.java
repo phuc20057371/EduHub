@@ -7,6 +7,8 @@ import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface AttendedTrainingCourseMapper {
     AttendedTrainingCourse toEntity(AttendedTrainingCourseReq req);
@@ -37,4 +39,11 @@ public interface AttendedTrainingCourseMapper {
     @Mapping(target = "adminNote", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUpdateFromRequest(AttendedTrainingCourseUpdateReq req,@MappingTarget AttendedTrainingCourseUpdate update);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    List<AttendedTrainingCourseDTO> toDTOs(List<AttendedTrainingCourse> attendedTrainingCourses);
 }

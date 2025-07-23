@@ -7,6 +7,8 @@ import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ResearchProjectMapper {
 
@@ -35,4 +37,12 @@ public interface ResearchProjectMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     void updateEntityFromUpdate(ResearchProjectUpdate update,@MappingTarget ResearchProject original);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    List<ResearchProjectDTO> toDTOs(List<ResearchProject> researchProjects);
 }
