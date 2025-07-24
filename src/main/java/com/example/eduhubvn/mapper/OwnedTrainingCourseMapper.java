@@ -19,6 +19,7 @@ public interface OwnedTrainingCourseMapper {
     OwnedTrainingCourseUpdate toEntity(OwnedTrainingCourseUpdateReq req);
 
     OwnedTrainingCourseDTO toDTO(OwnedTrainingCourse course);
+
     OwnedTrainingCourseDTO toDTO(OwnedTrainingCourseUpdate course);
 
     @Mapping(target = "id", ignore = true)

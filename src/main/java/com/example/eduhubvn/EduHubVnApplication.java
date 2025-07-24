@@ -28,7 +28,7 @@ public class EduHubVnApplication {
                 for (int i = 1; i <= 10; i++) {
                     var lecturer = RegisterRequest.builder()
                             .email("lecturer" + i + "@gmail.com")
-                            .password("123")
+                            .password("SGL@2025")
                             .role(Role.LECTURER)
                             .build();
                     System.out.println("token lecturer" + i + ": " + authenticationService.register(lecturer).getAccessToken());
@@ -37,7 +37,7 @@ public class EduHubVnApplication {
                 for (int i = 1; i <= 10; i++) {
                     var school = RegisterRequest.builder()
                             .email("school" + i + "@gmail.com")
-                            .password("123")
+                            .password("SGL@2025")
                             .role(Role.SCHOOL)
                             .build();
                     System.out.println("token school" + i + ": " + authenticationService.register(school).getAccessToken());
@@ -46,7 +46,7 @@ public class EduHubVnApplication {
                 for (int i = 1; i <= 10; i++) {
                     var organization = RegisterRequest.builder()
                             .email("organization" + i + "@gmail.com")
-                            .password("123")
+                            .password("SGL@2025")
                             .role(Role.ORGANIZATION)
                             .build();
                     System.out.println("token organization" + i + ": " + authenticationService.register(organization).getAccessToken());
@@ -55,7 +55,7 @@ public class EduHubVnApplication {
                 for (int i = 1; i <= 10; i++) {
                     var user = RegisterRequest.builder()
                             .email("user" + i + "@gmail.com")
-                            .password("123")
+                            .password("SGL@2025")
                             .role(Role.USER)
                             .build();
                     System.out.println("token user" + i + ": " + authenticationService.register(user).getAccessToken());
@@ -63,7 +63,7 @@ public class EduHubVnApplication {
                 // Create 1 ADMIN user
                 var admin = RegisterRequest.builder()
                         .email("admin@gmail.com")
-                        .password("123")
+                        .password("SGL@2025")
                         .role(Role.ADMIN)
                         .build();
                 System.out.println("token admin: " + authenticationService.register(admin).getAccessToken());

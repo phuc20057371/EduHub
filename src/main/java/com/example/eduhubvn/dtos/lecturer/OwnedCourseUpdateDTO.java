@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DegreePendingDTO {
-    private DegreeDTO degree;
-    private DegreeDTO updatedDegree;
+public class OwnedCourseUpdateDTO {
     private LecturerDTO lecturer;
+    private OwnedTrainingCourseDTO original;
+    private OwnedTrainingCourseDTO update;
 }

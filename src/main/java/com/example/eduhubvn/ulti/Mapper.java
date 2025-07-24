@@ -5,8 +5,10 @@ import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.entities.Lecturer;
 import org.springframework.stereotype.Component;
 
-
+@Component
 public class Mapper {
+
+
     public static LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
         if (lecturer == null) {
             return null;

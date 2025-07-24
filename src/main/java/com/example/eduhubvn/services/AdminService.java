@@ -1,9 +1,6 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.AllPendingEntityDTO;
-import com.example.eduhubvn.dtos.AllPendingUpdateDTO;
-import com.example.eduhubvn.dtos.IdRequest;
-import com.example.eduhubvn.dtos.RejectReq;
+import com.example.eduhubvn.dtos.*;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -20,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -50,7 +48,7 @@ public class AdminService {
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
-
+    private final Mapper mapper;
 
     /// Get
 
@@ -809,13 +807,13 @@ public class AdminService {
         }
     }
     @Transactional
-    public List<DegreePendingDTO> getPendingDegreeUpdates() {
+    public List<DegreeUpdateDTO> getPendingDegreeUpdates() {
         try {
             List<DegreeUpdate> pendingUpdates = degreeUpdateRepository.findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getDegree() != null
                             && update.getDegree().getStatus() == PendingStatus.APPROVED)
-                    .map(update -> DegreePendingDTO.builder()
+                    .map(update -> DegreeUpdateDTO.builder()
                             .degree(degreeMapper.toDTO(update.getDegree()))
                             .updatedDegree(degreeMapper.toDTO(update))
                             .lecturer(lecturerMapper.toDTO(update.getDegree().getLecturer()))
@@ -825,6 +823,75 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending degree updates.", e);
         }
     }
+    @Transactional
+    public List<CertificationUpdateDTO> getPendingCertificationUpdates() {
+        try {
+            List<CertificationUpdate> pendingUpdates = certificationUpdateRepository.findByStatus(PendingStatus.PENDING);
+            return pendingUpdates.stream()
+                    .filter(update -> update.getCertification() != null
+                            && update.getCertification().getStatus() == PendingStatus.APPROVED)
+                    .map(update -> CertificationUpdateDTO.builder()
+                            .original(certificationMapper.toDTO(update.getCertification()))
+                            .update(certificationMapper.toDTO(update))
+                            .lecturer(lecturerMapper.toDTO(update.getCertification().getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending degree updates.", e);
+        }
+    }
+    @Transactional
+    public List<AttendedCourseUpdateDTO> getPendingAttendedCourseUpdates() {
+        try {
+            List<AttendedTrainingCourseUpdate> pendingUpdates = attendedTrainingCourseUpdateRepository.findByStatus(PendingStatus.PENDING);
+            return pendingUpdates.stream()
+                    .filter(update -> update.getAttendedTrainingCourse() != null
+                            && update.getAttendedTrainingCourse().getStatus() == PendingStatus.APPROVED)
+                    .map(update -> AttendedCourseUpdateDTO.builder()
+                            .original(attendedTrainingCourseMapper.toDTO(update.getAttendedTrainingCourse()))
+                            .update(attendedTrainingCourseMapper.toDTO(update))
+                            .lecturer(lecturerMapper.toDTO(update.getAttendedTrainingCourse().getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending degree updates.", e);
+        }
+    }
+    @Transactional
+    public List<OwnedCourseUpdateDTO> getPendingOwnedCourseUpdates() {
+        try {
+            List<OwnedTrainingCourseUpdate> pendingUpdates = ownedTrainingCourseUpdateRepository.findByStatus(PendingStatus.PENDING);
+            return pendingUpdates.stream()
+                    .filter(update -> update.getOwnedTrainingCourse() != null
+                            && update.getOwnedTrainingCourse().getStatus() == PendingStatus.APPROVED)
+                    .map(update -> OwnedCourseUpdateDTO.builder()
+                            .original(ownedTrainingCourseMapper.toDTO(update.getOwnedTrainingCourse()))
+                            .update(ownedTrainingCourseMapper.toDTO(update))
+                            .lecturer(lecturerMapper.toDTO(update.getOwnedTrainingCourse().getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending updates.", e);
+        }
+    }
+    @Transactional
+    public List<ResearchProjectUpdateDTO> getPendingResearchProjectUpdates() {
+        try {
+            List<ResearchProjectUpdate> pendingUpdates = researchProjectUpdateRepository.findByStatus(PendingStatus.PENDING);
+            return pendingUpdates.stream()
+                    .filter(update -> update.getResearchProject() != null
+                            && update.getResearchProject().getStatus() == PendingStatus.APPROVED)
+                    .map(update -> ResearchProjectUpdateDTO.builder()
+                            .original(researchProjectMapper.toDTO(update.getResearchProject()))
+                            .update(researchProjectMapper.toDTO(update))
+                            .lecturer(lecturerMapper.toDTO(update.getResearchProject().getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching pending degree updates.", e);
+        }
+    }
+
     @Transactional
     public List<DegreePendingCreateDTO> getPendingDegreeCreate() {
         try {
@@ -954,7 +1021,7 @@ public class AdminService {
         try {
             Lecturer lecturer = lecturerRepository.findById(lecturerId)
                     .orElseThrow(() -> new IllegalStateException("Không tìm thấy giảng viên với ID: " + lecturerId));
-            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+            LecturerInfoDTO lecturerInfo = mapper.mapToLecturerInfoDTO(lecturer);
             List <CertificationDTO> certifications = lecturer.getCertifications().stream()
                     .map(certificationMapper::toDTO)
                     .toList();
@@ -983,5 +1050,150 @@ public class AdminService {
         }
 
     }
+    @Transactional
+    public List<RequestFromLecturer<?>> getLecturerRequests() {
+        try {
+            List<RequestFromLecturer<?>> requests = new ArrayList<>();
+
+            // Add Degree requests
+            List<Degree> degrees = degreeRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            for (Degree degree : degrees) {
+                requests.add(RequestFromLecturer.<DegreeDTO>builder()
+                        .content(degreeMapper.toDTO(degree))
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(degree.getLecturer())) // Use instance
+                        .type(RequestLecturerType.BC)
+                        .label(RequestLabel.Create)
+                        .date(degree.getCreatedAt())
+                        .build());
+            }
+
+            // Add Certification requests
+            List<Certification> certifications = certificationRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            for (Certification certification : certifications) {
+                requests.add(RequestFromLecturer.<CertificationDTO>builder()
+                        .content(certificationMapper.toDTO(certification))
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(certification.getLecturer()))
+                        .type(RequestLecturerType.CC)
+                        .label(RequestLabel.Create)
+                        .date(certification.getCreatedAt())
+                        .build());
+            }
+
+            // Add AttendedTrainingCourse requests
+            List<AttendedTrainingCourse> attendedCourses = attendedTrainingCourseRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            System.out.println("Found " + attendedCourses.size() + " pending attended training course requests.");
+            for (AttendedTrainingCourse course : attendedCourses) {
+                requests.add(RequestFromLecturer.<AttendedTrainingCourseDTO>builder()
+                        .content(attendedTrainingCourseMapper.toDTO(course))
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
+                        .type(RequestLecturerType.AC)
+                        .label(RequestLabel.Create)
+                        .date(course.getCreatedAt())
+                        .build());
+            }
+
+            // Add OwnedTrainingCourse requests
+            List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+
+            System.out.println("Found " + ownedCourses.size() + " pending owned training course requests.");
+            for (OwnedTrainingCourse course : ownedCourses) {
+                requests.add(RequestFromLecturer.<OwnedTrainingCourseDTO>builder()
+                        .content(ownedTrainingCourseMapper.toDTO(course))
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
+                        .type(RequestLecturerType.OC)
+                        .label(RequestLabel.Create)
+                        .date(course.getCreatedAt())
+                        .build());
+            }
+
+            // Add ResearchProject requests
+            List<ResearchProject> researchProjects = researchProjectRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            System.out.println("Found " + researchProjects.size() + " pending research project requests.");
+            for (ResearchProject project : researchProjects) {
+                requests.add(RequestFromLecturer.<ResearchProjectDTO>builder()
+                        .content(researchProjectMapper.toDTO(project))
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(project.getLecturer()))
+                        .type(RequestLecturerType.RP)
+                        .label(RequestLabel.Create)
+                        .date(project.getCreatedAt())
+                        .build());
+            }
+            List<DegreeUpdateDTO> degreeUpdates = getPendingDegreeUpdates();
+            for (DegreeUpdateDTO degreeUpdate : degreeUpdates) {
+                requests.add(RequestFromLecturer.<DegreeUpdateDTO>builder()
+                        .content(degreeUpdate)
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findByIdWithUser(degreeUpdate.getLecturer().getId())
+                                        .orElseThrow(IllegalArgumentException::new)
+                        ))
+                        .type(RequestLecturerType.BC)
+                        .label(RequestLabel.Update)
+                        .date(degreeUpdate.getDegree().getCreatedAt())
+                        .build());
+                
+            }
+            List<CertificationUpdateDTO> certificationUpdates = getPendingCertificationUpdates();
+            for (CertificationUpdateDTO certificationUpdate : certificationUpdates) {
+                requests.add(RequestFromLecturer.<CertificationUpdateDTO>builder()
+                        .content(certificationUpdate)
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findByIdWithUser(certificationUpdate.getLecturer().getId())
+                                        .orElseThrow(IllegalArgumentException::new)
+                        ))
+                        .type(RequestLecturerType.CC)
+                        .label(RequestLabel.Update)
+                        .date(certificationUpdate.getOriginal().getCreatedAt())
+                        .build());
+            }
+            List<AttendedCourseUpdateDTO> attendedCourseUpdates = getPendingAttendedCourseUpdates();
+            for (AttendedCourseUpdateDTO attendedCourseUpdate : attendedCourseUpdates) {
+                requests.add(RequestFromLecturer.<AttendedCourseUpdateDTO>builder()
+                        .content(attendedCourseUpdate)
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findByIdWithUser(attendedCourseUpdate.getLecturer().getId())
+                                        .orElseThrow(IllegalArgumentException::new)
+                        ))
+                        .type(RequestLecturerType.AC)
+                        .label(RequestLabel.Update)
+                        .date(attendedCourseUpdate.getOriginal().getCreatedAt())
+                        .build());
+            }
+            List<OwnedCourseUpdateDTO> ownedCourseUpdates = getPendingOwnedCourseUpdates();
+            for (OwnedCourseUpdateDTO ownedCourseUpdate : ownedCourseUpdates) {
+                requests.add(RequestFromLecturer.<OwnedCourseUpdateDTO>builder()
+                        .content(ownedCourseUpdate)
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findByIdWithUser(ownedCourseUpdate.getLecturer().getId())
+                                        .orElseThrow(IllegalArgumentException::new)
+                        ))
+                        .type(RequestLecturerType.OC)
+                        .label(RequestLabel.Update)
+                        .date(ownedCourseUpdate.getOriginal().getCreatedAt())
+                        .build());
+            }
+            List<ResearchProjectUpdateDTO> researchProjectUpdates = getPendingResearchProjectUpdates();
+            for (ResearchProjectUpdateDTO researchProjectUpdate : researchProjectUpdates) {
+                requests.add(RequestFromLecturer.<ResearchProjectUpdateDTO>builder()
+                        .content(researchProjectUpdate)
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findByIdWithUser(researchProjectUpdate.getLecturer().getId())
+                                        .orElseThrow(IllegalArgumentException::new)
+                        ))
+                        .type(RequestLecturerType.RP)
+                        .label(RequestLabel.Update)
+                        .date(researchProjectUpdate.getOriginal().getCreatedAt())
+                        .build());
+            }
+           
+
+            // Sort by date (newest first)
+            requests.sort((r1, r2) -> r2.getDate().compareTo(r1.getDate()));
+
+            return requests;
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching lecturer requests.", e);
+        }
+    }
+    
 
 }
