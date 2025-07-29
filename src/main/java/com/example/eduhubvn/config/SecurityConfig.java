@@ -34,20 +34,11 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final Oauth2Service oauth2Service;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .cors(httpSecurityCorsConfigurer -> {
-//                    httpSecurityCorsConfigurer.configurationSource(request -> {
-//                        var cors = new CorsConfiguration();
-//                        cors.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:5173","http://http://172.16.10.25/:8080")); // Chỉ định rõ origin
-//                        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//                        cors.setAllowedHeaders(List.of("*"));
-//                        cors.setAllowCredentials(true); // Bắt buộc nếu frontend gửi token/cookie
-//                        return cors;
-//                    });
-//                })
                 .cors(httpSecurityCorsConfigurer -> {
                     httpSecurityCorsConfigurer.configurationSource(request -> {
                         var cors = new CorsConfiguration();
@@ -102,7 +93,7 @@ public class SecurityConfig {
                                 String script = "<script>" +
                                         "window.opener.postMessage({authResponse: " + Json.pretty(authResponse) +
 //                                        "}, 'http://localhost:3000');" +
-                                        "}, 'http://localhost:5173');" +
+                                        "}, 'http://"+ request.getServerName() +"/');" +
                                         "window.close();" +
                                         "</script>";
                                 response.setContentType("text/html");
@@ -110,7 +101,7 @@ public class SecurityConfig {
                             })
                             .failureHandler((request, response, exception) -> {
 //                                response.sendRedirect("http://localhost:3000");
-                                response.sendRedirect("http://localhost:5173");
+                                response.sendRedirect("http://" + request.getServerName() + "/");
                             });
                 })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

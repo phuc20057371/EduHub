@@ -20,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,19 +61,26 @@ public class UserController {
             return fileResponse;
         }
     }
+
     private static final String UPLOAD_DIR = "uploads";
 
     @PostMapping("/uploads")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
                                         HttpServletRequest request) {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        User user = (User) authentication.getPrincipal();
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (file.isEmpty() || (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") &&
                 !fileName.endsWith(".png") && !fileName.endsWith(".pdf"))) {
             return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
         }
 
         try {
-            Path uploadPath = Paths.get("uploads");
+            Path uploadPath = Paths.get("uploads", String.valueOf(user.getRole()), String.valueOf(user.getId()));
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -81,7 +90,7 @@ public class UserController {
 
             // Build file access URL
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-            String fileUrl = baseUrl + "/uploads/" + fileName;
+            String fileUrl = baseUrl + "/uploads/"+ user.getRole()+"/" +user.getId()+"/" + fileName;
 
             return ResponseEntity.ok().body(fileUrl);
         } catch (IOException e) {
@@ -89,71 +98,84 @@ public class UserController {
                     .body("Failed to upload file: " + e.getMessage());
         }
     }
+
     @GetMapping("/user-profile")
     public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfile(@AuthenticationPrincipal User user) {
         UserProfileDTO dto = userService.getCurrentUserProfile(user);
         return ResponseEntity.ok(ApiResponse.success("Thông tin người dùng hiện tại", dto));
     }
-/// Lecturer
+
+    /// Lecturer
     @PostMapping("/register-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
         LecturerDTO dto = lecturerService.createLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
+
     @PostMapping("/update-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerReq req, @AuthenticationPrincipal User user) {
         LecturerDTO request = lecturerService.updateLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
     }
+
     @GetMapping("/pending-lecturer-profile")
     public ResponseEntity<ApiResponse<PendingLecturerDTO>> getPendingLecturerProfile(@AuthenticationPrincipal User user) {
         PendingLecturerDTO pending = lecturerService.getPendingLecturerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("Danh sách hồ sơ đang chờ duyệt", pending));
     }
+
     @PostMapping("/resubmit-lecturer")
     public ResponseEntity<ApiResponse<PendingLecturerDTO>> updatePendingLecturer(@RequestBody PendingLecturerDTO req, @AuthenticationPrincipal User user) {
         PendingLecturerDTO pending = lecturerService.updatePendingLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", pending));
     }
-/// Degree
+
+    /// Degree
     @PostMapping("/create-degree")
     public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req, @AuthenticationPrincipal User user) {
         List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
+
     @PostMapping("/update-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> updateDegree(@RequestBody DegreeUpdateReq req, @AuthenticationPrincipal User user) {
         DegreeDTO dto = lecturerService.updateDegree(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
-/// Certification
+
+    /// Certification
     @PostMapping("/create-certification")
     public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req, @AuthenticationPrincipal User user) {
         List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
-/// Education Institution
+
+    /// Education Institution
     @PostMapping("/register-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> createEduInsFromUser(@RequestBody EducationInstitutionReq req, @AuthenticationPrincipal User user) {
         EducationInstitutionDTO dto = educationInstitutionService.createEduInsFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
+
     @PostMapping("/update-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateEduins(@RequestBody EducationInstitutionReq req, @AuthenticationPrincipal User user) {
         EducationInstitutionDTO dto = educationInstitutionService.updateEduins(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+
     @GetMapping("/pending-institution-profile")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> getPendingEduinsProfile(@AuthenticationPrincipal User user) {
         EducationInstitutionDTO pending = educationInstitutionService.getPendingEduinsProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
     }
-/// Partner Organization
+
+    /// Partner Organization
     @PostMapping("/register-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> createEduInsFromUser(@RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
         PartnerOrganizationDTO dto = partnerOrganizationService.createPartnerFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
+
     @PostMapping("/update-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(@RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
         PartnerOrganizationDTO dto = partnerOrganizationService.updatePartner(req, user);

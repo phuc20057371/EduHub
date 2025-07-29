@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DegreeUpdateDTO {
-    private DegreeDTO degree;
-    private DegreeDTO updatedDegree;
+    private DegreeDTO original;
+    private DegreeDTO update;
     private LecturerDTO lecturer;
 }

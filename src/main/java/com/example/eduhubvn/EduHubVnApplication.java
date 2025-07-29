@@ -25,7 +25,7 @@ public class EduHubVnApplication {
                     return;
                 }
                 // Create 10 LECTURER accounts
-                for (int i = 1; i <= 10; i++) {
+                for (int i = 1; i <= 100; i++) {
                     var lecturer = RegisterRequest.builder()
                             .email("lecturer" + i + "@gmail.com")
                             .password("SGL@2025")

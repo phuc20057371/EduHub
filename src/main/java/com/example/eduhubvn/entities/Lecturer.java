@@ -80,5 +80,7 @@ public class Lecturer {
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OwnedTrainingCourse> ownedTrainingCourses = new ArrayList<>();
 
+    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseLecturer> courseLecturers;
 
 }

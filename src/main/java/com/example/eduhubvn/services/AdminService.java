@@ -1,6 +1,9 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.*;
+import com.example.eduhubvn.dtos.course.CourseDTO;
+import com.example.eduhubvn.dtos.course.CourseInfoDTO;
+import com.example.eduhubvn.dtos.course.CourseMemberDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -39,6 +42,7 @@ public class AdminService {
     private final OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository;
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
+    private final CourseRepository courseRepository;
 
     private final LecturerMapper lecturerMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
@@ -48,6 +52,7 @@ public class AdminService {
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
+    private final CourseMapper courseMapper;
     private final Mapper mapper;
 
     /// Get
@@ -814,8 +819,8 @@ public class AdminService {
                     .filter(update -> update.getDegree() != null
                             && update.getDegree().getStatus() == PendingStatus.APPROVED)
                     .map(update -> DegreeUpdateDTO.builder()
-                            .degree(degreeMapper.toDTO(update.getDegree()))
-                            .updatedDegree(degreeMapper.toDTO(update))
+                            .original(degreeMapper.toDTO(update.getDegree()))
+                            .update(degreeMapper.toDTO(update))
                             .lecturer(lecturerMapper.toDTO(update.getDegree().getLecturer()))
                             .build())
                     .toList();
@@ -1128,7 +1133,7 @@ public class AdminService {
                         ))
                         .type(RequestLecturerType.BC)
                         .label(RequestLabel.Update)
-                        .date(degreeUpdate.getDegree().getCreatedAt())
+                        .date(degreeUpdate.getOriginal().getCreatedAt())
                         .build());
                 
             }
@@ -1194,6 +1199,24 @@ public class AdminService {
             throw new RuntimeException("Error fetching lecturer requests.", e);
         }
     }
-    
 
+    @Transactional
+    public List<CourseInfoDTO> getAllCourses() {
+        List<CourseInfoDTO> courseInfoDTOS = new ArrayList<>();
+        List<Course> courses = courseRepository.findAll();
+        for (Course course : courses) {
+            List<CourseMemberDTO> members = course.getCourseLecturers().stream()
+                    .map(courseLecturer -> CourseMemberDTO.builder()
+                            .lecturer(Mapper.mapToLecturerInfoDTO(courseLecturer.getLecturer()))
+                            .courseRole(courseLecturer.getRole())
+                            .build())
+                    .toList();
+            CourseInfoDTO courseInfo = CourseInfoDTO.builder()
+                    .course(courseMapper.toDTO(course))
+                    .members(members)
+                    .build();
+            courseInfoDTOS.add(courseInfo);
+        }
+        return courseInfoDTOS;
+    }
 }

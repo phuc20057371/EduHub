@@ -1,6 +1,8 @@
 package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.*;
+import com.example.eduhubvn.dtos.course.CourseDTO;
+import com.example.eduhubvn.dtos.course.CourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -8,6 +10,7 @@ import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.entities.Course;
 import com.example.eduhubvn.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -306,6 +309,13 @@ public class AdminController {
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> rejectResearchProjectUpdate(@RequestBody RejectReq req) {
         ResearchProjectDTO dto = adminService.rejectResearchProjectUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
+    }
+
+
+    @GetMapping("get-all-courses")
+    public ResponseEntity<ApiResponse<List<CourseInfoDTO>>> getAllCourses() {
+        List<CourseInfoDTO> courses = adminService.getAllCourses();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học", courses));
     }
 
 }
