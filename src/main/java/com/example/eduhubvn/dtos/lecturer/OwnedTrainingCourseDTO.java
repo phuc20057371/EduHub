@@ -10,22 +10,30 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OwnedTrainingCourseDTO {
-    private Integer id;
+    private UUID id;
     private String title;
     private String topic;
     private CourseType courseType;
     private Scale scale;
+    private String thumbnailUrl;
+    private String contentUrl;
+    private String level; // e.g., Beginner, Intermediate, Advanced
+    private String requirements; // Prerequisites for the course
+    private String language;
+    private Boolean isOnline; // Whether the course is online or in-person
+    private String address;
+    private Double price;
+
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer numberOfHour;
-    private String location;
-    private String courseStatus;
+
     private String description;
     private String courseUrl;
 

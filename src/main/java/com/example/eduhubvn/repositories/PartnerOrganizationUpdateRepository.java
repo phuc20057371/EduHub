@@ -7,12 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface PartnerOrganizationUpdateRepository extends JpaRepository<PartnerOrganizationUpdate, Integer> {
+public interface PartnerOrganizationUpdateRepository extends JpaRepository<PartnerOrganizationUpdate, UUID> {
     Optional<PartnerOrganizationUpdate> findByPartnerOrganizationAndStatus(PartnerOrganization partnerOrganization, PendingStatus pendingStatus);
     List<PartnerOrganizationUpdate> findByStatus(PendingStatus status);
-
-    Optional<PartnerOrganizationUpdate> findByIdAndStatus(Integer id, PendingStatus pendingStatus);
 
     Optional<PartnerOrganizationUpdate> findByPartnerOrganization(PartnerOrganization partnerOrganization);
 }

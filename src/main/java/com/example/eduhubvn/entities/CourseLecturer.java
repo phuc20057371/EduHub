@@ -3,6 +3,8 @@ package com.example.eduhubvn.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "course_lecturer")
 @Data
@@ -11,8 +13,8 @@ import lombok.*;
 @Builder
 public class CourseLecturer {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "course_id")

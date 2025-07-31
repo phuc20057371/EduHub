@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "owned_training_course_update")
@@ -16,8 +17,8 @@ import java.time.LocalDateTime;
 @Builder
 public class OwnedTrainingCourseUpdate {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @OneToOne
     @JoinColumn(name = "course_id", nullable = false)
@@ -28,17 +29,27 @@ public class OwnedTrainingCourseUpdate {
     @Enumerated(EnumType.STRING)
     @Column(name="course_type")
     private CourseType courseType;
+
     @Enumerated(EnumType.STRING)
     private Scale scale;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+    @Column(name = "content_url")
+    private String contentUrl;
+    private String level; // e.g., Beginner, Intermediate, Advanced
+    private String requirements; // Prerequisites for the course
+    private String language;
+    @Column(name = "is_online")
+    private Boolean isOnline; // Whether the course is online or in-person
+    private String address;
+    private Double price;
+
     @Column(name = "start_date")
     private LocalDate startDate;
     @Column(name = "end_date")
     private LocalDate endDate;
-    @Column(name = "number_of_hour")
-    private Integer numberOfHour;
-    private String location;
-    @Column(name = "course_status")
-    private String courseStatus;
+
     private String description;
     @Column(name = "course_url")
     private String courseUrl;

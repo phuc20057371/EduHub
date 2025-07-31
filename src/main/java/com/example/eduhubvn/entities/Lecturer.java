@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "lecturer")
@@ -21,8 +22,8 @@ import java.util.List;
 @Builder
 public class Lecturer {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
     private String citizenId;

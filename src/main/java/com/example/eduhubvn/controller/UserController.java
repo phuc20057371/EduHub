@@ -3,14 +3,12 @@ package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.FileResponse;
+import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.*;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
+import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
 import com.example.eduhubvn.entities.User;
@@ -35,6 +33,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -90,7 +89,7 @@ public class UserController {
 
             // Build file access URL
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-            String fileUrl = baseUrl + "/uploads/"+ user.getRole()+"/" +user.getId()+"/" + fileName;
+            String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + fileName;
 
             return ResponseEntity.ok().body(fileUrl);
         } catch (IOException e) {
@@ -143,11 +142,29 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
+    @PostMapping("/delete-degree")
+    public ResponseEntity<ApiResponse<DegreeDTO>> deleteDegree(@RequestBody IdRequest req) {
+        DegreeDTO dto = userService.deleteDegree(req);
+        return ResponseEntity.ok(ApiResponse.success("Xóa thành công.", dto));
+    }
+
     /// Certification
     @PostMapping("/create-certification")
     public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req, @AuthenticationPrincipal User user) {
         List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
+    }
+
+    @PostMapping("/update-certification")
+    public ResponseEntity<ApiResponse<CertificationDTO>> updateCertification(@RequestBody CertificationUpdateReq req, @AuthenticationPrincipal User user) {
+        CertificationDTO dto = lecturerService.updateCertification(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
+    }
+
+    @PostMapping("/delete-certification")
+    public ResponseEntity<ApiResponse<CertificationDTO>> deleteCertification(@RequestBody IdRequest req) {
+        CertificationDTO dto = userService.deleteCertification(req);
+        return ResponseEntity.ok(ApiResponse.success("Xóa thành công.", dto));
     }
 
     /// Education Institution
@@ -198,7 +215,7 @@ public class UserController {
 
     @GetMapping("/lecturer-profile/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
-    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable Integer lecturerId) {
+    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId) {
         LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
     }

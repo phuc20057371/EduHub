@@ -1,13 +1,13 @@
 package com.example.eduhubvn.dtos.lecturer.request;
 
-import com.example.eduhubvn.entities.CourseType;
-import com.example.eduhubvn.entities.Scale;
+import com.example.eduhubvn.entities.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
 
 @Data
 @Builder
@@ -18,11 +18,19 @@ public class OwnedTrainingCourseReq {
     private String topic;
     private CourseType courseType;
     private Scale scale;
+    private String thumbnailUrl;
+    private String contentUrl;
+    private String level; // e.g., Beginner, Intermediate, Advanced
+    private String requirements; // Prerequisites for the course
+    private String language;
+    private Boolean isOnline; // Whether the course is online or in-person
+    private String address;
+    private Double price;
+
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer numberOfHour;
-    private String location;
-    private String courseStatus;
+
     private String description;
     private String courseUrl;
+
 }

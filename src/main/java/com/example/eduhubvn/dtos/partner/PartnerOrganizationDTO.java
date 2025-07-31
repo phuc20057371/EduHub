@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 public class PartnerOrganizationDTO {
-    private Integer id;
+    private UUID id;
     private String businessRegistrationNumber;
     private String organizationName;
     private String industry;

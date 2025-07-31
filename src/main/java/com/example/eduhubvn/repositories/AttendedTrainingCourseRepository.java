@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
-public interface AttendedTrainingCourseRepository extends JpaRepository<AttendedTrainingCourse, Integer> {
+public interface AttendedTrainingCourseRepository extends JpaRepository<AttendedTrainingCourse, UUID> {
     List<AttendedTrainingCourse> findByLecturer(Lecturer lecturer);
 
     List<AttendedTrainingCourse> findByStatus(PendingStatus pendingStatus);

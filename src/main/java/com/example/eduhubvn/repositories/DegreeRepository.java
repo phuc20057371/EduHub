@@ -9,11 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface DegreeRepository extends JpaRepository<Degree, Integer> {
-    Optional<Degree> findByIdAndStatus(Integer id, PendingStatus pendingStatus);
-
-    List<Degree> findByLecturerAndStatus(Lecturer lecturer, PendingStatus pendingStatus);
+public interface DegreeRepository extends JpaRepository<Degree, UUID> {
 
     List<Degree> findByStatus(PendingStatus pendingStatus);
 

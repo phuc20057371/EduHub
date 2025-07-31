@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificationUpdateReq {
-    private Integer id;
+    private UUID id;
     private String referenceId;
     private String name;
     private String issuedBy;

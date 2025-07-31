@@ -10,13 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LecturerInfoDTO {
-    private Integer id;
+    private UUID id;
     private String citizenId;
     private String email;
     private String phoneNumber;

@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "partner_organization")
@@ -16,8 +17,8 @@ import java.time.LocalDateTime;
 @Builder
 public class PartnerOrganization {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
     private String businessRegistrationNumber;

@@ -12,19 +12,18 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CourseDTO {
-    private Integer id;
+    private UUID id;
     private String title;
     private String topic;
     @Enumerated(EnumType.STRING)
     private CourseType courseType;
-    @Enumerated(EnumType.STRING)
-    private Scale scale;
     private String description;
     private String thumbnailUrl;
     private String contentUrl;

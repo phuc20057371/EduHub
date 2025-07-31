@@ -12,13 +12,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttendedTrainingCourseDTO {
-    private Integer id;
+    private UUID id;
     private String title;
     private String topic;
     private String organizer;

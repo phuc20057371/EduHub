@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -666,7 +667,7 @@ public class LecturerService {
 
     }
     @Transactional
-    public LecturerProfileDTO getLecturerProfile(Integer idRequest) {
+    public LecturerProfileDTO getLecturerProfile(UUID idRequest) {
         if (idRequest == null) {
             throw new IllegalArgumentException("ID không được trống.");
         }
@@ -693,5 +694,30 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
 
+    }
+    @Transactional
+    public CertificationDTO updateCertification(CertificationUpdateReq req, User user) {
+        if (req == null) {
+            throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
+        }
+        Certification certification = certificationRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
+        try {
+            certificationMapper.updateEntityFromReq(req, certification);
+            certification.setStatus(PendingStatus.PENDING);
+            certification.setAdminNote("");
+            certificationRepository.save(certification);
+            certificationRepository.flush();
+            return certificationMapper.toDTO(certification);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

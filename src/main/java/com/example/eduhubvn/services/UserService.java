@@ -7,12 +7,10 @@ import com.example.eduhubvn.dtos.*;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.entities.*;
-import com.example.eduhubvn.mapper.EducationInstitutionMapper;
-import com.example.eduhubvn.mapper.LecturerMapper;
-import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
-import com.example.eduhubvn.repositories.LecturerRepository;
-import com.example.eduhubvn.repositories.UserRepository;
+import com.example.eduhubvn.mapper.*;
+import com.example.eduhubvn.repositories.*;
 import com.example.eduhubvn.ulti.Mapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +27,12 @@ public class UserService {
     private final LecturerMapper lecturerMapper;
     private final EducationInstitutionMapper educationInstitutionMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
+    private final CertificationRepository certificationRepository;
+    private final DegreeRepository degreeRepository;
+    private final CertificationMapper certificationMapper;
+    private final DegreeMapper degreeMapper;
+
+
 
 
 
@@ -76,6 +80,37 @@ public class UserService {
             return lecturers.stream()
                     .map(lecturerMapper::toDTO)
                     .toList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public DegreeDTO deleteDegree(IdRequest req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Degree degree = degreeRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bằng cấp với ID: " + req.getId()));
+        try {
+            degreeRepository.delete(degree);
+            degreeRepository.flush();
+            return degreeMapper.toDTO(degree);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    @Transactional
+    public CertificationDTO deleteCertification(IdRequest req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Certification certification = certificationRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chứng chỉ với ID: " + req.getId()));
+        try {
+            certificationRepository.delete(certification);
+            certificationRepository.flush();
+            return certificationMapper.toDTO(certification);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

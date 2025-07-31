@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface CertificationRepository extends JpaRepository<Certification, Integer> {
-    Optional<Certification> findByIdAndStatus(Integer certificationId, PendingStatus pendingStatus);
+public interface CertificationRepository extends JpaRepository<Certification, UUID> {
 
     List<Certification> findByLecturerAndStatus(Lecturer lecturer, PendingStatus pendingStatus);
 

@@ -3,6 +3,8 @@ package com.example.eduhubvn.controller;
 import com.example.eduhubvn.dtos.*;
 import com.example.eduhubvn.dtos.course.CourseDTO;
 import com.example.eduhubvn.dtos.course.CourseInfoDTO;
+import com.example.eduhubvn.dtos.course.CourseReq;
+import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -28,6 +30,9 @@ public class AdminController {
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
     private final AdminService adminService;
+    private final UserService userService;
+
+
 
 
     @GetMapping("/lecturer-pending-updates")
@@ -223,6 +228,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
+
 /// Degree
     @PostMapping("/approve-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> approveDegree(@RequestBody IdRequest req) {
@@ -244,6 +250,7 @@ public class AdminController {
         DegreeDTO dto = adminService.rejectDegreeUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+
 
 /// Attended Training Course
     @PostMapping("/approve-attended-course")
@@ -288,6 +295,11 @@ public class AdminController {
         OwnedTrainingCourseDTO dto = adminService.rejectOwnedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+    @GetMapping("/get-owned-courses")
+    public ResponseEntity<ApiResponse<List<OwnedCourseInfoDTO>>> getOwnedCourses() {
+        List<OwnedCourseInfoDTO> ownedCourses = adminService.getOwnedCourses();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học sở hữu", ownedCourses));
+    }
 
 /// Research Project
     @PostMapping("/approve-research-project")
@@ -311,11 +323,27 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-
+/// Course
     @GetMapping("get-all-courses")
     public ResponseEntity<ApiResponse<List<CourseInfoDTO>>> getAllCourses() {
         List<CourseInfoDTO> courses = adminService.getAllCourses();
         return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học", courses));
     }
+    @GetMapping("/get-course/{id}")
+    public ResponseEntity<ApiResponse<CourseDTO>> getCourseById(@PathVariable("id") String id) {
+        CourseDTO course = adminService.getCourseById(id);
+        return ResponseEntity.ok(ApiResponse.success("Thông tin khóa học", course));
+    }
+    @PostMapping("/update-course-member")
+    public ResponseEntity<ApiResponse<CourseInfoDTO>> updateCourseMember(@RequestBody CourseInfoDTO req) {
+        CourseInfoDTO courseInfo = adminService.updateCourseMember(req);
+        return ResponseEntity.ok(ApiResponse.success("Thêm thành viên vào khóa học thành công", courseInfo));
+    }
+    @PostMapping("create-course")
+    public ResponseEntity<ApiResponse<CourseInfoDTO>> createCourse(@RequestBody CourseReq req) {
+        CourseInfoDTO course = adminService.createCourse(req);
+        return ResponseEntity.ok(ApiResponse.success("Tạo khóa học thành công", course));
+    }
+
 
 }

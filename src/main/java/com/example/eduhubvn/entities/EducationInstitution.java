@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @ToString(exclude = "user")
@@ -17,8 +18,8 @@ import java.time.LocalDateTime;
 public class EducationInstitution {
 
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "business_registration_number", length = 10, nullable = false)
     private String businessRegistrationNumber;

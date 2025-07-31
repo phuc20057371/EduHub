@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
-public interface ResearchProjectRepository extends JpaRepository<ResearchProject, Integer> {
+public interface ResearchProjectRepository extends JpaRepository<ResearchProject, UUID> {
     List<ResearchProject> findByLecturer(Lecturer lecturer);
 
     List<ResearchProject> findByStatus(PendingStatus pendingStatus);

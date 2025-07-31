@@ -1,9 +1,7 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.*;
-import com.example.eduhubvn.dtos.course.CourseDTO;
-import com.example.eduhubvn.dtos.course.CourseInfoDTO;
-import com.example.eduhubvn.dtos.course.CourseMemberDTO;
+import com.example.eduhubvn.dtos.course.*;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -22,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class AdminService {
     private final ResearchProjectMapper researchProjectMapper;
     private final CourseMapper courseMapper;
     private final Mapper mapper;
+    private final CourseLecturerRepository courseLecturerRepository;
 
     /// Get
 
@@ -119,9 +120,9 @@ public class AdminService {
         }
         Lecturer lecturer = lecturerRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (lecturer.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (lecturer.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             lecturer.getUser().setRole(Role.LECTURER);
             lecturer.setStatus(PendingStatus.APPROVED);
@@ -162,9 +163,9 @@ public class AdminService {
         }
         LecturerUpdate update = lecturerUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             Lecturer lecturer = update.getLecturer();
             lecturerMapper.updateEntityFromUpdate(update, lecturer);
@@ -210,9 +211,9 @@ public class AdminService {
         }
         EducationInstitution educationInstitution = educationInstitutionRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (educationInstitution.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (educationInstitution.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             educationInstitution.getUser().setRole(Role.SCHOOL);
             educationInstitution.setStatus(PendingStatus.APPROVED);
@@ -253,9 +254,9 @@ public class AdminService {
         }
         EducationInstitutionUpdate update = educationInstitutionUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             EducationInstitution educationInstitution = update.getEducationInstitution();
             educationInstitutionMapper.updateEntityFromUpdate(update, educationInstitution);
@@ -301,9 +302,9 @@ public class AdminService {
         }
         PartnerOrganization partnerOrganization = partnerOrganizationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (partnerOrganization.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (partnerOrganization.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             partnerOrganization.getUser().setRole(Role.ORGANIZATION);
             partnerOrganization.setStatus(PendingStatus.APPROVED);
@@ -322,9 +323,9 @@ public class AdminService {
         }
         PartnerOrganizationUpdate update = partnerOrganizationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             PartnerOrganization partnerOrganization = update.getPartnerOrganization();
             partnerOrganizationMapper.updateEntityFromUpdate(update, partnerOrganization);
@@ -494,9 +495,9 @@ public class AdminService {
         }
         CertificationUpdate update = certificationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             Certification certification = update.getCertification();
             certificationMapper.updateEntityFromUpdate(update, certification);
@@ -581,9 +582,9 @@ public class AdminService {
         }
         AttendedTrainingCourseUpdate update = attendedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             AttendedTrainingCourse original = update.getAttendedTrainingCourse();
             attendedTrainingCourseMapper.updateEntityFromUpdate(update, original);
@@ -619,6 +620,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public AttendedTrainingCourseDTO rejectAttendedCourseUpdate(RejectReq req) {
         if (req == null) {
@@ -659,6 +661,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public OwnedTrainingCourseDTO approveOwnedCourseUpdate(IdRequest req) {
         if (req == null) {
@@ -666,9 +669,9 @@ public class AdminService {
         }
         OwnedTrainingCourseUpdate update = ownedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             OwnedTrainingCourse original = update.getOwnedTrainingCourse();
             ownedTrainingCourseMapper.updateEntityFromUpdate(update, original);
@@ -705,6 +708,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public OwnedTrainingCourseDTO rejectOwnedCourseUpdate(RejectReq req) {
         if (req == null) {
@@ -746,6 +750,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public ResearchProjectDTO approveResearchProjectUpdate(IdRequest req) {
         if (req == null) {
@@ -753,9 +758,9 @@ public class AdminService {
         }
         ResearchProjectUpdate update = researchProjectUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-        }
+//        if (update.getStatus() == PendingStatus.APPROVED) {
+//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
+//        }
         try {
             ResearchProject original = update.getResearchProject();
             researchProjectMapper.updateEntityFromUpdate(update, original);
@@ -771,6 +776,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public ResearchProjectDTO rejectResearchProject(RejectReq req) {
         if (req == null) {
@@ -791,6 +797,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public ResearchProjectDTO rejectResearchProjectUpdate(RejectReq req) {
         if (req == null) {
@@ -811,6 +818,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public List<DegreeUpdateDTO> getPendingDegreeUpdates() {
         try {
@@ -828,6 +836,7 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending degree updates.", e);
         }
     }
+
     @Transactional
     public List<CertificationUpdateDTO> getPendingCertificationUpdates() {
         try {
@@ -845,6 +854,7 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending degree updates.", e);
         }
     }
+
     @Transactional
     public List<AttendedCourseUpdateDTO> getPendingAttendedCourseUpdates() {
         try {
@@ -862,6 +872,7 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending degree updates.", e);
         }
     }
+
     @Transactional
     public List<OwnedCourseUpdateDTO> getPendingOwnedCourseUpdates() {
         try {
@@ -879,6 +890,7 @@ public class AdminService {
             throw new RuntimeException("Error fetching pending updates.", e);
         }
     }
+
     @Transactional
     public List<ResearchProjectUpdateDTO> getPendingResearchProjectUpdates() {
         try {
@@ -964,6 +976,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public List<EducationInstitutionDTO> getAllInstitutions() {
         try {
@@ -976,6 +989,7 @@ public class AdminService {
             throw new RuntimeException("Error fetching all institutions.", e);
         }
     }
+
     @Transactional
     public EducationInstitutionDTO updateInstitution(EducationInstitutionUpdateDTO req) {
         if (req == null || req.getId() == null) {
@@ -1008,6 +1022,7 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public List<PartnerOrganizationDTO> getAllPartners() {
         try {
@@ -1022,12 +1037,12 @@ public class AdminService {
     }
 
     @Transactional
-    public LecturerAllInfoDTO getLecturerProfile(Integer lecturerId) {
+    public LecturerAllInfoDTO getLecturerProfile(UUID lecturerId) {
         try {
             Lecturer lecturer = lecturerRepository.findById(lecturerId)
                     .orElseThrow(() -> new IllegalStateException("Không tìm thấy giảng viên với ID: " + lecturerId));
-            LecturerInfoDTO lecturerInfo = mapper.mapToLecturerInfoDTO(lecturer);
-            List <CertificationDTO> certifications = lecturer.getCertifications().stream()
+            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+            List<CertificationDTO> certifications = lecturer.getCertifications().stream()
                     .map(certificationMapper::toDTO)
                     .toList();
             List<DegreeDTO> degrees = lecturer.getDegrees().stream()
@@ -1055,6 +1070,7 @@ public class AdminService {
         }
 
     }
+
     @Transactional
     public List<RequestFromLecturer<?>> getLecturerRequests() {
         try {
@@ -1135,7 +1151,7 @@ public class AdminService {
                         .label(RequestLabel.Update)
                         .date(degreeUpdate.getOriginal().getCreatedAt())
                         .build());
-                
+
             }
             List<CertificationUpdateDTO> certificationUpdates = getPendingCertificationUpdates();
             for (CertificationUpdateDTO certificationUpdate : certificationUpdates) {
@@ -1189,7 +1205,7 @@ public class AdminService {
                         .date(researchProjectUpdate.getOriginal().getCreatedAt())
                         .build());
             }
-           
+
 
             // Sort by date (newest first)
             requests.sort((r1, r2) -> r2.getDate().compareTo(r1.getDate()));
@@ -1218,5 +1234,143 @@ public class AdminService {
             courseInfoDTOS.add(courseInfo);
         }
         return courseInfoDTOS;
+    }
+
+    @Transactional
+    public CourseDTO getCourseById(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ID không được để trống.");
+        }
+        try {
+            UUID courseId;
+            courseId = UUID.fromString(id);
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + id));
+            return courseMapper.toDTO(course);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("ID không hợp lệ.");
+        }
+
+    }
+
+    @Transactional
+    public CourseInfoDTO updateCourseMember(CourseInfoDTO req) {
+        if (req == null || req.getCourse() == null || req.getCourse().getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Course course = courseRepository.findById(req.getCourse().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học."));
+        try {
+            // Update course details
+//            courseMapper. updateEntityFromDTO(req.getCourse(), course);
+//            courseRepository.save(course);
+//            courseRepository.flush();
+
+            // Update course members
+            List<CourseLecturer> existingMembers = course.getCourseLecturers();
+            List<CourseLecturer> updatedMembers = req.getMembers().stream()
+                    .map(member -> CourseLecturer.builder()
+                            .course(course)
+                            .lecturer(lecturerRepository.findById(member.getLecturer().getId())
+                                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên.")))
+                            .role(member.getCourseRole())
+                            .build())
+                    .toList();
+
+            for (CourseLecturer existing : existingMembers) {
+                for (CourseLecturer updated : updatedMembers) {
+                    if (existing.getLecturer().getId().equals(updated.getLecturer().getId())) {
+                        // Nếu role khác thì cập nhật
+                        if (!existing.getRole().equals(updated.getRole())) {
+                            existing.setRole(updated.getRole());
+                        }
+                    }
+                }
+            }
+
+
+            // Remove old members not in the updated list
+            existingMembers.removeIf(existingMember ->
+                    updatedMembers.stream().noneMatch(updatedMember ->
+                            updatedMember.getLecturer().getId().equals(existingMember.getLecturer().getId())));
+
+            // Add new members
+            for (CourseLecturer updated : updatedMembers) {
+                boolean alreadyExists = existingMembers.stream()
+                        .anyMatch(existing -> existing.getLecturer().getId().equals(updated.getLecturer().getId()));
+                if (!alreadyExists) {
+                    existingMembers.add(updated);
+                }
+            }
+
+            course.setCourseLecturers(existingMembers);
+            courseRepository.save(course);
+            return CourseInfoDTO.builder()
+                    .course(courseMapper.toDTO(course))
+                    .members(req.getMembers())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Transactional
+    public List<OwnedCourseInfoDTO> getOwnedCourses() {
+        try {
+            List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findAll();
+            return ownedCourses.stream()
+                    .filter(ownedTrainingCourse -> ownedTrainingCourse.getStatus() == PendingStatus.APPROVED
+                            && ownedTrainingCourse.getLecturer() != null
+                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED)
+                    .map(course -> OwnedCourseInfoDTO.builder()
+                            .ownedCourse(ownedTrainingCourseMapper.toDTO(course))
+                            .lecturer(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching owned courses.", e);
+        }
+    }
+
+    @Transactional
+    public CourseInfoDTO createCourse(CourseReq req) {
+        if (req == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        try {
+            Course course = courseMapper.toEntity(req);
+
+            Optional<OwnedTrainingCourse> ownedCourse = ownedTrainingCourseRepository.findById(req.getOwnedCourseId());
+            ownedCourse.ifPresent(course::setOwnedTrainingCourse);
+            courseRepository.save(course);
+            courseRepository.flush();
+
+            CourseMemberDTO authorMember = null;
+            if (req.getAuthorId() != null) {
+                CourseLecturer courseLecturer = CourseLecturer.builder()
+                        .course(course)
+                        .lecturer(lecturerRepository.findById(req.getAuthorId())
+                                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId())))
+                        .role(CourseRole.AUTHOR)
+                        .build();
+                courseLecturerRepository.save(courseLecturer);
+                courseLecturerRepository.flush();
+                authorMember = CourseMemberDTO.builder()
+                        .lecturer(Mapper.mapToLecturerInfoDTO(
+                                lecturerRepository.findById(req.getAuthorId())
+                                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId()))))
+                        .courseRole(CourseRole.AUTHOR)
+                        .build();
+            }
+
+
+            return CourseInfoDTO.builder()
+                    .course(courseMapper.toDTO(course))
+                    .members(authorMember != null ? List.of(authorMember) : List.of())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tạo khóa học: " + e.getMessage(), e);
+        }
     }
 }

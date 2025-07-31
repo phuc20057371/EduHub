@@ -10,13 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResearchProjectDTO {
-    private Integer id;
+    private UUID id;
     private String title;
     private String researchArea;
     private Scale scale;

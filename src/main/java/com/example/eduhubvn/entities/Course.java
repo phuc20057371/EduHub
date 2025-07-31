@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "course")
@@ -17,16 +18,13 @@ import java.util.List;
 @Builder
 public class Course {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private String title;
     private String topic;
     @Enumerated(EnumType.STRING)
     @Column(name = "course_type")
     private CourseType courseType;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "scale")
-    private Scale scale;
     private String description;
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
@@ -56,4 +54,10 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLecturer> courseLecturers;
+
+    @OneToOne
+    @JoinColumn(name = "ownedCourse_id")
+    private OwnedTrainingCourse ownedTrainingCourse;
+
+
 }
