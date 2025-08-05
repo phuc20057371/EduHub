@@ -1322,7 +1322,8 @@ public class AdminService {
             return ownedCourses.stream()
                     .filter(ownedTrainingCourse -> ownedTrainingCourse.getStatus() == PendingStatus.APPROVED
                             && ownedTrainingCourse.getLecturer() != null
-                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED)
+                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED
+                            && ownedTrainingCourse.getCourse() == null)
                     .map(course -> OwnedCourseInfoDTO.builder()
                             .ownedCourse(ownedTrainingCourseMapper.toDTO(course))
                             .lecturer(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
@@ -1340,30 +1341,39 @@ public class AdminService {
         }
         try {
             Course course = courseMapper.toEntity(req);
+            if (req.getOwnedCourseId() != null) {
+                Optional<OwnedTrainingCourse> ownedCourseOpt = ownedTrainingCourseRepository.findById(req.getOwnedCourseId());
+                if (ownedCourseOpt.isPresent()) {
+                    OwnedTrainingCourse ownedCourse = ownedCourseOpt.get();
+                    // Gán 2 chiều
+                    course.setOwnedTrainingCourse(ownedCourse);
+                    ownedCourse.setCourse(course);
+                    ownedTrainingCourseRepository.save(ownedCourse);
+                }
+            }
 
-            Optional<OwnedTrainingCourse> ownedCourse = ownedTrainingCourseRepository.findById(req.getOwnedCourseId());
-            ownedCourse.ifPresent(course::setOwnedTrainingCourse);
             courseRepository.save(course);
             courseRepository.flush();
 
             CourseMemberDTO authorMember = null;
             if (req.getAuthorId() != null) {
+                Lecturer lecturer = lecturerRepository.findById(req.getAuthorId())
+                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId()));
+
                 CourseLecturer courseLecturer = CourseLecturer.builder()
                         .course(course)
-                        .lecturer(lecturerRepository.findById(req.getAuthorId())
-                                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId())))
+                        .lecturer(lecturer)
                         .role(CourseRole.AUTHOR)
                         .build();
+
                 courseLecturerRepository.save(courseLecturer);
                 courseLecturerRepository.flush();
+
                 authorMember = CourseMemberDTO.builder()
-                        .lecturer(Mapper.mapToLecturerInfoDTO(
-                                lecturerRepository.findById(req.getAuthorId())
-                                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId()))))
+                        .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
                         .courseRole(CourseRole.AUTHOR)
                         .build();
             }
-
 
             return CourseInfoDTO.builder()
                     .course(courseMapper.toDTO(course))

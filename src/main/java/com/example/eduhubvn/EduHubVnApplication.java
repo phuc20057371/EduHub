@@ -5,6 +5,7 @@ import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.repositories.*;
 import com.example.eduhubvn.services.AuthenticationService;
 import com.github.javafaker.Faker;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,10 @@ public class EduHubVnApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EduHubVnApplication.class, args);
+    }
+    @PostConstruct
+    public void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
     }
 
     @Bean
@@ -168,14 +173,9 @@ public class EduHubVnApplication {
                         "Sản xuất và kỹ thuật"
                 ));
                 List<String> urlCert = new ArrayList<>(Arrays.asList(
-                        "http://localhost:8080/uploads/LECTURER/c7fdd4c2-fa79-44c7-a6b4-5f406250da8e/Bangtk_PMP KPS Cert.pdf",
-                        "http://localhost:8080/uploads/LECTURER/c7fdd4c2-fa79-44c7-a6b4-5f406250da8e/Bangtk_CCNT_5971752_certificate.pdf"
+                        "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_PMP KPS Cert.pdf",
+                        "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_CCNT_5971752_certificate.pdf"
                 ));
-//                String degreeUrl = "http://localhost:8080/uploads/LECTURER/50f6fe0b-3abe-486e-9ce8-e746089e8be1/Bangtotnghiep_Bangtk.pdf";
-//                List<String> urlCert = new ArrayList<>(Arrays.asList(
-//                        "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_PMP KPS Cert.pdf",
-//                        "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_CCNT_5971752_certificate.pdf"
-//                ));
                 String degreeUrl = "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtotnghiep_Bangtk.pdf";
 
                 List<String> trainingCenters = new ArrayList<>(Arrays.asList(
@@ -293,10 +293,10 @@ public class EduHubVnApplication {
                         email = "lecturer" + i + "@gmail.com";
                         role = Role.LECTURER;
                     } else if (i <= 110) {
-                        email = "institution" + (i - 100) + "@gmail.com";
+                        email = "school" + (i - 100) + "@gmail.com";
                         role = Role.SCHOOL;
                     } else if (i <= 120) {
-                        email = "partner" + (i - 110) + "@gmail.com";
+                        email = "organization" + (i - 110) + "@gmail.com";
                         role = Role.ORGANIZATION;
                     } else {
                         email = "user" + (i - 120) + "@gmail.com";
@@ -350,7 +350,7 @@ public class EduHubVnApplication {
                             .jobField(
                                     jobFieldWithExperienceList.get(faker.random().nextInt(jobFieldWithExperienceList.size()))
                             )
-                            .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                            .status(PendingStatus.values()[faker.random().nextInt(2)])
                             .avatarUrl("https://picsum.photos/200")
                             .build();
                     lecturers.add(lecturer);
@@ -359,7 +359,7 @@ public class EduHubVnApplication {
 
                 List<EducationInstitution> institutions = new ArrayList<>();
                 for (int i = 101; i <= 110; i++) {
-                    User user = userRepository.findByEmail("institution" + (i - 100) + "@gmail.com")
+                    User user = userRepository.findByEmail("school" + (i - 100) + "@gmail.com")
                             .orElseThrow(() -> new RuntimeException("User not found: institution"));
                     if (user == null) {
                         throw new RuntimeException("User not found for institution: " + (i - 100));
@@ -388,14 +388,14 @@ public class EduHubVnApplication {
                             .logoUrl("https://picsum.photos/200")
                             .establishedYear(faker.number().numberBetween(1990, 2022))
                             .adminNote("Dữ liệu mẫu")
-                            .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                            .status(PendingStatus.values()[faker.random().nextInt(2)])
                             .build();
                     institutions.add(inst);
                 }
                 educationInstitutionRepository.saveAll(institutions);
                 List<PartnerOrganization> organizations = new ArrayList<>();
                 for (int i = 111; i <= 120; i++) {
-                    User user = userRepository.findByEmail("partner" + (i - 110) + "@gmail.com")
+                    User user = userRepository.findByEmail("organization" + (i - 110) + "@gmail.com")
                             .orElseThrow(() -> new RuntimeException("User not found: partner"));
                     if (user == null) {
                         throw new RuntimeException("User not found for partner organization: " + (i - 110));
@@ -429,7 +429,7 @@ public class EduHubVnApplication {
                             .logoUrl("https://picsum.photos/200")
                             .establishedYear(faker.number().numberBetween(1990, 2024))
                             .adminNote("Đây là dữ liệu mẫu cho tổ chức đối tác")
-                            .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                            .status(PendingStatus.values()[faker.random().nextInt(2)])
                             .build();
 
                     organizations.add(partner);
@@ -464,7 +464,7 @@ public class EduHubVnApplication {
                                 .url(degreeUrl)
                                 .description(faker.lorem().sentence())
                                 .adminNote("Tự động sinh")
-                                .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                                .status(PendingStatus.values()[faker.random().nextInt(2)])
                                 .lecturer(lecturer)
                                 .build();
                         degrees.add(degree);
@@ -501,7 +501,7 @@ public class EduHubVnApplication {
                                 )
                                 .description(faker.lorem().sentence())
                                 .adminNote("Tự động sinh")
-                                .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                                .status(PendingStatus.values()[faker.random().nextInt(2)])
                                 .lecturer(lecturer)
                                 .build();
                         certifications.add(cert);
@@ -540,7 +540,7 @@ public class EduHubVnApplication {
                                 )
                                 .description(faker.lorem().sentence())
                                 .courseUrl("https://www.google.com/" + UUID.randomUUID())
-                                .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                                .status(PendingStatus.values()[faker.random().nextInt(2)])
                                 .adminNote("Đây là dữ liệu mẫu cho khóa học đã tham gia")
                                 .lecturer(lecturer)
                                 .build();
@@ -588,7 +588,7 @@ public class EduHubVnApplication {
                                 .endDate(endDate)
                                 .description(faker.lorem().sentence())
                                 .courseUrl("https://www.google.com/" + UUID.randomUUID())
-                                .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                                .status(PendingStatus.values()[faker.random().nextInt(2)])
                                 .adminNote("Đây là dữ liệu mẫu cho khóa học sở hữu")
                                 .lecturer(lecturer)
                                 .course(null) // có thể gán course nếu muốn liên kết đến entity Course
@@ -634,7 +634,7 @@ public class EduHubVnApplication {
                                 .publishedUrl("https://www.google.com/" + UUID.randomUUID())
                                 .courseStatus(faker.options().option("Đang thực hiện", "Hoàn thành", "Tạm dừng"))
                                 .description(faker.lorem().sentence())
-                                .status(PendingStatus.values()[faker.random().nextInt(PendingStatus.values().length)])
+                                .status(PendingStatus.values()[faker.random().nextInt(2)])
                                 .adminNote("Đây là dữ liệu mẫu cho đề tài nghiên cứu")
                                 .lecturer(lecturer)
                                 .build();
@@ -729,6 +729,209 @@ public class EduHubVnApplication {
                 }
 
                 courseLecturerRepository.saveAll(courseLecturers);
+
+                // Thêm vào cuối hàm init, sau khi đã tạo courseLecturerRepository.saveAll(courseLecturers);
+
+// Tạo LecturerUpdate
+                List<LecturerUpdate> lecturerUpdates = new ArrayList<>();
+                for (int i = 0; i < 30; i++) { // Tạo 30 bản cập nhật cho lecturer
+                    Lecturer randomLecturer = lecturers.get(i);
+
+                    LocalDate dob = faker.date()
+                            .birthday(25, 60)
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+
+                    LecturerUpdate lecturerUpdate = LecturerUpdate.builder()
+                            .lecturer(randomLecturer)
+                            .phoneNumber("09" + faker.number().numberBetween(100000000, 999999999))
+                            .fullName(
+                                    lastNames.get(faker.random().nextInt(lastNames.size())) + " " +
+                                            middleNames.get(faker.random().nextInt(middleNames.size())) + " " +
+                                            firstNames.get(faker.random().nextInt(firstNames.size()))
+                            )
+                            .dateOfBirth(dob)
+                            .gender(faker.bool().bool())
+                            .bio(bios.get(faker.random().nextInt(bios.size())))
+                            .address(addresses.get(faker.random().nextInt(addresses.size())))
+                            .avatarUrl("https://picsum.photos/200?random=" + i)
+                            .academicRank(AcademicRank.values()[faker.random().nextInt(AcademicRank.values().length)])
+                            .specialization(specializationWithRankList.get(faker.random().nextInt(specializationWithRankList.size())))
+                            .experienceYears(faker.number().numberBetween(1, 40))
+                            .jobField(jobFieldWithExperienceList.get(faker.random().nextInt(jobFieldWithExperienceList.size())))
+                            .adminNote("Yêu cầu cập nhật thông tin cá nhân")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    lecturerUpdates.add(lecturerUpdate);
+                }
+                lecturerUpdateRepository.saveAll(lecturerUpdates);
+
+// Tạo DegreeUpdate
+                List<DegreeUpdate> degreeUpdates = new ArrayList<>();
+                for (int i = 0; i < 50; i++) { // Tạo 50 bản cập nhật cho degree
+                    Degree randomDegree = degrees.get(i);
+
+                    int startYear = faker.number().numberBetween(1995, 2018);
+                    int graduationYear = startYear + faker.number().numberBetween(3, 5);
+
+                    DegreeUpdate degreeUpdate = DegreeUpdate.builder()
+                            .degree(randomDegree)
+                            .referenceId("DEG_UPD" + faker.number().digits(6))
+                            .name(degreesSample.get(faker.random().nextInt(degreesSample.size())))
+                            .major(specializationWithRankList.get(faker.random().nextInt(specializationWithRankList.size())))
+                            .institution(trainingCenters.get(faker.random().nextInt(trainingCenters.size())))
+                            .startYear(startYear)
+                            .graduationYear(graduationYear)
+                            .level(faker.options().option("Cử nhân", "Thạc sĩ", "Tiến sĩ", "Cao đẳng", "Trung cấp", "Kỹ sư"))
+                            .url(degreeUrl)
+                            .description(faker.lorem().sentence())
+                            .adminNote("Yêu cầu cập nhật thông tin bằng cấp")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    degreeUpdates.add(degreeUpdate);
+                }
+                degreeUpdateRepository.saveAll(degreeUpdates);
+
+// Tạo CertificationUpdate
+                List<CertificationUpdate> certificationUpdates = new ArrayList<>();
+                for (int i = 0; i < 40; i++) { // Tạo 40 bản cập nhật cho certification
+                    Certification randomCert = certifications.get(i);
+
+                    LocalDate issueDate = faker.date().past(2000, TimeUnit.of(ChronoUnit.DAYS)).toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate expiryDate = issueDate.plusYears(faker.number().numberBetween(1, 5));
+
+                    CertificationUpdate certUpdate = CertificationUpdate.builder()
+                            .certification(randomCert)
+                            .referenceId("CERT_UPD" + faker.number().digits(6))
+                            .name(certificationsSample.get(faker.random().nextInt(certificationsSample.size())))
+                            .issuedBy(trainingCenters.get(faker.random().nextInt(trainingCenters.size())))
+                            .issueDate(issueDate)
+                            .expiryDate(faker.bool().bool() ? expiryDate : null)
+                            .certificateUrl(urlCert.get(faker.random().nextInt(urlCert.size())))
+                            .level(faker.options().option("Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"))
+                            .description(faker.lorem().sentence())
+                            .adminNote("Yêu cầu cập nhật thông tin chứng chỉ")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    certificationUpdates.add(certUpdate);
+                }
+                certificationUpdateRepository.saveAll(certificationUpdates);
+                // Thêm vào cuối hàm init, sau khi đã tạo certificationUpdateRepository.saveAll(certificationUpdates);
+
+// Tạo OwnedTrainingCourseUpdate
+                List<OwnedTrainingCourseUpdate> ownedCourseUpdates = new ArrayList<>();
+                for (int i = 0; i < 35; i++) { // Tạo 35 bản cập nhật cho owned training course
+                    OwnedTrainingCourse randomOwnedCourse = ownedCourses.get(i);
+
+                    LocalDate startDate = faker.date().past(2000, java.util.concurrent.TimeUnit.DAYS)
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    LocalDate endDate = startDate.plusDays(faker.number().numberBetween(2, 15));
+                    boolean isOnline = faker.bool().bool();
+
+                    OwnedTrainingCourseUpdate courseUpdate = OwnedTrainingCourseUpdate.builder()
+                            .ownedTrainingCourse(randomOwnedCourse)
+                            .title(courseTitles.get(faker.random().nextInt(courseTitles.size())))
+                            .topic(courseTopics.get(faker.random().nextInt(courseTopics.size())))
+                            .courseType(CourseType.values()[faker.random().nextInt(CourseType.values().length)])
+                            .scale(Scale.values()[faker.random().nextInt(Scale.values().length)])
+                            .thumbnailUrl("https://picsum.photos/200/300?random=" + i)
+                            .contentUrl("https://www.google.com/" + UUID.randomUUID())
+                            .level(faker.options().option("Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"))
+                            .requirements("Cập nhật yêu cầu khóa học")
+                            .language(faker.options().option("English", "Vietnamese", "French", "Japanese"))
+                            .isOnline(isOnline)
+                            .address(isOnline ? "https://app.zoom.us/wc" : addresses.get(faker.random().nextInt(addresses.size())))
+                            .price(faker.number().randomDouble(2, 0, 5000000))
+                            .startDate(startDate)
+                            .endDate(endDate)
+                            .description(faker.lorem().sentence())
+                            .courseUrl("https://www.google.com/" + UUID.randomUUID())
+                            .adminNote("Yêu cầu cập nhật thông tin khóa học sở hữu")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    ownedCourseUpdates.add(courseUpdate);
+                }
+                ownedTrainingCourseUpdateRepository.saveAll(ownedCourseUpdates);
+
+// Tạo AttendedTrainingCourseUpdate
+                List<AttendedTrainingCourseUpdate> attendedCourseUpdates = new ArrayList<>();
+                for (int i = 0; i < 45; i++) { // Tạo 45 bản cập nhật cho attended training course
+                    AttendedTrainingCourse randomAttendedCourse = attendedCourses.get(i);
+
+                    LocalDate startDate = faker.date().past(1500, java.util.concurrent.TimeUnit.DAYS)
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    LocalDate endDate = startDate.plusDays(faker.number().numberBetween(2, 10));
+
+                    AttendedTrainingCourseUpdate courseUpdate = AttendedTrainingCourseUpdate.builder()
+                            .attendedTrainingCourse(randomAttendedCourse)
+                            .title(courseTitles.get(faker.random().nextInt(courseTitles.size())))
+                            .topic(courseTopics.get(faker.random().nextInt(courseTopics.size())))
+                            .organizer(companies.get(faker.random().nextInt(companies.size())))
+                            .courseType(CourseType.values()[faker.random().nextInt(CourseType.values().length)])
+                            .scale(Scale.values()[faker.random().nextInt(Scale.values().length)])
+                            .startDate(startDate)
+                            .endDate(endDate)
+                            .numberOfHour(faker.number().numberBetween(8, 80))
+                            .location(addresses.get(faker.random().nextInt(addresses.size())))
+                            .description(faker.lorem().sentence())
+                            .courseUrl("https://www.google.com/" + UUID.randomUUID())
+                            .adminNote("Yêu cầu cập nhật thông tin khóa học đã tham gia")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    attendedCourseUpdates.add(courseUpdate);
+                }
+                attendedTrainingCourseUpdateRepository.saveAll(attendedCourseUpdates);
+
+// Tạo ResearchProjectUpdate
+                List<ResearchProjectUpdate> researchProjectUpdates = new ArrayList<>();
+                for (int i = 0; i < 38; i++) { // Tạo 38 bản cập nhật cho research project
+                    ResearchProject randomProject = projects.get(i);
+
+                    LocalDate startDate = faker.date().past(2500, java.util.concurrent.TimeUnit.DAYS)
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    LocalDate endDate = startDate.plusDays(faker.number().numberBetween(90, 720));
+
+                    ResearchProjectUpdate projectUpdate = ResearchProjectUpdate.builder()
+                            .researchProject(randomProject)
+                            .title(researchTopics.get(faker.random().nextInt(researchTopics.size())))
+                            .researchArea(faker.options().option(
+                                    "Khoa học máy tính", "Khoa học dữ liệu", "Trí tuệ nhân tạo",
+                                    "Công nghệ sinh học", "Vật lý học", "Hóa học", "Khoa học môi trường",
+                                    "Khoa học xã hội", "Kinh tế học", "Y học"
+                            ))
+                            .scale(Scale.values()[faker.random().nextInt(Scale.values().length)])
+                            .startDate(startDate)
+                            .endDate(endDate)
+                            .foundingAmount(faker.number().randomDouble(2, 200000, 5000000))
+                            .foundingSource(faker.options().option(
+                                    "Ngân sách nhà nước", "Quỹ nghiên cứu", "Hợp tác doanh nghiệp",
+                                    "Tài trợ cá nhân", "Tài trợ quốc tế", "Tài trợ từ tổ chức phi lợi nhuận"
+                            ))
+                            .projectType(ProjectType.values()[faker.random().nextInt(ProjectType.values().length)])
+                            .roleInProject(faker.options().option("Chủ nhiệm", "Thành viên", "Tư vấn", "Đồng nghiên cứu"))
+                            .publishedUrl("https://www.google.com/" + UUID.randomUUID())
+                            .courseStatus(faker.options().option("Đang thực hiện", "Hoàn thành", "Tạm dừng"))
+                            .description(faker.lorem().sentence())
+                            .adminNote("Yêu cầu cập nhật thông tin đề tài nghiên cứu")
+                            .status(PendingStatus.PENDING)
+                            .build();
+
+                    researchProjectUpdates.add(projectUpdate);
+                }
+                researchProjectUpdateRepository.saveAll(researchProjectUpdates);
 
 
                 var admin = RegisterRequest.builder()

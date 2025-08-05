@@ -28,4 +28,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("academicRank") AcademicRank academicRank,
             @Param("specialization") String specialization
     );
+
 }

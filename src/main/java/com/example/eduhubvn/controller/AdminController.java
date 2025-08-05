@@ -295,7 +295,7 @@ public class AdminController {
         OwnedTrainingCourseDTO dto = adminService.rejectOwnedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
-    @GetMapping("/get-owned-courses")
+    @GetMapping("/get-new-owned-courses")
     public ResponseEntity<ApiResponse<List<OwnedCourseInfoDTO>>> getOwnedCourses() {
         List<OwnedCourseInfoDTO> ownedCourses = adminService.getOwnedCourses();
         return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học sở hữu", ownedCourses));
@@ -345,5 +345,10 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Tạo khóa học thành công", course));
     }
 
+    @GetMapping("/check-citizen-id/{citizenId}")
+    public ResponseEntity<ApiResponse<Boolean>> checkCitizenIdExists(@PathVariable("citizenId") String citizenId) {
+        Boolean exists = userService.checkCitizenIdExists(citizenId);
+        return ResponseEntity.ok(ApiResponse.success("Kiểm tra thành công", exists));
+    }
 
 }

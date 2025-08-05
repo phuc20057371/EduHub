@@ -33,6 +33,9 @@ public class PartnerOrganizationService {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
+        if( partnerOrganizationRepository.existsByBusinessRegistrationNumber(req.getBusinessRegistrationNumber())) {
+            throw new IllegalArgumentException("Số đăng ký kinh doanh đã tồn tại trong hệ thống.");
+        }
         if (user.getPartnerOrganization() != null) {
             throw new EntityNotFoundException("Đã có tài khoản");
         }

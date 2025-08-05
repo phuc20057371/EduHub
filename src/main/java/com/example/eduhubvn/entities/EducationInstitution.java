@@ -21,7 +21,7 @@ public class EducationInstitution {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "business_registration_number", length = 10, nullable = false)
+    @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
     private String businessRegistrationNumber;
 
     @OneToOne

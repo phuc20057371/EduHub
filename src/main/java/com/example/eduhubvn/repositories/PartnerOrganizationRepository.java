@@ -10,4 +10,6 @@ import java.util.UUID;
 
 public interface PartnerOrganizationRepository extends JpaRepository<PartnerOrganization, UUID> {
     List<PartnerOrganization> findByStatus(PendingStatus status);
+
+    boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
 }

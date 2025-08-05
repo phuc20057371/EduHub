@@ -1,5 +1,6 @@
 package com.example.eduhubvn.dtos.lecturer.request;
 
+import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,8 @@ public class LecturerReq {
     private String bio;
     private String address;
     private String avatarUrl;
-    private String academicRank;
+    private AcademicRank academicRank;
     private String specialization;
     private Integer experienceYears;
+    private String jobField;
 }

@@ -10,4 +10,6 @@ import java.util.UUID;
 
 public interface EducationInstitutionRepository extends JpaRepository<EducationInstitution, UUID> {
     List<EducationInstitution> findByStatus(PendingStatus status);
+
+    boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
 }

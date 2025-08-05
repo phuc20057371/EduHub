@@ -1,5 +1,3 @@
-
-
 spring:
   config:
     import: optional:classpath:application-secret.yml
@@ -20,14 +18,16 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             user-name-attribute: sub
-
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    date-format:  HH:mm:ss dd/MM/yyyy
   datasource:
     url: jdbc:postgresql://localhost:5432/eduhubvn
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:

@@ -15,4 +15,8 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
 
     @Query("SELECT l FROM Lecturer l JOIN FETCH l.user WHERE l.id = :id")
     Optional<Lecturer> findByIdWithUser(@Param("id") UUID id);
+
+    Optional<Lecturer> findByCitizenId(String citizenId);
+
+    boolean existsByCitizenId(String citizenId);
 }

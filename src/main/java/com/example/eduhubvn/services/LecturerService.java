@@ -66,6 +66,9 @@ public class LecturerService {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
+        if(lecturerRepository.existsByCitizenId(req.getCitizenId())) {
+            throw new IllegalArgumentException("Số CMND/CCCD đã tồn tại trong hệ thống.");
+        }
         if (user.getLecturer() != null) {
             throw new EntityNotFoundException("Đã có tài khoản");
         }

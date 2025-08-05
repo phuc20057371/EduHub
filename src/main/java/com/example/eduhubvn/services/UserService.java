@@ -31,9 +31,7 @@ public class UserService {
     private final DegreeRepository degreeRepository;
     private final CertificationMapper certificationMapper;
     private final DegreeMapper degreeMapper;
-
-
-
+    private final LecturerRepository lecturerRepository;
 
 
 //    public Optional<User> getCurrentUser() {
@@ -115,5 +113,12 @@ public class UserService {
             throw new RuntimeException(e);
         }
     }
-
+    @Transactional
+    public Boolean checkCitizenIdExists(String citizenId) {
+        if (citizenId == null || citizenId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Citizen ID không được để trống.");
+        }
+        Optional<Lecturer> lecturer = lecturerRepository.findByCitizenId(citizenId);
+        return lecturer.isPresent();
+    }
 }
