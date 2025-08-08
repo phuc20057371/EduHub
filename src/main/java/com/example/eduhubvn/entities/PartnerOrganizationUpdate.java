@@ -29,6 +29,8 @@ public class PartnerOrganizationUpdate {
     @JoinColumn(name = "partner_organization_id", nullable = false)
     private PartnerOrganization partnerOrganization;
 
+    @Column(name = "business_registration_number", unique = true, nullable = false)
+    private String businessRegistrationNumber;
     @Column(name = "organization_name")
     private String organizationName;
     private String industry;

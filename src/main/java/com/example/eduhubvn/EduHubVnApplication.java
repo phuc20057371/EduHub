@@ -25,6 +25,7 @@ public class EduHubVnApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduHubVnApplication.class, args);
     }
+
     @PostConstruct
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -496,7 +497,7 @@ public class EduHubVnApplication {
                                 )
                                 .level(
                                         faker.options().option(
-                                                "Cơ bản", "Trung cấp",  "Nâng cao", "Chuyên gia"
+                                                "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"
                                         )
                                 )
                                 .description(faker.lorem().sentence())
@@ -575,7 +576,7 @@ public class EduHubVnApplication {
                                 .thumbnailUrl("https://picsum.photos/200/300?random=" + j)
                                 .contentUrl("https://www.google.com/" + UUID.randomUUID())
                                 .level(faker.options().option(
-                                        "Cơ bản", "Trung cấp",  "Nâng cao", "Chuyên gia"
+                                        "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"
                                 ))
                                 .requirements("Không yêu cầu")
                                 .language(truncate(faker.options().option("English", "Vietnamese", "French", "Japanese"), 255))
@@ -619,7 +620,7 @@ public class EduHubVnApplication {
                                                 "Khoa học máy tính", "Khoa học dữ liệu", "Trí tuệ nhân tạo",
                                                 "Công nghệ sinh học", "Vật lý học", "Hóa học", "Khoa học môi trường",
                                                 "Khoa học xã hội", "Kinh tế học", "Y học"
-                                ))
+                                        ))
                                 .scale(Scale.values()[faker.random().nextInt(Scale.values().length)])
                                 .startDate(startDate)
                                 .endDate(endDate)
@@ -628,7 +629,7 @@ public class EduHubVnApplication {
                                         faker.options().option(
                                                 "Ngân sách nhà nước", "Quỹ nghiên cứu", "Hợp tác doanh nghiệp",
                                                 "Tài trợ cá nhân", "Tài trợ quốc tế", "Tài trợ từ tổ chức phi lợi nhuận"
-                                ))
+                                        ))
                                 .projectType(ProjectType.values()[faker.random().nextInt(ProjectType.values().length)])
                                 .roleInProject(faker.options().option("Chủ nhiệm", "Thành viên", "Tư vấn", "Đồng nghiên cứu"))
                                 .publishedUrl("https://www.google.com/" + UUID.randomUUID())
@@ -655,8 +656,8 @@ public class EduHubVnApplication {
                     String description = truncate(faker.lorem().paragraph(), 255);
                     String thumbnailUrl = "https://picsum.photos/200/300?random=" + i;
                     String contentUrl = "https://www.google.com/";
-                    String level = truncate( faker.options().option(
-                            "Cơ bản", "Trung cấp",  "Nâng cao", "Chuyên gia"
+                    String level = truncate(faker.options().option(
+                            "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"
                     ), 255);
                     String requirements = truncate("Không yêu cầu", 255);
                     String language = truncate(faker.options().option("English", "Vietnamese", "French", "Japanese"), 255);
@@ -933,6 +934,65 @@ public class EduHubVnApplication {
                 }
                 researchProjectUpdateRepository.saveAll(researchProjectUpdates);
 
+// Create EducationInstitutionUpdate sample data
+                List<EducationInstitutionUpdate> institutionUpdates = new ArrayList<>();
+                for (int i = 0; i < 7; i++) { // Create 7 updates for education institutions
+                    EducationInstitution inst = institutions.get(i);
+                    EducationInstitutionUpdate update = EducationInstitutionUpdate.builder()
+                            .educationInstitution(inst)
+                            .businessRegistrationNumber("BRN" + faker.number().digits(6))
+                            .institutionName(trainingCenters.get(faker.random().nextInt(trainingCenters.size())))
+                            .institutionType(faker.bool().bool() ? EducationInstitutionType.UNIVERSITY : EducationInstitutionType.TRAINING_CENTER)
+                            .phoneNumber(faker.phoneNumber().cellPhone())
+                            .website(faker.internet().url())
+                            .address(addresses.get(faker.random().nextInt(addresses.size())))
+                            .representativeName(
+                                    lastNames.get(faker.random().nextInt(lastNames.size())) + " " +
+                                            middleNames.get(faker.random().nextInt(middleNames.size())) + " " +
+                                            firstNames.get(faker.random().nextInt(firstNames.size()))
+                            )
+                            .position("Giám đốc")
+                            .description(faker.lorem().sentence())
+                            .logoUrl("https://picsum.photos/200?random=" + i)
+                            .establishedYear(faker.number().numberBetween(1990, 2022))
+                            .adminNote("Yêu cầu cập nhật thông tin trường/TT")
+                            .status(PendingStatus.PENDING)
+                            .build();
+                    institutionUpdates.add(update);
+                }
+                educationInstitutionUpdateRepository.saveAll(institutionUpdates);
+
+// Create PartnerOrganizationUpdate sample data
+                List<PartnerOrganizationUpdate> orgUpdates = new ArrayList<>();
+                for (int i = 0; i < 8; i++) { // Create 8 updates for partner organizations
+                    PartnerOrganization org = organizations.get(i);
+                    PartnerOrganizationUpdate update = PartnerOrganizationUpdate.builder()
+                            .partnerOrganization(org)
+                            .organizationName(companies.get(faker.random().nextInt(companies.size())))
+                            .businessRegistrationNumber("BRN" + faker.number().digits(6))
+                            .industry(faker.options().option(
+                                    "Công nghệ thông tin", "Tài chính - Ngân hàng", "Giáo dục và Đào tạo",
+                                    "Y tế và Chăm sóc sức khỏe", "Sản xuất và Chế biến", "Dịch vụ và Du lịch",
+                                    "Bất động sản", "Nông nghiệp", "Logistics và Vận tải", "Xây dựng"
+                            ))
+                            .phoneNumber(faker.phoneNumber().cellPhone())
+                            .website(faker.internet().url())
+                            .address(addresses.get(faker.random().nextInt(addresses.size())))
+                            .representativeName(
+                                    lastNames.get(faker.random().nextInt(lastNames.size())) + " " +
+                                            middleNames.get(faker.random().nextInt(middleNames.size())) + " " +
+                                            firstNames.get(faker.random().nextInt(firstNames.size()))
+                            )
+                            .position("Giám đốc")
+                            .description(faker.lorem().paragraph())
+                            .logoUrl("https://picsum.photos/200?random=" + i)
+                            .establishedYear(faker.number().numberBetween(1990, 2024))
+                            .adminNote("Yêu cầu cập nhật thông tin tổ chức đối tác")
+                            .status(PendingStatus.PENDING)
+                            .build();
+                    orgUpdates.add(update);
+                }
+                partnerOrganizationUpdateRepository.saveAll(orgUpdates);
 
                 var admin = RegisterRequest.builder()
                         .email("admin@gmail.com")

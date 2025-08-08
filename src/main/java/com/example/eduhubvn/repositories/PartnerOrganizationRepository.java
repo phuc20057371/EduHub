@@ -12,4 +12,6 @@ public interface PartnerOrganizationRepository extends JpaRepository<PartnerOrga
     List<PartnerOrganization> findByStatus(PendingStatus status);
 
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
+
+    boolean existsByBusinessRegistrationNumberAndIdNot(String businessRegistrationNumber, UUID id);
 }

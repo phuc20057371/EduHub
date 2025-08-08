@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 public class PartnerOrganizationUpdateDTO {
     private UUID id;
+    private String businessRegistrationNumber;
     private String organizationName;
     private String industry;
     private String phoneNumber;

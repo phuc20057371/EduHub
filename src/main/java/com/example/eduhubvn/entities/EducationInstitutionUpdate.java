@@ -26,6 +26,8 @@ public class EducationInstitutionUpdate {
     @JoinColumn(name = "education_institution_id", nullable = false)
     private EducationInstitution educationInstitution;
 
+    @Column(name = "business_registration_number", unique = true, nullable = false)
+    private String businessRegistrationNumber;
     @Column(name = "institution_name")
     private String institutionName;
     @Column(name = "institution_type")

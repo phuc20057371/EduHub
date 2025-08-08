@@ -16,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EducationInstitutionUpdateDTO {
     private UUID id;
+    private String businessRegistrationNumber;
     private String institutionName;
     private EducationInstitutionType institutionType;
     private String phoneNumber;

@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class PartnerUpdateReq {
+    private String id;
+    private String businessRegistrationNumber;
     private String organizationName;
     private String industry;
     private String phoneNumber;

@@ -995,6 +995,10 @@ public class AdminService {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
+        if (educationInstitutionRepository.existsByBusinessRegistrationNumberAndIdNot(
+                req.getBusinessRegistrationNumber(), req.getId())) {
+            throw new IllegalArgumentException("Mã số đăng ký kinh doanh đã tồn tại.");
+        }
         EducationInstitution institution = educationInstitutionRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
         try {
@@ -1013,6 +1017,11 @@ public class AdminService {
         }
         PartnerOrganization organization = partnerOrganizationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
+        if (partnerOrganizationRepository.existsByBusinessRegistrationNumberAndIdNot(
+                req.getBusinessRegistrationNumber(), req.getId())) {
+            throw new IllegalArgumentException("Mã số đăng ký kinh doanh đã tồn tại.");
+
+        }
         try {
             partnerOrganizationMapper.updateEntityFromUpdate(req, organization);
             partnerOrganizationRepository.save(organization);
