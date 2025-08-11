@@ -60,6 +60,10 @@ public class PartnerOrganizationService {
         if (organization == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
+        if (partnerOrganizationRepository.existsByBusinessRegistrationNumberAndIdNot(
+                req.getBusinessRegistrationNumber(), organization.getId())) {
+            throw new IllegalArgumentException("Số đăng ký kinh doanh đã tồn tại trong hệ thống.");
+        }
         if (user.getRole() == Role.ORGANIZATION && organization.getStatus() == PendingStatus.APPROVED) {
             throw new IllegalStateException("Bạn không có quyền cập nhật thông tin đối tác này.");
         }

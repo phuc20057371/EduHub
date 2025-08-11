@@ -142,9 +142,6 @@ public class AdminService {
         }
         Lecturer lecturer = lecturerRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (lecturer.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalArgumentException("Đã bị từ chối trước đó.");
-        }
         try {
             lecturer.setStatus(PendingStatus.REJECTED);
             lecturer.setAdminNote(req.getAdminNote());
@@ -189,9 +186,6 @@ public class AdminService {
         }
         LecturerUpdate update = lecturerUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -233,9 +227,7 @@ public class AdminService {
         }
         EducationInstitution institution = educationInstitutionRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (institution.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             institution.setStatus(PendingStatus.REJECTED);
             institution.setAdminNote(req.getAdminNote());
@@ -280,9 +272,7 @@ public class AdminService {
         }
         EducationInstitutionUpdate update = educationInstitutionUpdateRepository.findByIdAndStatus(req.getId(), PendingStatus.PENDING)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -350,9 +340,7 @@ public class AdminService {
         }
         PartnerOrganizationUpdate update = partnerOrganizationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -371,9 +359,7 @@ public class AdminService {
         }
         PartnerOrganization organization = partnerOrganizationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-        if (organization.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             organization.setStatus(PendingStatus.REJECTED);
             organization.setAdminNote(req.getAdminNote());
@@ -434,9 +420,7 @@ public class AdminService {
         }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (degree.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             degree.setStatus(PendingStatus.REJECTED);
             degree.setAdminNote(req.getAdminNote());
@@ -455,9 +439,7 @@ public class AdminService {
         }
         DegreeUpdate update = degreeUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -521,9 +503,7 @@ public class AdminService {
         }
         Certification certification = certificationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (certification.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             certification.setStatus(PendingStatus.REJECTED);
             certification.setAdminNote(req.getAdminNote());
@@ -543,9 +523,7 @@ public class AdminService {
         }
         CertificationUpdate update = certificationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -608,9 +586,7 @@ public class AdminService {
         }
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (course.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             course.setStatus(PendingStatus.REJECTED);
             course.setAdminNote(req.getAdminNote());
@@ -628,9 +604,7 @@ public class AdminService {
         }
         AttendedTrainingCourseUpdate update = attendedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -695,9 +669,7 @@ public class AdminService {
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (course.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             course.setStatus(PendingStatus.REJECTED);
             course.setAdminNote(req.getAdminNote());
@@ -716,9 +688,7 @@ public class AdminService {
         }
         OwnedTrainingCourseUpdate update = ownedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (update.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
@@ -784,9 +754,7 @@ public class AdminService {
         }
         ResearchProject project = researchProjectRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (project.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó");
-        }
+
         try {
             project.setStatus(PendingStatus.REJECTED);
             project.setAdminNote(req.getAdminNote());
@@ -805,9 +773,7 @@ public class AdminService {
         }
         ResearchProjectUpdate project = researchProjectUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (project.getStatus() == PendingStatus.REJECTED) {
-            throw new IllegalStateException("Đã bị từ chối trước đó.");
-        }
+
         try {
             project.setStatus(PendingStatus.REJECTED);
             project.setAdminNote(req.getAdminNote());
@@ -953,6 +919,7 @@ public class AdminService {
                 .specialization(lecturer.getSpecialization())
                 .experienceYears(lecturer.getExperienceYears())
                 .jobField(lecturer.getJobField())
+                .hidden(lecturer.isHidden())
                 .adminNote(lecturer.getAdminNote())
                 .status(lecturer.getStatus())
                 .createdAt(lecturer.getCreatedAt())
@@ -1390,6 +1357,22 @@ public class AdminService {
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tạo khóa học: " + e.getMessage(), e);
+        }
+    }
+    @Transactional
+    public CourseDTO updateCourse(CourseDTO req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Course course = courseRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
+        try {
+            courseMapper.updateEntityFromDTO(req, course);
+            courseRepository.save(course);
+            courseRepository.flush();
+            return courseMapper.toDTO(course);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật khóa học: " + e.getMessage(), e);
         }
     }
 }

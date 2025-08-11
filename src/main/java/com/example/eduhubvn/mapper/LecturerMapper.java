@@ -69,4 +69,5 @@ public interface LecturerMapper {
     @Mapping(target = "adminNote", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDTO(LecturerDTO dto, @MappingTarget Lecturer lecturer);
+
 }

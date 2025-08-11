@@ -56,6 +56,8 @@ public class Lecturer {
     @Column(name = "job_field")
     private String jobField;
 
+    private boolean hidden;
+
     private String adminNote;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;

@@ -351,6 +351,7 @@ public class EduHubVnApplication {
                             .jobField(
                                     jobFieldWithExperienceList.get(faker.random().nextInt(jobFieldWithExperienceList.size()))
                             )
+                            .hidden(faker.bool().bool())
                             .status(PendingStatus.values()[faker.random().nextInt(2)])
                             .avatarUrl("https://picsum.photos/200")
                             .build();

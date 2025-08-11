@@ -5,10 +5,13 @@ import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
 import com.example.eduhubvn.dtos.edu.request.EduInsUpdateReq;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
+import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.EducationInstitutionMapper;
+import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
+import com.example.eduhubvn.repositories.LecturerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,8 @@ public class EducationInstitutionService {
     private final EducationInstitutionUpdateRepository educationInstitutionUpdateRepository;
 
     private final EducationInstitutionMapper educationInstitutionMapper;
+    private final LecturerRepository lecturerRepository;
+    private final LecturerMapper lecturerMapper;
 
     /// GET
     @Transactional
@@ -148,5 +153,48 @@ public class EducationInstitutionService {
         } catch (EntityNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+    @Transactional
+    public List<LecturerInfoDTO> getLecturers(User user) {
+        try {
+            EducationInstitution institution = user.getEducationInstitution();
+            if (institution == null) {
+                throw new EntityNotFoundException("Không có quyền truy cập");
+            }
+            List<Lecturer> lecturers = lecturerRepository.findAll();
+            return lecturers.stream()
+                    .filter(lecturer -> lecturer.getStatus() == PendingStatus.APPROVED)
+                    .map(this::mapToLecturerInfoDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
+        boolean isHidden = lecturer.isHidden();
+
+        return LecturerInfoDTO.builder()
+                .id(lecturer.getId())
+                .citizenId(isHidden ? null : lecturer.getCitizenId())
+                .email(isHidden
+                        ? null
+                        : (lecturer.getUser() != null ? lecturer.getUser().getEmail() : null))
+                .phoneNumber(isHidden ? null : lecturer.getPhoneNumber())
+                .fullName(lecturer.getFullName())
+                .dateOfBirth(isHidden ? null : lecturer.getDateOfBirth())
+                .gender(lecturer.getGender())
+                .bio(lecturer.getBio())
+                .address(isHidden ? null : lecturer.getAddress())
+                .avatarUrl(lecturer.getAvatarUrl())
+                .academicRank(lecturer.getAcademicRank())
+                .specialization(lecturer.getSpecialization())
+                .experienceYears(lecturer.getExperienceYears())
+                .jobField(lecturer.getJobField())
+                .hidden(isHidden)
+                .adminNote(lecturer.getAdminNote())
+                .status(lecturer.getStatus())
+                .createdAt(lecturer.getCreatedAt())
+                .updatedAt(lecturer.getUpdatedAt())
+                .build();
     }
 }

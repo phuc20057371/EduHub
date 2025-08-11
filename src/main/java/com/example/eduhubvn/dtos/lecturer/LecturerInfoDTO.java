@@ -33,6 +33,8 @@ public class LecturerInfoDTO {
     private Integer experienceYears;
     private String jobField;
 
+    private boolean hidden;
+
     private String adminNote;
     private PendingStatus status;
     private LocalDateTime createdAt;

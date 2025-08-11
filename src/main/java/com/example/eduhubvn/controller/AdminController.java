@@ -350,5 +350,10 @@ public class AdminController {
         Boolean exists = userService.checkCitizenIdExists(citizenId);
         return ResponseEntity.ok(ApiResponse.success("Kiểm tra thành công", exists));
     }
+    @PostMapping("/update-course")
+    public ResponseEntity<ApiResponse<CourseDTO>> updateCourse(@RequestBody CourseDTO req) {
+        CourseDTO course = adminService.updateCourse(req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật khóa học thành công", course));
+    }
 
 }
