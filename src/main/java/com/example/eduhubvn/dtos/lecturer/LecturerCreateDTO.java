@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LecturerCreateDTO {
-    private LecturerDTO lecturer;
+    private LecturerInfoDTO lecturer;
     private List<DegreeDTO> degrees;
     private List<CertificationDTO> certificates;
 }

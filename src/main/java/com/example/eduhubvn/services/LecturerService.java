@@ -1,5 +1,6 @@
 package com.example.eduhubvn.services;
 
+import com.example.eduhubvn.dtos.BooleanRequest;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.RejectReq;
 import com.example.eduhubvn.dtos.lecturer.*;
@@ -7,6 +8,7 @@ import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.*;
 import com.example.eduhubvn.repositories.*;
+import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -528,7 +530,7 @@ public class LecturerService {
             List<Lecturer> pending = lecturerRepository.findByStatus(PendingStatus.PENDING);
             return pending.stream()
                     .map(lecturer -> LecturerCreateDTO.builder()
-                            .lecturer(lecturerMapper.toDTO(lecturer))
+                            .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
                             //degree with status pending
                             .degrees(degreeMapper.toDTOs(degreeRepository.findByLecturer(lecturer)))
                             .certificates(certificationMapper.toDTOs(certificationRepository.findByLecturer(lecturer)))
@@ -722,5 +724,21 @@ public class LecturerService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    @Transactional
+    public LecturerDTO hiddenLecturerProfile(User user, BooleanRequest hidden) {
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            lecturer.setHidden(hidden.isValue());
+            lecturerRepository.save(lecturer);
+            lecturerRepository.flush();
+            return lecturerMapper.toDTO(lecturer);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

@@ -214,9 +214,9 @@ public class UserController {
     }
 
     @GetMapping("/lecturer-profile/{lecturerId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
-    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId) {
-        LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId);
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION') or hasRole('LECTURER')")
+    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId, @AuthenticationPrincipal User user) {
+        LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId, user);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
     }
 

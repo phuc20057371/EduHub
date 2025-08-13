@@ -2,6 +2,7 @@ package com.example.eduhubvn.controller;
 
 
 import com.example.eduhubvn.dtos.ApiResponse;
+import com.example.eduhubvn.dtos.BooleanRequest;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.*;
@@ -33,6 +34,12 @@ public class    LecturerController {
         LecturerDTO request = lecturerService.updateLecturerProfile(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
     }
+    @PostMapping("/hidden-profile")
+    public ResponseEntity<ApiResponse<LecturerDTO>> hiddenLecturerProfile( @AuthenticationPrincipal User user, @RequestBody BooleanRequest hidden) {
+        LecturerDTO request = lecturerService.hiddenLecturerProfile(user, hidden);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu ẩn thông tin", request));
+    }
+
 
 /// Certification
     @PostMapping("/create-certification")

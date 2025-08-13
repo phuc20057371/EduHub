@@ -1013,11 +1013,42 @@ public class AdminService {
     }
 
     @Transactional
-    public LecturerAllInfoDTO getLecturerProfile(UUID lecturerId) {
+    public LecturerAllInfoDTO getLecturerProfile(UUID lecturerId, User user) {
         try {
             Lecturer lecturer = lecturerRepository.findById(lecturerId)
                     .orElseThrow(() -> new IllegalStateException("Không tìm thấy giảng viên với ID: " + lecturerId));
-            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+
+            boolean canViewSensitiveInfo =
+                    user.getRole().equals(Role.ADMIN) || !lecturer.isHidden() || user.getId().equals(lecturer.getUser().getId());
+
+//            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+
+            LecturerInfoDTO lecturerInfo = LecturerInfoDTO.builder()
+                    .id(lecturer.getId())
+                    .citizenId(canViewSensitiveInfo ? lecturer.getCitizenId() : "***")
+                    .email(canViewSensitiveInfo
+                            ? (lecturer.getUser() != null ? lecturer.getUser().getEmail() : null)
+                            : "***")
+                    .phoneNumber(canViewSensitiveInfo ? lecturer.getPhoneNumber() : "***")
+                    .fullName(lecturer.getFullName())
+                    .dateOfBirth(canViewSensitiveInfo ? lecturer.getDateOfBirth() : null)
+                    .gender(lecturer.getGender())
+                    .bio(canViewSensitiveInfo ? lecturer.getBio() : "***")
+                    .address(canViewSensitiveInfo ? lecturer.getAddress() : "***")
+                    .avatarUrl(lecturer.getAvatarUrl())
+                    .academicRank(lecturer.getAcademicRank())
+                    .specialization(lecturer.getSpecialization())
+                    .experienceYears(lecturer.getExperienceYears())
+                    .jobField(lecturer.getJobField())
+                    .hidden(lecturer.isHidden())
+                    .adminNote(lecturer.getAdminNote())
+                    .status(lecturer.getStatus())
+                    .createdAt(lecturer.getCreatedAt())
+                    .updatedAt(lecturer.getUpdatedAt())
+                    .build();
+
+
+
             List<CertificationDTO> certifications = lecturer.getCertifications().stream()
                     .map(certificationMapper::toDTO)
                     .toList();

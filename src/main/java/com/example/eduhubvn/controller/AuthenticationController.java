@@ -1,21 +1,16 @@
 package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.auth.AuthenResponse;
-import com.example.eduhubvn.dtos.auth.Email;
-import com.example.eduhubvn.dtos.auth.LoginRequest;
-import com.example.eduhubvn.dtos.auth.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.*;
 import com.example.eduhubvn.services.AuthenticationService;
+import com.example.eduhubvn.services.EmailService;
 import com.example.eduhubvn.services.OtpService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -24,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final OtpService otpService;
+    private final EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthenResponse>> register(@RequestBody RegisterRequest request) {
@@ -69,5 +65,15 @@ public class AuthenticationController {
             @RequestBody Email email
     ) throws MessagingException {
         return ResponseEntity.ok(otpService.sendEmail(email.getEmail()));
+    }
+
+    @PostMapping("/send-mail")
+    public String sendEmail(@RequestBody EmailSent email) throws MessagingException {
+        String to = email.getTo();
+        if (!otpService.isValidEmail(to)) {
+            return "Invalid email address";
+        }
+        emailService.sendHtmlEmail(to, email.getSubject(), email.getBody());
+        return "Email sent successfully";
     }
 }
