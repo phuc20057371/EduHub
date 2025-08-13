@@ -61,16 +61,14 @@ public class AuthenticationController {
         }
     }
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(
-            @RequestBody Email email
-    ) throws MessagingException {
+    public ResponseEntity<String> sendOtp(@RequestBody Email email) throws MessagingException {
         return ResponseEntity.ok(otpService.sendEmail(email.getEmail()));
     }
 
     @PostMapping("/send-mail")
     public String sendEmail(@RequestBody EmailSent email) throws MessagingException {
         String to = email.getTo();
-        if (!otpService.isValidEmail(to)) {
+        if (otpService.isValidEmail(to)) {
             return "Invalid email address";
         }
         emailService.sendHtmlEmail(to, email.getSubject(), email.getBody());

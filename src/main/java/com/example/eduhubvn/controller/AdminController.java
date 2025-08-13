@@ -8,7 +8,9 @@ import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
+import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
 import com.example.eduhubvn.dtos.lecturer.*;
+import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
@@ -54,8 +56,8 @@ public class AdminController {
     }
 
     @GetMapping("/partner-pending-create")
-    public ResponseEntity<ApiResponse<List<PartnerOrganizationDTO>>> getPendingPartnerCreate() {
-        List<PartnerOrganizationDTO> pendingList = partnerOrganizationService.getPendingPartnerOrganizationCreate();
+    public ResponseEntity<ApiResponse<List<PartnerInfoDTO>>> getPendingPartnerCreate() {
+        List<PartnerInfoDTO> pendingList = partnerOrganizationService.getPendingPartnerOrganizationCreate();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
@@ -66,8 +68,8 @@ public class AdminController {
     }
 
     @GetMapping("/institution-pending-create")
-    public ResponseEntity<ApiResponse<List<EducationInstitutionDTO>>> getPendingEduInstitutionCreate() {
-        List<EducationInstitutionDTO> pendingList = educationInstitutionService.getPendingEducationInstitutionCreate();
+    public ResponseEntity<ApiResponse<List<InstitutionInfoDTO>>> getPendingEduInstitutionCreate() {
+        List<InstitutionInfoDTO> pendingList = educationInstitutionService.getPendingEducationInstitutionCreate();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 

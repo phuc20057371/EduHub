@@ -2,6 +2,7 @@ package com.example.eduhubvn.services;
 
 
 import com.example.eduhubvn.entities.Otp;
+import com.example.eduhubvn.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
@@ -24,16 +25,22 @@ public class OtpService {
     private static final int OTP_LENGTH = 6;
     private final SecureRandom random = new SecureRandom();
 
+    private final UserRepository userRepository;
+
     public boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
         Pattern pattern = Pattern.compile(emailRegex);
-        return pattern.matcher(email).matches();
+        return !pattern.matcher(email).matches();
     }
     public String sendEmail(String email) throws MessagingException {
         email = email.trim();
-        if (!isValidEmail(email)) {
+        if (isValidEmail(email)) {
             return "Invalid email";
         }
+        if (userRepository.existsByEmail(email)) {
+            throw new MessagingException("Email already exists");
+        }
+
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);

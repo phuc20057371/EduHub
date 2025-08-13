@@ -1,9 +1,15 @@
 package com.example.eduhubvn.ulti;
 
 
+import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
+import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
+import com.example.eduhubvn.entities.EducationInstitution;
 import com.example.eduhubvn.entities.Lecturer;
+import com.example.eduhubvn.entities.PartnerOrganization;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Function;
 
 @Component
 public class Mapper {
@@ -33,6 +39,58 @@ public class Mapper {
                 .status(lecturer.getStatus())
                 .createdAt(lecturer.getCreatedAt())
                 .updatedAt(lecturer.getUpdatedAt())
+                .build();
+    }
+
+    public static InstitutionInfoDTO mapToInstitutionInfoDTO( EducationInstitution educationInstitution) {
+        if (educationInstitution == null) {
+            return null;
+        }
+
+        return InstitutionInfoDTO.builder()
+                .id(educationInstitution.getId())
+                .email(educationInstitution.getUser() != null ? educationInstitution.getUser().getEmail() : null)
+                .businessRegistrationNumber(educationInstitution.getBusinessRegistrationNumber())
+                .institutionName(educationInstitution.getInstitutionName())
+                .institutionType(educationInstitution.getInstitutionType())
+                .phoneNumber(educationInstitution.getPhoneNumber())
+                .website(educationInstitution.getWebsite())
+                .address(educationInstitution.getAddress())
+                .representativeName(educationInstitution.getRepresentativeName())
+                .position(educationInstitution.getPosition())
+                .description(educationInstitution.getDescription())
+                .logoUrl(educationInstitution.getLogoUrl())
+                .establishedYear(educationInstitution.getEstablishedYear())
+                .adminNote(educationInstitution.getAdminNote())
+                .status(educationInstitution.getStatus())
+                .createdAt(educationInstitution.getCreatedAt())
+                .updatedAt(educationInstitution.getUpdatedAt())
+                .build();
+    }
+
+    public static PartnerInfoDTO mapToPartnerInfoDTO(PartnerOrganization partnerOrganization) {
+        if (partnerOrganization == null) {
+            return null;
+        }
+
+        return PartnerInfoDTO.builder()
+                .id(partnerOrganization.getId())
+                .email(partnerOrganization.getUser() != null ? partnerOrganization.getUser().getEmail() : null)
+                .businessRegistrationNumber(partnerOrganization.getBusinessRegistrationNumber())
+                .organizationName(partnerOrganization.getOrganizationName())
+                .industry(partnerOrganization.getIndustry())
+                .phoneNumber(partnerOrganization.getPhoneNumber())
+                .website(partnerOrganization.getWebsite())
+                .address(partnerOrganization.getAddress())
+                .representativeName(partnerOrganization.getRepresentativeName())
+                .position(partnerOrganization.getPosition())
+                .description(partnerOrganization.getDescription())
+                .logoUrl(partnerOrganization.getLogoUrl())
+                .establishedYear(partnerOrganization.getEstablishedYear())
+                .adminNote(partnerOrganization.getAdminNote())
+                .status(partnerOrganization.getStatus())
+                .createdAt(partnerOrganization.getCreatedAt())
+                .updatedAt(partnerOrganization.getUpdatedAt())
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.example.eduhubvn.services;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
+import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
 import com.example.eduhubvn.dtos.edu.request.EduInsUpdateReq;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
@@ -12,6 +13,7 @@ import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
+import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -129,13 +131,13 @@ public class EducationInstitutionService {
     }
 
     @Transactional
-    public List<EducationInstitutionDTO> getPendingEducationInstitutionCreate() {
+    public List<InstitutionInfoDTO> getPendingEducationInstitutionCreate() {
         try {
             List<EducationInstitution> pendingInstitutions =
                     educationInstitutionRepository.findByStatus(PendingStatus.PENDING);
 
             return pendingInstitutions.stream()
-                    .map(educationInstitutionMapper::toDTO)
+                    .map(Mapper::mapToInstitutionInfoDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException(e);

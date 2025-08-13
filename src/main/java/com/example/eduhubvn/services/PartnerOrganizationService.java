@@ -1,5 +1,6 @@
 package com.example.eduhubvn.services;
 
+import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
@@ -9,6 +10,7 @@ import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
 import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
 import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
+import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -132,13 +134,13 @@ public class PartnerOrganizationService {
     }
 
     @Transactional
-    public List<PartnerOrganizationDTO> getPendingPartnerOrganizationCreate() {
+    public List<PartnerInfoDTO> getPendingPartnerOrganizationCreate() {
         try {
             List<PartnerOrganization> pendingOrganizations =
                     partnerOrganizationRepository.findByStatus(PendingStatus.PENDING);
 
             return pendingOrganizations.stream()
-                    .map(partnerOrganizationMapper::toDTO)
+                    .map(Mapper::mapToPartnerInfoDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException(e);
