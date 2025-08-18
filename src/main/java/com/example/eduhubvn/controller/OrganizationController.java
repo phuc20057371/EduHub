@@ -2,7 +2,6 @@ package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerUpdateReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.PartnerOrganizationService;

@@ -9,7 +9,6 @@ import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.entities.*;
 import com.example.eduhubvn.mapper.EducationInstitutionMapper;
-import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
@@ -31,7 +30,6 @@ public class EducationInstitutionService {
 
     private final EducationInstitutionMapper educationInstitutionMapper;
     private final LecturerRepository lecturerRepository;
-    private final LecturerMapper lecturerMapper;
 
     /// GET
     @Transactional

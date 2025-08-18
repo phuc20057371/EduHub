@@ -13,22 +13,44 @@ import java.util.List;
 public interface ResearchProjectMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
     ResearchProject toEntity(ResearchProjectReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "researchProject", ignore = true)
     ResearchProjectUpdate toEntity(ResearchProjectUpdateReq req);
 
     ResearchProjectDTO toDTO(ResearchProject entity);
+
     ResearchProjectDTO toDTO(ResearchProjectUpdate entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    void updateEntityFromRequest(ResearchProjectUpdateReq req,@MappingTarget ResearchProject project);
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
+    void updateEntityFromRequest(ResearchProjectUpdateReq req, @MappingTarget ResearchProject project);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    void updateUpdateFromRequest(ResearchProjectUpdateReq req,@MappingTarget ResearchProjectUpdate project);
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "researchProject", ignore = true)
+    void updateUpdateFromRequest(ResearchProjectUpdateReq req, @MappingTarget ResearchProjectUpdate project);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
@@ -36,7 +58,8 @@ public interface ResearchProjectMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    void updateEntityFromUpdate(ResearchProjectUpdate update,@MappingTarget ResearchProject original);
+    @Mapping(target = "lecturer", ignore = true)
+    void updateEntityFromUpdate(ResearchProjectUpdate update, @MappingTarget ResearchProject original);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

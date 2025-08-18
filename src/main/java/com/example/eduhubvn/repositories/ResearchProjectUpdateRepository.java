@@ -1,6 +1,5 @@
 package com.example.eduhubvn.repositories;
 
-import com.example.eduhubvn.dtos.lecturer.ResearchProjectUpdateDTO;
 import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;

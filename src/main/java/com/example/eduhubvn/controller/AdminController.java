@@ -14,7 +14,6 @@ import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
-import com.example.eduhubvn.entities.Course;
 import com.example.eduhubvn.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

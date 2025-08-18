@@ -1,7 +1,6 @@
 package com.example.eduhubvn.mapper;
 
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
 import com.example.eduhubvn.entities.Degree;
@@ -13,8 +12,20 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DegreeMapper {
     DegreeDTO toDTO(Degree entity);
+
     DegreeDTO toDTO(DegreeUpdate entity);
+
+    @Mapping(target = "lecturer", ignore = true)
     Degree toEntity(DegreeDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Degree toEntity(DegreeReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     List<Degree> toEntities(List<DegreeReq> reqs);
@@ -30,13 +41,24 @@ public interface DegreeMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromReq(DegreeUpdateReq req,@MappingTarget Degree degree);
+    void updateEntityFromReq(DegreeUpdateReq req, @MappingTarget Degree degree);
 
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "degree", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDto(DegreeUpdateReq req, @MappingTarget DegreeUpdate entity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "degree", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     DegreeUpdate toUpdate(DegreeUpdateReq req);
 
@@ -45,6 +67,7 @@ public interface DegreeMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(DegreeUpdate update, @MappingTarget Degree degree);
 
@@ -53,14 +76,8 @@ public interface DegreeMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "degree", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUpdateFromRequest(DegreeUpdateReq req,@MappingTarget DegreeUpdate update);
+    void updateUpdateFromRequest(DegreeUpdateReq req, @MappingTarget DegreeUpdate update);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Degree toEntity(DegreeReq req);
 }

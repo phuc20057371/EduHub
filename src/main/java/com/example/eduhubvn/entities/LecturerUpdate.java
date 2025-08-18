@@ -1,6 +1,5 @@
 package com.example.eduhubvn.entities;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,13 +27,16 @@ public class LecturerUpdate {
     @JoinColumn(name = "lecturer_id", nullable = false)
     private Lecturer lecturer;
 
+    @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
+    private String citizenId;
+
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "full_name")
     private String fullName;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-    @Column (name ="gender")
+    @Column(name = "gender")
     private Boolean gender;
     @Column(name = "bio")
     private String bio;
@@ -42,7 +44,7 @@ public class LecturerUpdate {
     private String address;
     @Column(name = "avatar_url")
     private String avatarUrl;
-    @Column (name = "academic_rank")
+    @Column(name = "academic_rank")
     @Enumerated(EnumType.STRING)
     private AcademicRank academicRank;
     @Column(name = "specialization")

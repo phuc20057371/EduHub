@@ -12,7 +12,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "attended_training_course_update")
 @Data
-@ToString(exclude = "lecturer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

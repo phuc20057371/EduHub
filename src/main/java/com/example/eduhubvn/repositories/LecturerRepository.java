@@ -19,4 +19,6 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     Optional<Lecturer> findByCitizenId(String citizenId);
 
     boolean existsByCitizenId(String citizenId);
+
+    boolean existsByCitizenIdAndIdNot(String citizenId, UUID id);
 }

@@ -61,8 +61,6 @@ public class UserController {
         }
     }
 
-    private static final String UPLOAD_DIR = "uploads";
-
     @PostMapping("/uploads")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
                                         HttpServletRequest request) {

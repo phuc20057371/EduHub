@@ -16,12 +16,32 @@ public interface EducationInstitutionMapper {
 
     EducationInstitutionUpdateDTO toDTO(EducationInstitutionUpdate entity);
 
+    @Mapping(target = "user", ignore = true)
     EducationInstitution toEntity(EducationInstitutionDTO dto);
+
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     EducationInstitution toEntity(EducationInstitutionReq req);
 
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "educationInstitution", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     EducationInstitutionUpdate toUpdate(EduInsUpdateReq req);
 
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(EducationInstitutionReq req, @MappingTarget EducationInstitution institution);
 
@@ -30,21 +50,29 @@ public interface EducationInstitutionMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromUpdate(EducationInstitutionUpdate update, @MappingTarget EducationInstitution educationInstitution);
+    void updateEntityFromUpdate(EducationInstitutionUpdate update,
+            @MappingTarget EducationInstitution educationInstitution);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromUpdate(EducationInstitutionUpdateDTO update, @MappingTarget EducationInstitution educationInstitution);
+    void updateEntityFromUpdate(EducationInstitutionUpdateDTO update,
+            @MappingTarget EducationInstitution educationInstitution);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "educationInstitution", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUpdateFromRequest(EduInsUpdateReq req,@MappingTarget EducationInstitutionUpdate update);
-
+    void updateUpdateFromRequest(EduInsUpdateReq req, @MappingTarget EducationInstitutionUpdate update);
 
 }

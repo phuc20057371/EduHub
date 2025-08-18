@@ -9,11 +9,18 @@ import org.mapstruct.*;
 public interface CourseMapper {
     CourseDTO toDTO(Course course);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "courseLecturers", ignore = true)
+    @Mapping(target = "ownedTrainingCourse", ignore = true)
     Course toEntity(CourseReq req);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "courseLecturers", ignore = true)
+    @Mapping(target = "ownedTrainingCourse", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDTO(CourseDTO req,@MappingTarget Course course);
 }

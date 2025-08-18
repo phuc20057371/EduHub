@@ -53,7 +53,6 @@ public class AdminService {
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
     private final CourseMapper courseMapper;
-    private final Mapper mapper;
     private final CourseLecturerRepository courseLecturerRepository;
 
     /// Get
@@ -160,9 +159,6 @@ public class AdminService {
         }
         LecturerUpdate update = lecturerUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
         try {
             Lecturer lecturer = update.getLecturer();
             lecturerMapper.updateEntityFromUpdate(update, lecturer);
@@ -934,6 +930,9 @@ public class AdminService {
         }
         Lecturer lecturer = lecturerRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
+        if (lecturerRepository.existsByCitizenIdAndIdNot(req.getCitizenId(), lecturer.getId())) {
+            throw new IllegalArgumentException("Số CMND/CCCD đã tồn tại trong hệ thống.");
+        }
         try {
             lecturerMapper.updateEntityFromUpdate(req, lecturer);
             lecturerRepository.save(lecturer);

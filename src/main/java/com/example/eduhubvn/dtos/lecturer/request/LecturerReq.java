@@ -1,7 +1,6 @@
 package com.example.eduhubvn.dtos.lecturer.request;
 
 import com.example.eduhubvn.entities.AcademicRank;
-import com.example.eduhubvn.entities.PendingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

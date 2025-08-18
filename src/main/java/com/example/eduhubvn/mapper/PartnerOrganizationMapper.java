@@ -12,33 +12,63 @@ import org.mapstruct.*;
 public interface PartnerOrganizationMapper {
 
     PartnerOrganizationDTO toDTO(PartnerOrganization entity);
+
     PartnerOrganizationUpdateDTO toDTO(PartnerOrganizationUpdate entity);
+
+    @Mapping(target = "user", ignore = true)
     PartnerOrganization toEntity(PartnerOrganizationDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
     PartnerOrganization toEntity(PartnerOrganizationReq req);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(PartnerOrganizationReq req,@MappingTarget PartnerOrganization organization);
+    void updateEntityFromRequest(PartnerOrganizationReq req, @MappingTarget PartnerOrganization organization);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromUpdate(PartnerOrganizationUpdate update,@MappingTarget PartnerOrganization partnerOrganization);
+    void updateEntityFromUpdate(PartnerOrganizationUpdate update,
+            @MappingTarget PartnerOrganization partnerOrganization);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,@MappingTarget PartnerOrganization partnerOrganization);
+    void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,
+            @MappingTarget PartnerOrganization partnerOrganization);
 
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "partnerOrganization", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     PartnerOrganizationUpdate toUpdate(PartnerUpdateReq req);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "partnerOrganization", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUpdateFromRequest(PartnerUpdateReq req,@MappingTarget PartnerOrganizationUpdate update);
+    void updateUpdateFromRequest(PartnerUpdateReq req, @MappingTarget PartnerOrganizationUpdate update);
 }

@@ -6,7 +6,6 @@ import com.example.eduhubvn.dtos.auth.RegisterRequest;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service

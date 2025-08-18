@@ -3,7 +3,6 @@ package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.BooleanRequest;
-import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.entities.User;

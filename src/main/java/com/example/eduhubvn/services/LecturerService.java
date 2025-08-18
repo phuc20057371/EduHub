@@ -1,8 +1,6 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.BooleanRequest;
-import com.example.eduhubvn.dtos.IdRequest;
-import com.example.eduhubvn.dtos.RejectReq;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.entities.*;
@@ -68,7 +66,7 @@ public class LecturerService {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
-        if(lecturerRepository.existsByCitizenId(req.getCitizenId())) {
+        if (lecturerRepository.existsByCitizenId(req.getCitizenId())) {
             throw new IllegalArgumentException("Số CMND/CCCD đã tồn tại trong hệ thống.");
         }
         if (user.getLecturer() != null) {
@@ -85,6 +83,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public LecturerDTO updateLecturer(LecturerReq req, User user) {
         if (req == null) {
@@ -117,6 +116,9 @@ public class LecturerService {
         Lecturer lecturer = user.getLecturer();
         if (lecturer == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        if (lecturerRepository.existsByCitizenIdAndIdNot(req.getCitizenId(), lecturer.getId())) {
+            throw new IllegalArgumentException("Số CMND/CCCD đã tồn tại trong hệ thống.");
         }
         try {
             Optional<LecturerUpdate> optional = lecturerUpdateRequestRepository.findByLecturer(lecturer);
@@ -277,7 +279,8 @@ public class LecturerService {
         Certification certification = certificationRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
         try {
-            Optional<CertificationUpdate> optionalUpdate = certificationUpdateRepository.findByCertification(certification);
+            Optional<CertificationUpdate> optionalUpdate = certificationUpdateRepository
+                    .findByCertification(certification);
             CertificationUpdate update;
             if (optionalUpdate.isPresent()) {
                 update = optionalUpdate.get();
@@ -320,7 +323,7 @@ public class LecturerService {
 
     @Transactional
     public AttendedTrainingCourseDTO updateAttendedCourse(AttendedTrainingCourseUpdateReq req, User user) {
-        if (req== null) {
+        if (req == null) {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
@@ -352,8 +355,8 @@ public class LecturerService {
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
         try {
-            Optional<AttendedTrainingCourseUpdate> optionalUpdate =
-                    attendedTrainingCourseUpdateRepository.findByAttendedTrainingCourse(course);
+            Optional<AttendedTrainingCourseUpdate> optionalUpdate = attendedTrainingCourseUpdateRepository
+                    .findByAttendedTrainingCourse(course);
             AttendedTrainingCourseUpdate update;
             if (optionalUpdate.isPresent()) {
                 update = optionalUpdate.get();
@@ -428,7 +431,8 @@ public class LecturerService {
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
-        Optional<OwnedTrainingCourseUpdate> optional = ownedTrainingCourseUpdateRepository.findByOwnedTrainingCourse(course);
+        Optional<OwnedTrainingCourseUpdate> optional = ownedTrainingCourseUpdateRepository
+                .findByOwnedTrainingCourse(course);
         OwnedTrainingCourseUpdate update;
         if (optional.isPresent()) {
             update = optional.get();
@@ -531,7 +535,7 @@ public class LecturerService {
             return pending.stream()
                     .map(lecturer -> LecturerCreateDTO.builder()
                             .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
-                            //degree with status pending
+                            // degree with status pending
                             .degrees(degreeMapper.toDTOs(degreeRepository.findByLecturer(lecturer)))
                             .certificates(certificationMapper.toDTOs(certificationRepository.findByLecturer(lecturer)))
                             .build())
@@ -540,6 +544,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public DegreeDTO createDegreeFromUser(DegreeReq req, User user) {
         if (req == null) {
@@ -561,6 +566,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public DegreeDTO updateDegree(DegreeUpdateReq req, User user) {
         if (req == null) {
@@ -575,6 +581,9 @@ public class LecturerService {
         }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
+        if (degree.getStatus() == PendingStatus.APPROVED) {
+            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
+        }
         try {
             degreeMapper.updateEntityFromReq(req, degree);
             degree.setStatus(PendingStatus.PENDING);
@@ -586,6 +595,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public CertificationDTO createCertificationFromUser(CertificationReq req, User user) {
         if (req == null) {
@@ -607,6 +617,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public PendingLecturerDTO getPendingLecturerProfile(User user) {
         Lecturer lecturer = user.getLecturer();
@@ -625,6 +636,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public PendingLecturerDTO updatePendingLecturer(PendingLecturerDTO req, User user) {
         if (req == null) {
@@ -671,6 +683,7 @@ public class LecturerService {
         }
 
     }
+
     @Transactional
     public LecturerProfileDTO getLecturerProfile(UUID idRequest) {
         if (idRequest == null) {
@@ -683,12 +696,14 @@ public class LecturerService {
             List<Degree> degrees = degreeRepository.findByLecturer(lecturer);
             List<Certification> certifications = certificationRepository.findByLecturer(lecturer);
             List<OwnedTrainingCourse> ownedTrainingCourses = ownedTrainingCourseRepository.findByLecturer(lecturer);
-            List<AttendedTrainingCourse> attendedTrainingCourses = attendedTrainingCourseRepository.findByLecturer(lecturer);
+            List<AttendedTrainingCourse> attendedTrainingCourses = attendedTrainingCourseRepository
+                    .findByLecturer(lecturer);
             List<ResearchProject> researchProjects = researchProjectRepository.findByLecturer(lecturer);
 
             return LecturerProfileDTO.builder()
                     .lecturer(lecturerMapper.toDTO(lecturer))
-                    .lecturerUpdate(lecturerMapper.toDTOFromUpdate(lecturerUpdateRequestRepository.findByLecturer(lecturer).orElse(null)))
+                    .lecturerUpdate(lecturerMapper
+                            .toDTOFromUpdate(lecturerUpdateRequestRepository.findByLecturer(lecturer).orElse(null)))
                     .degrees(degreeMapper.toDTOs(degrees))
                     .certificates(certificationMapper.toDTOs(certifications))
                     .ownedTrainingCourses(ownedTrainingCourseMapper.toDTOs(ownedTrainingCourses))
@@ -700,6 +715,7 @@ public class LecturerService {
         }
 
     }
+
     @Transactional
     public CertificationDTO updateCertification(CertificationUpdateReq req, User user) {
         if (req == null) {
@@ -725,6 +741,7 @@ public class LecturerService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public LecturerDTO hiddenLecturerProfile(User user, BooleanRequest hidden) {
         Lecturer lecturer = user.getLecturer();

@@ -7,7 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,19 +68,19 @@ public class Lecturer {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Certification> certifications = new ArrayList<>();
+    private List<Certification> certifications;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Degree> degrees = new ArrayList<>();
+    private List<Degree> degrees;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ResearchProject> researchProjects = new ArrayList<>();
+    private List<ResearchProject> researchProjects;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AttendedTrainingCourse> attendedTrainingCourses = new ArrayList<>();
+    private List<AttendedTrainingCourse> attendedTrainingCourses;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OwnedTrainingCourse> ownedTrainingCourses = new ArrayList<>();
+    private List<OwnedTrainingCourse> ownedTrainingCourses;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLecturer> courseLecturers;
