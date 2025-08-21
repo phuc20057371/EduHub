@@ -24,10 +24,10 @@ public class OwnedTrainingCourseDTO {
     private Scale scale;
     private String thumbnailUrl;
     private String contentUrl;
-    private String level; // e.g., Beginner, Intermediate, Advanced
-    private String requirements; // Prerequisites for the course
+    private String level; 
+    private String requirements; 
     private String language;
-    private Boolean isOnline; // Whether the course is online or in-person
+    private Boolean isOnline;
     private String address;
     private Double price;
 

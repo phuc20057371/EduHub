@@ -1,6 +1,9 @@
 package com.example.eduhubvn.services;
 
 import com.example.eduhubvn.dtos.BooleanRequest;
+import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.MessageSocket;
+import com.example.eduhubvn.dtos.MessageSocketType;
 import com.example.eduhubvn.dtos.lecturer.*;
 import com.example.eduhubvn.dtos.lecturer.request.*;
 import com.example.eduhubvn.entities.*;
@@ -10,6 +13,8 @@ import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +44,8 @@ public class LecturerService {
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
+
+    private final SimpMessagingTemplate messagingTemplate;
 
     /// Get
 
@@ -134,7 +141,10 @@ public class LecturerService {
             update.setAdminNote("");
             lecturerUpdateRequestRepository.save(update);
             lecturerUpdateRequestRepository.flush();
-            return lecturerMapper.toDTOFromUpdate(update);
+            LecturerDTO dto = lecturerMapper.toDTOFromUpdate(update);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_LECTURER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi xử lý yêu cầu cập nhật: " + e.getMessage(), e);
         }
@@ -158,8 +168,12 @@ public class LecturerService {
                 degree.setAdminNote("");
             });
             List<Degree> degreeList = degreeRepository.saveAll(degrees);
+
             degreeRepository.flush();
-            return degreeMapper.toDTOs(degreeList);
+            List<DegreeDTO> dtos = degreeMapper.toDTOs(degreeList);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_DEGREE, dtos));
+            return dtos;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -189,7 +203,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public DegreeDTO editDegreeFromUser(DegreeUpdateReq req, User user) {
+    public DegreeDTO editDegree(DegreeUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Request không được trống");
         }
@@ -212,10 +226,31 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             DegreeUpdate savedUpdate = degreeUpdateRepository.saveAndFlush(update);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_DEGREE, degreeMapper.toDTO(degree)));
             return degreeMapper.toDTO(savedUpdate);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật bằng cấp: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional
+    public DegreeDTO deleteDegree(IdRequest req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Degree degree = degreeRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bằng cấp với ID: " + req.getId()));
+        try {
+            degreeRepository.delete(degree);
+            degreeRepository.flush();
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.DELETE_DEGREE, degreeMapper.toDTO(degree)));
+            return degreeMapper.toDTO(degree);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /// Certification
@@ -237,7 +272,10 @@ public class LecturerService {
             });
             List<Certification> certificationList = certificationRepository.saveAll(certifications);
             certificationRepository.flush();
-            return certificationMapper.toDTOs(certificationList);
+            List<CertificationDTO> dtos = certificationMapper.toDTOs(certificationList);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_CERTIFICATION, dtos));
+            return dtos;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -287,13 +325,36 @@ public class LecturerService {
                 certificationMapper.updateUpdateFromRequest(req, update);
             } else {
                 update = certificationMapper.toUpdate(req);
+                update.setCertification(certification);
             }
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             certificationUpdateRepository.saveAndFlush(update);
-            return certificationMapper.toDTO(update);
+            CertificationDTO dto = certificationMapper.toDTO(certification);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_CERTIFICATION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật chứng chỉ: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public CertificationDTO deleteCertification(IdRequest req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Certification certification = certificationRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chứng chỉ với ID: " + req.getId()));
+        try {
+            certificationRepository.delete(certification);
+            certificationRepository.flush();
+            CertificationDTO dto = certificationMapper.toDTO(certification);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.DELETE_CERTIFICATION, dto));
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -315,10 +376,13 @@ public class LecturerService {
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
             attendedTrainingCourseRepository.flush();
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return attendedTrainingCourseMapper.toDTO(course);
     }
 
     @Transactional
@@ -337,7 +401,10 @@ public class LecturerService {
             course.setStatus(PendingStatus.PENDING);
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
-            return attendedTrainingCourseMapper.toDTO(course);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -368,7 +435,10 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             attendedTrainingCourseUpdateRepository.saveAndFlush(update);
-            return attendedTrainingCourseMapper.toDTO(course);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật khóa học đã tham gia: " + e.getMessage(), e);
         }
@@ -391,7 +461,10 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(course);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_OWNED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -414,7 +487,10 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(course);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_OWNED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -446,7 +522,10 @@ public class LecturerService {
             update.setAdminNote("");
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseUpdateRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(update);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_OWNED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -469,7 +548,10 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_RESEARCH_PROJECT, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -492,7 +574,10 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_RESEARCH_PROJECT, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -522,7 +607,33 @@ public class LecturerService {
             update.setAdminNote("");
             researchProjectUpdateRepository.save(update);
             researchProjectUpdateRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_RESEARCH_PROJECT, dto));
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResearchProjectDTO deleteResearchProject(IdRequest req, User user) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        ResearchProject project = researchProjectRepository.findById(req.getId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy dự án nghiên cứu với ID: " + req.getId()));
+        try {
+            researchProjectRepository.delete(project);
+            researchProjectRepository.flush();
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.DELETE_RESEARCH_PROJECT, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -576,9 +687,6 @@ public class LecturerService {
         if (lecturer == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
-        if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
-        }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
         if (degree.getStatus() == PendingStatus.APPROVED) {
@@ -590,6 +698,8 @@ public class LecturerService {
             degree.setAdminNote("");
             degreeRepository.save(degree);
             degreeRepository.flush();
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_DEGREE, degreeMapper.toDTO(degree)));
             return degreeMapper.toDTO(degree);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -701,7 +811,7 @@ public class LecturerService {
             List<ResearchProject> researchProjects = researchProjectRepository.findByLecturer(lecturer);
 
             return LecturerProfileDTO.builder()
-                    .lecturer(lecturerMapper.toDTO(lecturer))
+                    .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
                     .lecturerUpdate(lecturerMapper
                             .toDTOFromUpdate(lecturerUpdateRequestRepository.findByLecturer(lecturer).orElse(null)))
                     .degrees(degreeMapper.toDTOs(degrees))
@@ -725,9 +835,6 @@ public class LecturerService {
         if (lecturer == null) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
-        if (user.getRole() == Role.LECTURER && lecturer.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
-        }
         Certification certification = certificationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
         try {
@@ -736,7 +843,10 @@ public class LecturerService {
             certification.setAdminNote("");
             certificationRepository.save(certification);
             certificationRepository.flush();
-            return certificationMapper.toDTO(certification);
+            CertificationDTO dto = certificationMapper.toDTO(certification);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -758,4 +868,49 @@ public class LecturerService {
         }
 
     }
+
+    public OwnedTrainingCourseDTO deleteOwnedCourse(IdRequest req, User user) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
+        try {
+            ownedTrainingCourseRepository.delete(course);
+            ownedTrainingCourseRepository.flush();
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.DELETE_OWNED_COURSE, dto));
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public AttendedTrainingCourseDTO deleteAttendedCourse(IdRequest req, User user) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
+        try {
+            attendedTrainingCourseRepository.delete(course);
+            attendedTrainingCourseRepository.flush();
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.DELETE_ATTENDED_COURSE, dto));
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

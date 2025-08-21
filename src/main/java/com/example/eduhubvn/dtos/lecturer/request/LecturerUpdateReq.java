@@ -24,4 +24,5 @@ public class LecturerUpdateReq {
     private String academicRank;
     private String specialization;
     private Integer experienceYears;
+    private String jobField;
 }

@@ -61,7 +61,6 @@ public interface LecturerMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "jobField", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUpdateFromRequest(LecturerUpdateReq dto, @MappingTarget LecturerUpdate entity);

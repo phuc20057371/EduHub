@@ -19,6 +19,7 @@ public interface OwnedTrainingCourseMapper {
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
     OwnedTrainingCourse toEntity(OwnedTrainingCourseReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -41,7 +42,8 @@ public interface OwnedTrainingCourseMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "lecturer", ignore = true),
             @Mapping(target = "status", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true)
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
     })
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(OwnedTrainingCourseUpdateReq req, @MappingTarget OwnedTrainingCourse course);
@@ -62,6 +64,7 @@ public interface OwnedTrainingCourseMapper {
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "course", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(OwnedTrainingCourseUpdate update, @MappingTarget OwnedTrainingCourse original);
 

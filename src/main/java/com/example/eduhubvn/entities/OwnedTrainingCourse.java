@@ -63,6 +63,9 @@ public class OwnedTrainingCourse {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "ownedTrainingCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    private OwnedTrainingCourseUpdate ownedTrainingCourseUpdate;
+
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;

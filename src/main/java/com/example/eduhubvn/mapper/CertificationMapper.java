@@ -17,6 +17,7 @@ public interface CertificationMapper {
     CertificationDTO toDTO(CertificationUpdate entity);
 
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "certificationUpdate", ignore = true)
     Certification toEntity(CertificationDTO dto);
 
     @Mapping(target = "lecturer", ignore = true)
@@ -25,6 +26,7 @@ public interface CertificationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "certificationUpdate", ignore = true)
     Certification toEntity(CertificationReq req);
 
     @Mapping(target = "id", ignore = true)
@@ -46,6 +48,7 @@ public interface CertificationMapper {
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "certificationUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromReq(CertificationUpdateReq req, @MappingTarget Certification certification);
 
@@ -55,6 +58,7 @@ public interface CertificationMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "certificationUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(CertificationUpdate source, @MappingTarget Certification target);
 

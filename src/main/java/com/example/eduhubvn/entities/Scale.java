@@ -6,5 +6,6 @@ public enum Scale {
     DEPARTMENTAL,     // Department or provincial level
     MINISTERIAL,      // Ministry level
     NATIONAL,         // National level
-    INTERNATIONAL     // International level
+    INTERNATIONAL,    // International level
+    OTHERS;           // Other scales not specified
 }

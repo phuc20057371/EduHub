@@ -1,6 +1,5 @@
 package com.example.eduhubvn.entities;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,4 +48,7 @@ public class Degree {
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
+
+    @OneToOne(mappedBy = "degree", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DegreeUpdate degreeUpdate;
 }

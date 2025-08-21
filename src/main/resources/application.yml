@@ -20,15 +20,15 @@ spring:
             user-name-attribute: sub
   jackson:
     time-zone: Asia/Ho_Chi_Minh
-    date-format:  HH:mm:ss dd/MM/yyyy
+    date-format: HH:mm:ss dd/MM/yyyy
   datasource:
     url: jdbc:postgresql://localhost:5432/eduhubvn
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

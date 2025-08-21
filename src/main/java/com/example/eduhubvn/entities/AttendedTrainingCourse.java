@@ -25,7 +25,7 @@ public class AttendedTrainingCourse {
     private String topic;
     private String organizer;
     @Enumerated(EnumType.STRING)
-    @Column(name="course_type")
+    @Column(name = "course_type")
     private CourseType courseType;
     @Enumerated(EnumType.STRING)
     private Scale scale;
@@ -50,6 +50,9 @@ public class AttendedTrainingCourse {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "attendedTrainingCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AttendedTrainingCourseUpdate attendedTrainingCourseUpdate;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")

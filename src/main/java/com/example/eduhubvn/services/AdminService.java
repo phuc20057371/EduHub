@@ -16,6 +16,8 @@ import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -55,30 +57,34 @@ public class AdminService {
     private final CourseMapper courseMapper;
     private final CourseLecturerRepository courseLecturerRepository;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
     /// Get
 
     @Transactional
     public AllPendingUpdateDTO getAllPendingUpdates() {
         try {
             List<LecturerUpdate> lecturerUpdates = lecturerUpdateRepository.findByStatus(PendingStatus.PENDING);
-            List<PartnerOrganizationUpdate> partnerUpdates = partnerOrganizationUpdateRepository.findByStatus(PendingStatus.PENDING);
-            List<EducationInstitutionUpdate> eduInsUpdates = educationInstitutionUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<PartnerOrganizationUpdate> partnerUpdates = partnerOrganizationUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
+            List<EducationInstitutionUpdate> eduInsUpdates = educationInstitutionUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
 
             List<LecturerPendingDTO> lecturerDTOs = lecturerUpdates.stream()
                     .map(update -> new LecturerPendingDTO(
                             lecturerMapper.toDTO(update.getLecturer()),
-                            lecturerMapper.toDTO(update)
-                    )).toList();
+                            lecturerMapper.toDTO(update)))
+                    .toList();
             List<PartnerOrganizationPendingDTO> partnerDTOs = partnerUpdates.stream()
                     .map(update -> new PartnerOrganizationPendingDTO(
                             partnerOrganizationMapper.toDTO(update.getPartnerOrganization()),
-                            partnerOrganizationMapper.toDTO(update)
-                    )).toList();
+                            partnerOrganizationMapper.toDTO(update)))
+                    .toList();
             List<EducationInstitutionPendingDTO> eduDTOs = eduInsUpdates.stream()
                     .map(update -> new EducationInstitutionPendingDTO(
                             educationInstitutionMapper.toDTO(update.getEducationInstitution()),
-                            educationInstitutionMapper.toDTO(update)
-                    )).toList();
+                            educationInstitutionMapper.toDTO(update)))
+                    .toList();
             return AllPendingUpdateDTO.builder()
                     .lecturerUpdates(lecturerDTOs)
                     .partnerUpdates(partnerDTOs)
@@ -95,10 +101,12 @@ public class AdminService {
             List<LecturerDTO> lecturers = lecturerRepository.findByStatus(PendingStatus.PENDING).stream()
                     .map(lecturerMapper::toDTO)
                     .toList();
-            List<PartnerOrganizationDTO> partners = partnerOrganizationRepository.findByStatus(PendingStatus.PENDING).stream()
+            List<PartnerOrganizationDTO> partners = partnerOrganizationRepository.findByStatus(PendingStatus.PENDING)
+                    .stream()
                     .map(partnerOrganizationMapper::toDTO)
                     .toList();
-            List<EducationInstitutionDTO> institutions = educationInstitutionRepository.findByStatus(PendingStatus.PENDING).stream()
+            List<EducationInstitutionDTO> institutions = educationInstitutionRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
                     .map(educationInstitutionMapper::toDTO)
                     .toList();
             return AllPendingEntityDTO.builder()
@@ -119,9 +127,9 @@ public class AdminService {
         }
         Lecturer lecturer = lecturerRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (lecturer.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (lecturer.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             lecturer.getUser().setRole(Role.LECTURER);
             lecturer.setStatus(PendingStatus.APPROVED);
@@ -201,9 +209,9 @@ public class AdminService {
         }
         EducationInstitution educationInstitution = educationInstitutionRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (educationInstitution.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (educationInstitution.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             educationInstitution.getUser().setRole(Role.SCHOOL);
             educationInstitution.setStatus(PendingStatus.APPROVED);
@@ -242,9 +250,9 @@ public class AdminService {
         }
         EducationInstitutionUpdate update = educationInstitutionUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (update.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             EducationInstitution educationInstitution = update.getEducationInstitution();
             educationInstitutionMapper.updateEntityFromUpdate(update, educationInstitution);
@@ -266,7 +274,8 @@ public class AdminService {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống");
         }
-        EducationInstitutionUpdate update = educationInstitutionUpdateRepository.findByIdAndStatus(req.getId(), PendingStatus.PENDING)
+        EducationInstitutionUpdate update = educationInstitutionUpdateRepository
+                .findByIdAndStatus(req.getId(), PendingStatus.PENDING)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
 
         try {
@@ -288,9 +297,9 @@ public class AdminService {
         }
         PartnerOrganization partnerOrganization = partnerOrganizationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (partnerOrganization.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (partnerOrganization.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             partnerOrganization.getUser().setRole(Role.ORGANIZATION);
             partnerOrganization.setStatus(PendingStatus.APPROVED);
@@ -309,9 +318,9 @@ public class AdminService {
         }
         PartnerOrganizationUpdate update = partnerOrganizationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy hồ sơ."));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (update.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             PartnerOrganization partnerOrganization = update.getPartnerOrganization();
             partnerOrganizationMapper.updateEntityFromUpdate(update, partnerOrganization);
@@ -380,7 +389,10 @@ public class AdminService {
             degree.setStatus(PendingStatus.APPROVED);
             Degree saved = degreeRepository.save(degree);
             degreeRepository.flush();
-            return degreeMapper.toDTO(saved);
+            DegreeDTO dto = degreeMapper.toDTO(saved);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + degree.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_DEGREE, dto));
+            return dto;
         } catch (IllegalStateException e) {
             throw new RuntimeException(e);
         }
@@ -403,7 +415,10 @@ public class AdminService {
             degreeRepository.save(degree);
             degreeUpdateRepository.save(update);
             degreeRepository.flush();
-            return degreeMapper.toDTO(degree);
+            DegreeDTO dto = degreeMapper.toDTO(degree);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + degree.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_DEGREE_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -422,6 +437,8 @@ public class AdminService {
             degree.setAdminNote(req.getAdminNote());
             degreeRepository.save(degree);
             degreeRepository.flush();
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + degree.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_DEGREE, degreeMapper.toDTO(degree)));
             return degreeMapper.toDTO(degree);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -441,7 +458,10 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             degreeUpdateRepository.save(update);
             degreeUpdateRepository.flush();
-            return degreeMapper.toDTO(update);
+            DegreeDTO dto = degreeMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getDegree().getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_DEGREE_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -460,7 +480,10 @@ public class AdminService {
             certification.setStatus(PendingStatus.APPROVED);
             Certification saved = certificationRepository.save(certification);
             certificationRepository.flush();
-            return certificationMapper.toDTO(saved);
+            CertificationDTO dto = certificationMapper.toDTO(saved);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + certification.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_CERTIFICATION, dto));
+            return dto;
         } catch (IllegalStateException e) {
             throw new RuntimeException(e);
         }
@@ -473,9 +496,9 @@ public class AdminService {
         }
         CertificationUpdate update = certificationUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (update.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             Certification certification = update.getCertification();
             certificationMapper.updateEntityFromUpdate(update, certification);
@@ -486,7 +509,10 @@ public class AdminService {
             certificationRepository.save(certification);
             certificationUpdateRepository.save(update);
             certificationRepository.flush();
-            return certificationMapper.toDTO(certification);
+            CertificationDTO dto = certificationMapper.toDTO(certification);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + certification.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_CERTIFICATION_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -505,7 +531,10 @@ public class AdminService {
             certification.setAdminNote(req.getAdminNote());
             certificationRepository.save(certification);
             certificationRepository.flush();
-            return certificationMapper.toDTO(certification);
+            CertificationDTO dto = certificationMapper.toDTO(certification);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + certification.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_CERTIFICATION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -524,7 +553,10 @@ public class AdminService {
             update.setStatus(PendingStatus.REJECTED);
             update.setAdminNote(req.getAdminNote());
             certificationUpdateRepository.saveAndFlush(update);
-            return certificationMapper.toDTO(update);
+            CertificationDTO dto = certificationMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getCertification().getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_CERTIFICATION_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -543,7 +575,10 @@ public class AdminService {
             course.setStatus(PendingStatus.APPROVED);
             course.setAdminNote("");
             attendedTrainingCourseRepository.saveAndFlush(course);
-            return attendedTrainingCourseMapper.toDTO(course);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + course.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -556,9 +591,9 @@ public class AdminService {
         }
         AttendedTrainingCourseUpdate update = attendedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (update.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             AttendedTrainingCourse original = update.getAttendedTrainingCourse();
             attendedTrainingCourseMapper.updateEntityFromUpdate(update, original);
@@ -569,7 +604,10 @@ public class AdminService {
             attendedTrainingCourseRepository.save(original);
             attendedTrainingCourseUpdateRepository.save(update);
             attendedTrainingCourseRepository.flush();
-            return attendedTrainingCourseMapper.toDTO(original);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(original);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + original.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -587,7 +625,10 @@ public class AdminService {
             course.setStatus(PendingStatus.REJECTED);
             course.setAdminNote(req.getAdminNote());
             attendedTrainingCourseRepository.saveAndFlush(course);
-            return attendedTrainingCourseMapper.toDTO(course);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + course.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_ATTENDED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -606,7 +647,10 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             attendedTrainingCourseUpdateRepository.save(update);
             attendedTrainingCourseUpdateRepository.flush();
-            return attendedTrainingCourseMapper.toDTO(update);
+            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getAttendedTrainingCourse().getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_ATTENDED_COURSE_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -626,7 +670,10 @@ public class AdminService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(course);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + course.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_OWNED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -639,9 +686,9 @@ public class AdminService {
         }
         OwnedTrainingCourseUpdate update = ownedTrainingCourseUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
+        // if (update.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Đã được phê duyệt trước đó.");
+        // }
         try {
             OwnedTrainingCourse original = update.getOwnedTrainingCourse();
             ownedTrainingCourseMapper.updateEntityFromUpdate(update, original);
@@ -652,7 +699,10 @@ public class AdminService {
             ownedTrainingCourseRepository.save(original);
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(update);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(original);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + original.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_OWNED_COURSE_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -671,7 +721,10 @@ public class AdminService {
             course.setAdminNote(req.getAdminNote());
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(course);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + course.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_OWNED_COURSE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -690,12 +743,14 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseUpdateRepository.flush();
-            return ownedTrainingCourseMapper.toDTO(update);
+            OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getOwnedTrainingCourse().getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_OWNED_COURSE_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
     /// Research project
     @Transactional
@@ -711,7 +766,10 @@ public class AdminService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + project.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_RESEARCH_PROJECT, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -724,9 +782,6 @@ public class AdminService {
         }
         ResearchProjectUpdate update = researchProjectUpdateRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-//        if (update.getStatus() == PendingStatus.APPROVED) {
-//            throw new IllegalStateException("Đã được phê duyệt trước đó.");
-//        }
         try {
             ResearchProject original = update.getResearchProject();
             researchProjectMapper.updateEntityFromUpdate(update, original);
@@ -737,7 +792,10 @@ public class AdminService {
             researchProjectRepository.save(original);
             researchProjectUpdateRepository.save(update);
             researchProjectRepository.flush();
-            return researchProjectMapper.toDTO(original);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(original);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + original.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_RESEARCH_PROJECT_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -756,7 +814,10 @@ public class AdminService {
             project.setAdminNote(req.getAdminNote());
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + project.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_RESEARCH_PROJECT, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -775,7 +836,10 @@ public class AdminService {
             project.setAdminNote(req.getAdminNote());
             researchProjectUpdateRepository.save(project);
             researchProjectUpdateRepository.flush();
-            return researchProjectMapper.toDTO(project);
+            ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + project.getResearchProject().getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_RESEARCH_PROJECT_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -802,7 +866,8 @@ public class AdminService {
     @Transactional
     public List<CertificationUpdateDTO> getPendingCertificationUpdates() {
         try {
-            List<CertificationUpdate> pendingUpdates = certificationUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<CertificationUpdate> pendingUpdates = certificationUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getCertification() != null
                             && update.getCertification().getStatus() == PendingStatus.APPROVED)
@@ -820,7 +885,8 @@ public class AdminService {
     @Transactional
     public List<AttendedCourseUpdateDTO> getPendingAttendedCourseUpdates() {
         try {
-            List<AttendedTrainingCourseUpdate> pendingUpdates = attendedTrainingCourseUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<AttendedTrainingCourseUpdate> pendingUpdates = attendedTrainingCourseUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getAttendedTrainingCourse() != null
                             && update.getAttendedTrainingCourse().getStatus() == PendingStatus.APPROVED)
@@ -838,7 +904,8 @@ public class AdminService {
     @Transactional
     public List<OwnedCourseUpdateDTO> getPendingOwnedCourseUpdates() {
         try {
-            List<OwnedTrainingCourseUpdate> pendingUpdates = ownedTrainingCourseUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<OwnedTrainingCourseUpdate> pendingUpdates = ownedTrainingCourseUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getOwnedTrainingCourse() != null
                             && update.getOwnedTrainingCourse().getStatus() == PendingStatus.APPROVED)
@@ -856,7 +923,8 @@ public class AdminService {
     @Transactional
     public List<ResearchProjectUpdateDTO> getPendingResearchProjectUpdates() {
         try {
-            List<ResearchProjectUpdate> pendingUpdates = researchProjectUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<ResearchProjectUpdate> pendingUpdates = researchProjectUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getResearchProject() != null
                             && update.getResearchProject().getStatus() == PendingStatus.APPROVED)
@@ -948,7 +1016,7 @@ public class AdminService {
         try {
             List<EducationInstitution> institutions = educationInstitutionRepository.findAll();
             return institutions.stream()
-//                    .filter(institution -> institution.getStatus() == PendingStatus.APPROVED)
+                    // .filter(institution -> institution.getStatus() == PendingStatus.APPROVED)
                     .map(educationInstitutionMapper::toDTO)
                     .toList();
         } catch (Exception e) {
@@ -1003,7 +1071,7 @@ public class AdminService {
         try {
             List<PartnerOrganization> partners = partnerOrganizationRepository.findAll();
             return partners.stream()
-//                    .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
+                    // .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
                     .map(partnerOrganizationMapper::toDTO)
                     .toList();
         } catch (Exception e) {
@@ -1017,10 +1085,10 @@ public class AdminService {
             Lecturer lecturer = lecturerRepository.findById(lecturerId)
                     .orElseThrow(() -> new IllegalStateException("Không tìm thấy giảng viên với ID: " + lecturerId));
 
-            boolean canViewSensitiveInfo =
-                    user.getRole().equals(Role.ADMIN) || !lecturer.isHidden() || user.getId().equals(lecturer.getUser().getId());
+            boolean canViewSensitiveInfo = user.getRole().equals(Role.ADMIN) || !lecturer.isHidden()
+                    || user.getId().equals(lecturer.getUser().getId());
 
-//            LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
+            // LecturerInfoDTO lecturerInfo = Mapper.mapToLecturerInfoDTO(lecturer);
 
             LecturerInfoDTO lecturerInfo = LecturerInfoDTO.builder()
                     .id(lecturer.getId())
@@ -1045,8 +1113,6 @@ public class AdminService {
                     .createdAt(lecturer.getCreatedAt())
                     .updatedAt(lecturer.getUpdatedAt())
                     .build();
-
-
 
             List<CertificationDTO> certifications = lecturer.getCertifications().stream()
                     .map(certificationMapper::toDTO)
@@ -1087,27 +1153,29 @@ public class AdminService {
             for (Degree degree : degrees) {
                 requests.add(RequestFromLecturer.<DegreeDTO>builder()
                         .content(degreeMapper.toDTO(degree))
-                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(degree.getLecturer())) // Use instance
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(degree.getLecturer())) 
                         .type(RequestLecturerType.BC)
                         .label(RequestLabel.Create)
-                        .date(degree.getCreatedAt())
+                        .date(degree.getUpdatedAt())
                         .build());
             }
 
             // Add Certification requests
-            List<Certification> certifications = certificationRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            List<Certification> certifications = certificationRepository
+                    .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
             for (Certification certification : certifications) {
                 requests.add(RequestFromLecturer.<CertificationDTO>builder()
                         .content(certificationMapper.toDTO(certification))
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(certification.getLecturer()))
                         .type(RequestLecturerType.CC)
                         .label(RequestLabel.Create)
-                        .date(certification.getCreatedAt())
+                        .date(certification.getUpdatedAt())
                         .build());
             }
 
             // Add AttendedTrainingCourse requests
-            List<AttendedTrainingCourse> attendedCourses = attendedTrainingCourseRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            List<AttendedTrainingCourse> attendedCourses = attendedTrainingCourseRepository
+                    .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
             System.out.println("Found " + attendedCourses.size() + " pending attended training course requests.");
             for (AttendedTrainingCourse course : attendedCourses) {
                 requests.add(RequestFromLecturer.<AttendedTrainingCourseDTO>builder()
@@ -1115,12 +1183,13 @@ public class AdminService {
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
                         .type(RequestLecturerType.AC)
                         .label(RequestLabel.Create)
-                        .date(course.getCreatedAt())
+                        .date(course.getUpdatedAt())
                         .build());
             }
 
             // Add OwnedTrainingCourse requests
-            List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository
+                    .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
 
             System.out.println("Found " + ownedCourses.size() + " pending owned training course requests.");
             for (OwnedTrainingCourse course : ownedCourses) {
@@ -1129,12 +1198,13 @@ public class AdminService {
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
                         .type(RequestLecturerType.OC)
                         .label(RequestLabel.Create)
-                        .date(course.getCreatedAt())
+                        .date(course.getUpdatedAt())
                         .build());
             }
 
             // Add ResearchProject requests
-            List<ResearchProject> researchProjects = researchProjectRepository.findByStatusWithApprovedLecturer(PendingStatus.PENDING);
+            List<ResearchProject> researchProjects = researchProjectRepository
+                    .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
             System.out.println("Found " + researchProjects.size() + " pending research project requests.");
             for (ResearchProject project : researchProjects) {
                 requests.add(RequestFromLecturer.<ResearchProjectDTO>builder()
@@ -1142,7 +1212,7 @@ public class AdminService {
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(project.getLecturer()))
                         .type(RequestLecturerType.RP)
                         .label(RequestLabel.Create)
-                        .date(project.getCreatedAt())
+                        .date(project.getUpdatedAt())
                         .build());
             }
             List<DegreeUpdateDTO> degreeUpdates = getPendingDegreeUpdates();
@@ -1151,11 +1221,10 @@ public class AdminService {
                         .content(degreeUpdate)
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(
                                 lecturerRepository.findByIdWithUser(degreeUpdate.getLecturer().getId())
-                                        .orElseThrow(IllegalArgumentException::new)
-                        ))
+                                        .orElseThrow(IllegalArgumentException::new)))
                         .type(RequestLecturerType.BC)
                         .label(RequestLabel.Update)
-                        .date(degreeUpdate.getOriginal().getCreatedAt())
+                        .date(degreeUpdate.getUpdate().getUpdatedAt())
                         .build());
 
             }
@@ -1165,11 +1234,10 @@ public class AdminService {
                         .content(certificationUpdate)
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(
                                 lecturerRepository.findByIdWithUser(certificationUpdate.getLecturer().getId())
-                                        .orElseThrow(IllegalArgumentException::new)
-                        ))
+                                        .orElseThrow(IllegalArgumentException::new)))
                         .type(RequestLecturerType.CC)
                         .label(RequestLabel.Update)
-                        .date(certificationUpdate.getOriginal().getCreatedAt())
+                        .date(certificationUpdate.getUpdate().getUpdatedAt())
                         .build());
             }
             List<AttendedCourseUpdateDTO> attendedCourseUpdates = getPendingAttendedCourseUpdates();
@@ -1178,11 +1246,10 @@ public class AdminService {
                         .content(attendedCourseUpdate)
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(
                                 lecturerRepository.findByIdWithUser(attendedCourseUpdate.getLecturer().getId())
-                                        .orElseThrow(IllegalArgumentException::new)
-                        ))
+                                        .orElseThrow(IllegalArgumentException::new)))
                         .type(RequestLecturerType.AC)
                         .label(RequestLabel.Update)
-                        .date(attendedCourseUpdate.getOriginal().getCreatedAt())
+                        .date(attendedCourseUpdate.getUpdate().getUpdatedAt())
                         .build());
             }
             List<OwnedCourseUpdateDTO> ownedCourseUpdates = getPendingOwnedCourseUpdates();
@@ -1191,11 +1258,10 @@ public class AdminService {
                         .content(ownedCourseUpdate)
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(
                                 lecturerRepository.findByIdWithUser(ownedCourseUpdate.getLecturer().getId())
-                                        .orElseThrow(IllegalArgumentException::new)
-                        ))
+                                        .orElseThrow(IllegalArgumentException::new)))
                         .type(RequestLecturerType.OC)
                         .label(RequestLabel.Update)
-                        .date(ownedCourseUpdate.getOriginal().getCreatedAt())
+                        .date(ownedCourseUpdate.getUpdate().getUpdatedAt())
                         .build());
             }
             List<ResearchProjectUpdateDTO> researchProjectUpdates = getPendingResearchProjectUpdates();
@@ -1204,14 +1270,12 @@ public class AdminService {
                         .content(researchProjectUpdate)
                         .lecturerInfo(Mapper.mapToLecturerInfoDTO(
                                 lecturerRepository.findByIdWithUser(researchProjectUpdate.getLecturer().getId())
-                                        .orElseThrow(IllegalArgumentException::new)
-                        ))
+                                        .orElseThrow(IllegalArgumentException::new)))
                         .type(RequestLecturerType.RP)
                         .label(RequestLabel.Update)
-                        .date(researchProjectUpdate.getOriginal().getCreatedAt())
+                        .date(researchProjectUpdate.getUpdate().getUpdatedAt())
                         .build());
             }
-
 
             // Sort by date (newest first)
             requests.sort((r1, r2) -> r2.getDate().compareTo(r1.getDate()));
@@ -1268,9 +1332,9 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học."));
         try {
             // Update course details
-//            courseMapper. updateEntityFromDTO(req.getCourse(), course);
-//            courseRepository.save(course);
-//            courseRepository.flush();
+            // courseMapper. updateEntityFromDTO(req.getCourse(), course);
+            // courseRepository.save(course);
+            // courseRepository.flush();
 
             // Update course members
             List<CourseLecturer> existingMembers = course.getCourseLecturers();
@@ -1294,11 +1358,9 @@ public class AdminService {
                 }
             }
 
-
             // Remove old members not in the updated list
-            existingMembers.removeIf(existingMember ->
-                    updatedMembers.stream().noneMatch(updatedMember ->
-                            updatedMember.getLecturer().getId().equals(existingMember.getLecturer().getId())));
+            existingMembers.removeIf(existingMember -> updatedMembers.stream().noneMatch(
+                    updatedMember -> updatedMember.getLecturer().getId().equals(existingMember.getLecturer().getId())));
 
             // Add new members
             for (CourseLecturer updated : updatedMembers) {
@@ -1348,7 +1410,8 @@ public class AdminService {
         try {
             Course course = courseMapper.toEntity(req);
             if (req.getOwnedCourseId() != null) {
-                Optional<OwnedTrainingCourse> ownedCourseOpt = ownedTrainingCourseRepository.findById(req.getOwnedCourseId());
+                Optional<OwnedTrainingCourse> ownedCourseOpt = ownedTrainingCourseRepository
+                        .findById(req.getOwnedCourseId());
                 if (ownedCourseOpt.isPresent()) {
                     OwnedTrainingCourse ownedCourse = ownedCourseOpt.get();
                     // Gán 2 chiều
@@ -1364,7 +1427,8 @@ public class AdminService {
             CourseMemberDTO authorMember = null;
             if (req.getAuthorId() != null) {
                 Lecturer lecturer = lecturerRepository.findById(req.getAuthorId())
-                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + req.getAuthorId()));
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Không tìm thấy giảng viên với ID: " + req.getAuthorId()));
 
                 CourseLecturer courseLecturer = CourseLecturer.builder()
                         .course(course)
@@ -1389,6 +1453,7 @@ public class AdminService {
             throw new RuntimeException("Lỗi khi tạo khóa học: " + e.getMessage(), e);
         }
     }
+
     @Transactional
     public CourseDTO updateCourse(CourseDTO req) {
         if (req == null || req.getId() == null) {

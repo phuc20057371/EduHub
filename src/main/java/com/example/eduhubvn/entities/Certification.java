@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Entity
 @Table(name = "certification")
 @Data
@@ -48,6 +47,9 @@ public class Certification {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "certification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CertificationUpdate certificationUpdate;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")

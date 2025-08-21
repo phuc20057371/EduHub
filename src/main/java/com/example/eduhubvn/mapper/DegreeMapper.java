@@ -16,6 +16,7 @@ public interface DegreeMapper {
     DegreeDTO toDTO(DegreeUpdate entity);
 
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "degreeUpdate", ignore = true)
     Degree toEntity(DegreeDTO dto);
 
     @Mapping(target = "id", ignore = true)
@@ -24,6 +25,7 @@ public interface DegreeMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "degreeUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Degree toEntity(DegreeReq req);
 
@@ -42,6 +44,7 @@ public interface DegreeMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "degreeUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromReq(DegreeUpdateReq req, @MappingTarget Degree degree);
 
@@ -68,6 +71,7 @@ public interface DegreeMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "degreeUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(DegreeUpdate update, @MappingTarget Degree degree);
 
