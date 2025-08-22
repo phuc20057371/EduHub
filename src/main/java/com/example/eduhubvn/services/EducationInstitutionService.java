@@ -83,7 +83,7 @@ public class EducationInstitutionService {
         if (institution == null) {
             throw new EntityNotFoundException("Không có quyền truy cập");
         }
-        System.out.println(user);
+
         if (user.getRole()== Role.SCHOOL && institution.getStatus() == PendingStatus.APPROVED) {
             throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
         }

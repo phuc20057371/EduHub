@@ -55,6 +55,9 @@ public class ResearchProject {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "researchProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ResearchProjectUpdate researchProjectUpdate;
+
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;

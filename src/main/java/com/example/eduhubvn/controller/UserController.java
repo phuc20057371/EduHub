@@ -75,7 +75,6 @@ public class UserController {
             File tempFile = File.createTempFile("temp", file.getOriginalFilename());
             file.transferTo(tempFile);
             FileResponse fileResponse = googleDriveService.uploadFileToGoogleDrive(tempFile);
-            System.out.println(fileResponse);
             return fileResponse;
         }
     }

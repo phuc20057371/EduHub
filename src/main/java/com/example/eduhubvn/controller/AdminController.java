@@ -1,6 +1,23 @@
 package com.example.eduhubvn.controller;
 
-import com.example.eduhubvn.dtos.*;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.eduhubvn.dtos.AllPendingEntityDTO;
+import com.example.eduhubvn.dtos.AllPendingUpdateDTO;
+import com.example.eduhubvn.dtos.ApiResponse;
+import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.RejectReq;
+import com.example.eduhubvn.dtos.RequestFromLecturer;
 import com.example.eduhubvn.dtos.course.CourseDTO;
 import com.example.eduhubvn.dtos.course.CourseInfoDTO;
 import com.example.eduhubvn.dtos.course.CourseReq;
@@ -9,34 +26,42 @@ import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
 import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
-import com.example.eduhubvn.dtos.lecturer.*;
+import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
+import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
+import com.example.eduhubvn.dtos.lecturer.DegreePendingCreateDTO;
+import com.example.eduhubvn.dtos.lecturer.DegreeUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerAllProfileDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerCreateDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerPendingDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.OwnedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
 import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
-import com.example.eduhubvn.services.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import com.example.eduhubvn.services.AdminService;
+import com.example.eduhubvn.services.EducationInstitutionService;
+import com.example.eduhubvn.services.LecturerService;
+import com.example.eduhubvn.services.PartnerOrganizationService;
+import com.example.eduhubvn.services.UserService;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
+
+    private final AdminService adminService;
+    private final UserService userService;
     private final LecturerService lecturerService;
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
-    private final AdminService adminService;
-    private final UserService userService;
-
-
-
-
-
 
     @GetMapping("/lecturer-pending-updates")
     public ResponseEntity<ApiResponse<List<LecturerPendingDTO>>> getPendingLecturerUpdates() {
@@ -52,7 +77,8 @@ public class AdminController {
 
     @GetMapping("/partner-pending-updates")
     public ResponseEntity<ApiResponse<List<PartnerOrganizationPendingDTO>>> getPendingPartnerUpdates() {
-        List<PartnerOrganizationPendingDTO> pendingList = partnerOrganizationService.getPendingPartnerOrganizationUpdates();
+        List<PartnerOrganizationPendingDTO> pendingList = partnerOrganizationService
+                .getPendingPartnerOrganizationUpdates();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
@@ -64,7 +90,8 @@ public class AdminController {
 
     @GetMapping("/institution-pending-updates")
     public ResponseEntity<ApiResponse<List<EducationInstitutionPendingDTO>>> getPendingEduInstitutionUpdates() {
-        List<EducationInstitutionPendingDTO> pendingList = educationInstitutionService.getPendingEducationInstitutionUpdates();
+        List<EducationInstitutionPendingDTO> pendingList = educationInstitutionService
+                .getPendingEducationInstitutionUpdates();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
@@ -80,13 +107,11 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
-
     @GetMapping("/degree-pending-create")
     public ResponseEntity<ApiResponse<List<DegreePendingCreateDTO>>> getPendingDegreeCreate() {
         List<DegreePendingCreateDTO> pendingList = adminService.getPendingDegreeCreate();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
-
 
     @GetMapping("/pending-updates")
     public ResponseEntity<ApiResponse<AllPendingUpdateDTO>> getAllPendingUpdates() {
@@ -99,7 +124,6 @@ public class AdminController {
         AllPendingEntityDTO result = adminService.getAllPendingEntities();
         return ResponseEntity.ok(ApiResponse.success("Danh sách tất cả yêu cầu tạo mới chờ duyệt", result));
     }
-
 
     @GetMapping("/get-all-lecturers")
     public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
@@ -126,50 +150,61 @@ public class AdminController {
     }
 
     /// Lecturer
-        @PostMapping("/approve-lecturer")
+    @PostMapping("/approve-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturer(@RequestBody IdRequest req) {
         LecturerDTO dto = adminService.approveLecturer(req);
         return ResponseEntity.ok(ApiResponse.success("Duyệt thành công", dto));
     }
+
     @PostMapping("/approve-lecturer-update")
     public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturerUpdate(@RequestBody IdRequest req) {
         LecturerDTO dto = adminService.approveLecturerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> rejectLecturer(@RequestBody RejectReq req) {
         LecturerDTO dto = adminService.rejectLecturer(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới", dto));
     }
+
     @PostMapping("/reject-lecturer-update")
     public ResponseEntity<ApiResponse<LecturerUpdateDTO>> rejectLecturerUpdate(@RequestBody RejectReq req) {
         LecturerUpdateDTO dto = adminService.rejectLecturerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+
     @PostMapping("/update-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerUpdateDTO req) {
         LecturerDTO dto = adminService.updateLecturer(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
+    @GetMapping("/get-lecturer-all-profile/{id}")
+    public ResponseEntity<ApiResponse<LecturerAllProfileDTO>> getLecturerProfile(@PathVariable UUID id) {
+        LecturerAllProfileDTO profile = adminService.getLecturerAllProfile(id);
+        return ResponseEntity.ok(ApiResponse.success("Thông tin giảng viên", profile));
+    }
 
-
-/// Education Institution
+    /// Education Institution
     @PostMapping("/approve-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> approveEduIns(@RequestBody IdRequest req) {
         EducationInstitutionDTO dto = adminService.approveEduIns(req);
         return ResponseEntity.ok(ApiResponse.success("Duyệt thành công", dto));
     }
+
     @PostMapping("/approve-institution-update")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> approveEduInsUpdate(@RequestBody IdRequest req) {
         EducationInstitutionDTO dto = adminService.approveEduInsUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> rejectInstitution(@RequestBody RejectReq req) {
         EducationInstitutionDTO dto = adminService.rejectInstitution(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới", dto));
     }
+
     @PostMapping("/reject-institution-update")
     public ResponseEntity<ApiResponse<EducationInstitutionUpdateDTO>> rejectEduInsUpdate(@RequestBody RejectReq req) {
         EducationInstitutionUpdateDTO dto = adminService.rejectEduInsUpdate(req);
@@ -177,171 +212,196 @@ public class AdminController {
     }
 
     @PostMapping("/update-institution")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateInstitution(@RequestBody EducationInstitutionUpdateDTO req) {
+    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateInstitution(
+            @RequestBody EducationInstitutionUpdateDTO req) {
         EducationInstitutionDTO dto = adminService.updateInstitution(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
-/// Partner Organization
+    /// Partner Organization
     @PostMapping("/approve-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartner(@RequestBody IdRequest req) {
         PartnerOrganizationDTO dto = adminService.approvePartner(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
+
     @PostMapping("/approve-partner-update")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartnerUpdate(@RequestBody IdRequest req) {
         PartnerOrganizationDTO dto = adminService.approvePartnerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> rejectPartner(@RequestBody RejectReq req) {
         PartnerOrganizationDTO dto = adminService.rejectPartner(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới", dto));
     }
+
     @PostMapping("/reject-partner-update")
     public ResponseEntity<ApiResponse<PartnerOrganizationUpdateDTO>> rejectPartnerUpdate(@RequestBody RejectReq req) {
         PartnerOrganizationUpdateDTO dto = adminService.rejectPartnerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+
     @PostMapping("/update-partner")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(@RequestBody PartnerOrganizationUpdateDTO req) {
+    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(
+            @RequestBody PartnerOrganizationUpdateDTO req) {
         PartnerOrganizationDTO dto = adminService.updatePartner(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
-/// Certification
+    /// Certification
     @PostMapping("/approve-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> approveCertification(@RequestBody IdRequest req) {
         CertificationDTO dto = adminService.approveCertification(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
+
     @PostMapping("/approve-certification-update")
     public ResponseEntity<ApiResponse<CertificationDTO>> approveCertificationUpdate(@RequestBody IdRequest req) {
         CertificationDTO dto = adminService.approveCertificationUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> rejectCertification(@RequestBody RejectReq req) {
         CertificationDTO dto = adminService.rejectCertification(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
+
     @PostMapping("/reject-certification-update")
     public ResponseEntity<ApiResponse<CertificationDTO>> rejectEditCertification(@RequestBody RejectReq req) {
         CertificationDTO dto = adminService.rejectEditCertification(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-
-/// Degree
+    /// Degree
     @PostMapping("/approve-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> approveDegree(@RequestBody IdRequest req) {
         DegreeDTO dto = adminService.approveDegree(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
+
     @PostMapping("/approve-degree-update")
     public ResponseEntity<ApiResponse<DegreeDTO>> approveDegreeUpdate(@RequestBody IdRequest req) {
         DegreeDTO dto = adminService.approveDegreeUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> rejectDegree(@RequestBody RejectReq req) {
         DegreeDTO dto = adminService.rejectDegree(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
+
     @PostMapping("/reject-degree-update")
     public ResponseEntity<ApiResponse<DegreeDTO>> rejectDegreeUpdate(@RequestBody RejectReq req) {
         DegreeDTO dto = adminService.rejectDegreeUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-
-/// Attended Training Course
+    /// Attended Training Course
     @PostMapping("/approve-attended-course")
     public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourse(@RequestBody IdRequest req) {
         AttendedTrainingCourseDTO dto = adminService.approveAttendedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
+
     @PostMapping("/approve-attended-course-update")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourseUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourseUpdate(
+            @RequestBody IdRequest req) {
         AttendedTrainingCourseDTO dto = adminService.approveAttendedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-attended-course")
     public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> rejectAttendedCourse(@RequestBody RejectReq req) {
         AttendedTrainingCourseDTO dto = adminService.rejectAttendedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
+
     @PostMapping("/reject-attended-course-update")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> rejectAttendedCourseUpdate(@RequestBody RejectReq req) {
+    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> rejectAttendedCourseUpdate(
+            @RequestBody RejectReq req) {
         AttendedTrainingCourseDTO dto = adminService.rejectAttendedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-/// Owned Training Course
+    /// Owned Training Course
     @PostMapping("/approve-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourse(@RequestBody IdRequest req) {
         OwnedTrainingCourseDTO dto = adminService.approveOwnedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
+
     @PostMapping("/approve-owned-course-update")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourseUpdate(@RequestBody IdRequest req) {
         OwnedTrainingCourseDTO dto = adminService.approveOwnedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật hành công.", dto));
     }
+
     @PostMapping("/reject-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> rejectOwnedCourse(@RequestBody RejectReq req) {
         OwnedTrainingCourseDTO dto = adminService.rejectOwnedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
+
     @PostMapping("/reject-owned-course-update")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> rejectOwnedCourseUpdate(@RequestBody RejectReq req) {
         OwnedTrainingCourseDTO dto = adminService.rejectOwnedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
+
     @GetMapping("/get-new-owned-courses")
     public ResponseEntity<ApiResponse<List<OwnedCourseInfoDTO>>> getOwnedCourses() {
         List<OwnedCourseInfoDTO> ownedCourses = adminService.getOwnedCourses();
         return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học sở hữu", ownedCourses));
     }
 
-/// Research Project
+    /// Research Project
     @PostMapping("/approve-research-project")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProject(@RequestBody IdRequest req) {
-    ResearchProjectDTO dto = adminService.approveResearchProject(req);
+        ResearchProjectDTO dto = adminService.approveResearchProject(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
+
     @PostMapping("/approve-research-project-update")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProjectUpdate(@RequestBody IdRequest req) {
         ResearchProjectDTO dto = adminService.approveResearchProjectUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
+
     @PostMapping("/reject-research-project")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> rejectResearchProject(@RequestBody RejectReq req) {
         ResearchProjectDTO dto = adminService.rejectResearchProject(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
+
     @PostMapping("/reject-research-project-update")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> rejectResearchProjectUpdate(@RequestBody RejectReq req) {
         ResearchProjectDTO dto = adminService.rejectResearchProjectUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-/// Course
+    /// Course
     @GetMapping("get-all-courses")
     public ResponseEntity<ApiResponse<List<CourseInfoDTO>>> getAllCourses() {
         List<CourseInfoDTO> courses = adminService.getAllCourses();
         return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học", courses));
     }
+
     @GetMapping("/get-course/{id}")
     public ResponseEntity<ApiResponse<CourseDTO>> getCourseById(@PathVariable("id") String id) {
         CourseDTO course = adminService.getCourseById(id);
         return ResponseEntity.ok(ApiResponse.success("Thông tin khóa học", course));
     }
+
     @PostMapping("/update-course-member")
     public ResponseEntity<ApiResponse<CourseInfoDTO>> updateCourseMember(@RequestBody CourseInfoDTO req) {
         CourseInfoDTO courseInfo = adminService.updateCourseMember(req);
         return ResponseEntity.ok(ApiResponse.success("Thêm thành viên vào khóa học thành công", courseInfo));
     }
+
     @PostMapping("create-course")
     public ResponseEntity<ApiResponse<CourseInfoDTO>> createCourse(@RequestBody CourseReq req) {
         CourseInfoDTO course = adminService.createCourse(req);
@@ -353,6 +413,7 @@ public class AdminController {
         Boolean exists = userService.checkCitizenIdExists(citizenId);
         return ResponseEntity.ok(ApiResponse.success("Kiểm tra thành công", exists));
     }
+
     @PostMapping("/update-course")
     public ResponseEntity<ApiResponse<CourseDTO>> updateCourse(@RequestBody CourseDTO req) {
         CourseDTO course = adminService.updateCourse(req);

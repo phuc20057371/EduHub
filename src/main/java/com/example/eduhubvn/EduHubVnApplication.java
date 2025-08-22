@@ -308,6 +308,10 @@ public class EduHubVnApplication {
 
                                 List<Lecturer> lecturers = new ArrayList<>();
                                 for (int i = 1; i <= 100; i++) {
+                                        boolean isApproved = true;
+                                        if (i > 80) {
+                                                isApproved = false;
+                                        }
                                         String citizenId = String.format("%011d",
                                                         faker.number().numberBetween(10000000000L, 99999999999L));
                                         String phoneNumber = "09" + faker.number().numberBetween(100000000, 999999999);
@@ -359,8 +363,8 @@ public class EduHubVnApplication {
                                                                                         .nextInt(jobFieldWithExperienceList
                                                                                                         .size())))
                                                         .hidden(faker.bool().bool())
-                                                        // .status(PendingStatus.values()[faker.random().nextInt(2)])
-                                                        .status(PendingStatus.APPROVED)
+                                                        .status(PendingStatus.values()[isApproved ? 1 : 0])
+                                                        // .status(PendingStatus.APPROVED)
                                                         .avatarUrl("https://picsum.photos/200")
                                                         .build();
                                         lecturers.add(lecturer);

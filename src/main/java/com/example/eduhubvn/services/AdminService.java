@@ -201,6 +201,79 @@ public class AdminService {
         }
     }
 
+    public LecturerAllProfileDTO getLecturerAllProfile(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID không được trống.");
+        }
+        Lecturer lecturer = lecturerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
+        LecturerUpdate lecturerUpdate = lecturerUpdateRepository
+                .findByLecturerAndStatus(lecturer, PendingStatus.PENDING)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy yêu cầu cập nhật giảng viên."));
+        List<Degree> degrees = degreeRepository.findByLecturer(lecturer);
+        List<Certification> certifications = certificationRepository.findByLecturer(lecturer);
+        List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findByLecturer(lecturer);
+        List<AttendedTrainingCourse> attendedCourses = attendedTrainingCourseRepository.findByLecturer(lecturer);
+        List<ResearchProject> researchProjects = researchProjectRepository.findByLecturer(lecturer);
+
+        List<DegreeUpdateDTO> degreeUpdates = new ArrayList<>();
+        List<CertificationUpdateDTO> certificationUpdates = new ArrayList<>();
+        List<OwnedCourseUpdateDTO> ownedCourseUpdates = new ArrayList<>();
+        List<AttendedCourseUpdateDTO> attendedCourseUpdates = new ArrayList<>();
+        List<ResearchProjectUpdateDTO> researchProjectUpdates = new ArrayList<>();
+
+        for (Degree degree : degrees) {
+            DegreeUpdateDTO deg = DegreeUpdateDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(degree.getLecturer()))
+                    .original(degreeMapper.toDTO(degree))
+                    .update(degreeMapper.toDTO(degree.getDegreeUpdate()))
+                    .build();
+            degreeUpdates.add(deg);
+        }
+        for (Certification certification : certifications) {
+            CertificationUpdateDTO cert = CertificationUpdateDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(certification.getLecturer()))
+                    .original(certificationMapper.toDTO(certification))
+                    .update(certificationMapper.toDTO(certification.getCertificationUpdate()))
+                    .build();
+            certificationUpdates.add(cert);
+        }
+        for (OwnedTrainingCourse ownedCourse : ownedCourses) {
+            OwnedCourseUpdateDTO ownedCourseUpdate = OwnedCourseUpdateDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(ownedCourse.getLecturer()))
+                    .original(ownedTrainingCourseMapper.toDTO(ownedCourse))
+                    .update(ownedTrainingCourseMapper.toDTO(ownedCourse.getOwnedTrainingCourseUpdate()))
+                    .build();
+            ownedCourseUpdates.add(ownedCourseUpdate);
+        }
+        for (AttendedTrainingCourse attendedCourse : attendedCourses) {
+            AttendedCourseUpdateDTO attendedCourseUpdate = AttendedCourseUpdateDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(attendedCourse.getLecturer()))
+                    .original(attendedTrainingCourseMapper.toDTO(attendedCourse))
+                    .update(attendedTrainingCourseMapper.toDTO(attendedCourse.getAttendedTrainingCourseUpdate()))
+                    .build();
+            attendedCourseUpdates.add(attendedCourseUpdate);
+        }
+        for (ResearchProject researchProject : researchProjects) {
+            ResearchProjectUpdateDTO researchProjectUpdate = ResearchProjectUpdateDTO.builder()
+                    .lecturer(lecturerMapper.toDTO(researchProject.getLecturer()))
+                    .original(researchProjectMapper.toDTO(researchProject))
+                    .update(researchProjectMapper.toDTO(researchProject.getResearchProjectUpdate()))
+                    .build();
+            researchProjectUpdates.add(researchProjectUpdate);
+        }
+
+        return LecturerAllProfileDTO.builder()
+                .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
+                .lecturerUpdate(lecturerMapper.toDTO(lecturerUpdate))
+                .degrees(degreeUpdates)
+                .certifications(certificationUpdates)
+                .ownedCourses(ownedCourseUpdates)
+                .attendedCourses(attendedCourseUpdates)
+                .researchProjects(researchProjectUpdates)
+                .build();
+    }
+
     /// Education Institution
     @Transactional
     public EducationInstitutionDTO approveEduIns(IdRequest req) {
@@ -554,7 +627,8 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             certificationUpdateRepository.saveAndFlush(update);
             CertificationDTO dto = certificationMapper.toDTO(update);
-            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getCertification().getLecturer().getUser().getId(),
+            messagingTemplate.convertAndSend(
+                    "/topic/LECTURER/" + update.getCertification().getLecturer().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_CERTIFICATION_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -648,7 +722,8 @@ public class AdminService {
             attendedTrainingCourseUpdateRepository.save(update);
             attendedTrainingCourseUpdateRepository.flush();
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(update);
-            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getAttendedTrainingCourse().getLecturer().getUser().getId(),
+            messagingTemplate.convertAndSend(
+                    "/topic/LECTURER/" + update.getAttendedTrainingCourse().getLecturer().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_ATTENDED_COURSE_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -744,7 +819,8 @@ public class AdminService {
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseUpdateRepository.flush();
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(update);
-            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getOwnedTrainingCourse().getLecturer().getUser().getId(),
+            messagingTemplate.convertAndSend(
+                    "/topic/LECTURER/" + update.getOwnedTrainingCourse().getLecturer().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_OWNED_COURSE_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -837,7 +913,8 @@ public class AdminService {
             researchProjectUpdateRepository.save(project);
             researchProjectUpdateRepository.flush();
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
-            messagingTemplate.convertAndSend("/topic/LECTURER/" + project.getResearchProject().getLecturer().getUser().getId(),
+            messagingTemplate.convertAndSend(
+                    "/topic/LECTURER/" + project.getResearchProject().getLecturer().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_RESEARCH_PROJECT_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -1153,7 +1230,7 @@ public class AdminService {
             for (Degree degree : degrees) {
                 requests.add(RequestFromLecturer.<DegreeDTO>builder()
                         .content(degreeMapper.toDTO(degree))
-                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(degree.getLecturer())) 
+                        .lecturerInfo(Mapper.mapToLecturerInfoDTO(degree.getLecturer()))
                         .type(RequestLecturerType.BC)
                         .label(RequestLabel.Create)
                         .date(degree.getUpdatedAt())
@@ -1176,7 +1253,6 @@ public class AdminService {
             // Add AttendedTrainingCourse requests
             List<AttendedTrainingCourse> attendedCourses = attendedTrainingCourseRepository
                     .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
-            System.out.println("Found " + attendedCourses.size() + " pending attended training course requests.");
             for (AttendedTrainingCourse course : attendedCourses) {
                 requests.add(RequestFromLecturer.<AttendedTrainingCourseDTO>builder()
                         .content(attendedTrainingCourseMapper.toDTO(course))
@@ -1191,7 +1267,6 @@ public class AdminService {
             List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository
                     .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
 
-            System.out.println("Found " + ownedCourses.size() + " pending owned training course requests.");
             for (OwnedTrainingCourse course : ownedCourses) {
                 requests.add(RequestFromLecturer.<OwnedTrainingCourseDTO>builder()
                         .content(ownedTrainingCourseMapper.toDTO(course))
@@ -1205,7 +1280,6 @@ public class AdminService {
             // Add ResearchProject requests
             List<ResearchProject> researchProjects = researchProjectRepository
                     .findByStatusWithApprovedLecturer(PendingStatus.PENDING);
-            System.out.println("Found " + researchProjects.size() + " pending research project requests.");
             for (ResearchProject project : researchProjects) {
                 requests.add(RequestFromLecturer.<ResearchProjectDTO>builder()
                         .content(researchProjectMapper.toDTO(project))
@@ -1470,4 +1544,5 @@ public class AdminService {
             throw new RuntimeException("Lỗi khi cập nhật khóa học: " + e.getMessage(), e);
         }
     }
+
 }

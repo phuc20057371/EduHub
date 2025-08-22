@@ -124,7 +124,6 @@ public class PartnerOrganizationService {
                     PartnerOrganization organization = update.getPartnerOrganization();
                     PartnerOrganizationDTO orgDTO = partnerOrganizationMapper.toDTO(organization);
                     PartnerOrganizationUpdateDTO updateDTO = partnerOrganizationMapper.toDTO(update);
-                    System.out.println("Pending Update: " + update);
                     return PartnerOrganizationPendingDTO.builder()
                             .partnerOrganization(orgDTO)
                             .partnerOrganizationUpdate(updateDTO)

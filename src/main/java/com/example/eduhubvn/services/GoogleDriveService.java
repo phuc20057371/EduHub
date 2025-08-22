@@ -53,7 +53,6 @@ public class GoogleDriveService {
             response.setFileType(file.getName().substring(file.getName().lastIndexOf(".")) + 1);
             response.setSize(file.length());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             response.setStatus(500);
             response.setMessage("Upload file to Google Drive failed");
         }

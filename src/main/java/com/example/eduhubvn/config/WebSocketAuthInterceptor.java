@@ -27,7 +27,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
             
             if (token == null || token.isEmpty()) {
-                System.out.println("WebSocket connection denied: No token provided");
+                System.err.println("WebSocket connection denied: No token provided");
                 throw new RuntimeException("Authentication required");
             }
 
@@ -39,7 +39,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             try {
                 // Validate token
                 if (!jwtService.isTokenValid(token)) {
-                    System.out.println("WebSocket connection denied: Invalid token");
+                    System.err.println("WebSocket connection denied: Invalid token");
                     throw new RuntimeException("Invalid token");
                 }
                 
@@ -50,7 +50,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 System.out.println("WebSocket connection accepted for user: " + username);
                 
             } catch (Exception e) {
-                System.out.println("WebSocket connection denied: " + e.getMessage());
+                System.err.println("WebSocket connection denied: " + e.getMessage());
                 throw new RuntimeException("Authentication failed");
             }
         }
