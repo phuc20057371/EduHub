@@ -951,7 +951,7 @@ public class EduHubVnApplication {
 
                                 // Tạo OwnedTrainingCourseUpdate
                                 List<OwnedTrainingCourseUpdate> ownedCourseUpdates = new ArrayList<>();
-                                for (int i = 0; i < 35; i++) { // Tạo 35 bản cập nhật cho owned training course
+                                for (int i = 0; i < 150; i++) { // Tạo 35 bản cập nhật cho owned training course
                                         OwnedTrainingCourse randomOwnedCourse = ownedCourses.get(i);
 
                                         LocalDate startDate = faker.date()
@@ -998,7 +998,7 @@ public class EduHubVnApplication {
 
                                 // Tạo AttendedTrainingCourseUpdate
                                 List<AttendedTrainingCourseUpdate> attendedCourseUpdates = new ArrayList<>();
-                                for (int i = 0; i < 45; i++) { // Tạo 45 bản cập nhật cho attended training course
+                                for (int i = 0; i < 150; i++) { // Tạo 150 bản cập nhật cho attended training course
                                         AttendedTrainingCourse randomAttendedCourse = attendedCourses.get(i);
 
                                         LocalDate startDate = faker.date()
@@ -1038,7 +1038,7 @@ public class EduHubVnApplication {
 
                                 // Tạo ResearchProjectUpdate
                                 List<ResearchProjectUpdate> researchProjectUpdates = new ArrayList<>();
-                                for (int i = 0; i < 38; i++) { // Tạo 38 bản cập nhật cho research project
+                                for (int i = 0; i < 150; i++) { // Tạo 200 bản cập nhật cho research project
                                         ResearchProject randomProject = projects.get(i);
 
                                         LocalDate startDate = faker.date()

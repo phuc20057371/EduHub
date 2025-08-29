@@ -67,6 +67,8 @@ public class UserController {
     private final PartnerOrganizationService partnerOrganizationService;
     private final AdminService adminService;
 
+    /// General
+
     @PostMapping("/upload")
     public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -149,6 +151,22 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", pending));
     }
 
+    @GetMapping("/find-lecturers")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
+    public ResponseEntity<ApiResponse<List<LecturerDTO>>> findLecturers(@RequestParam String academicRank,
+            @RequestParam String specialization) {
+        List<LecturerDTO> lecturers = userService.findLecturers(academicRank, specialization);
+        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách giảng viên thành công", lecturers));
+    }
+
+    @GetMapping("/lecturer-profile/{lecturerId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION') or hasRole('LECTURER')")
+    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId,
+            @AuthenticationPrincipal User user) {
+        LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId, user);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
+    }
+
     /// Degree
     @PostMapping("/create-degree")
     public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req,
@@ -184,18 +202,21 @@ public class UserController {
         List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
+
     @PostMapping("/update-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> updateCertification(@RequestBody CertificationUpdateReq req,
             @AuthenticationPrincipal User user) {
         CertificationDTO dto = lecturerService.updateCertification(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+
     @PostMapping("/edit-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> editCertificationFromUser(
             @RequestBody CertificationUpdateReq req, @AuthenticationPrincipal User user) {
         CertificationDTO dto = lecturerService.editCertificationFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+
     @PostMapping("/delete-certification")
     public ResponseEntity<ApiResponse<CertificationDTO>> deleteCertification(@RequestBody IdRequest req) {
         CertificationDTO dto = lecturerService.deleteCertification(req);
@@ -244,22 +265,6 @@ public class UserController {
             @AuthenticationPrincipal User user) {
         PartnerOrganizationDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
-    }
-
-    @GetMapping("/find-lecturers")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
-    public ResponseEntity<ApiResponse<List<LecturerDTO>>> findLecturers(@RequestParam String academicRank,
-            @RequestParam String specialization) {
-        List<LecturerDTO> lecturers = userService.findLecturers(academicRank, specialization);
-        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách giảng viên thành công", lecturers));
-    }
-
-    @GetMapping("/lecturer-profile/{lecturerId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION') or hasRole('LECTURER')")
-    public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId,
-            @AuthenticationPrincipal User user) {
-        LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId, user);
-        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
     }
 
 }

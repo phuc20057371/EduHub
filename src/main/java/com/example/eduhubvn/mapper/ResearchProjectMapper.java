@@ -19,6 +19,7 @@ public interface ResearchProjectMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "researchProjectUpdate", ignore = true)
     ResearchProject toEntity(ResearchProjectReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -41,6 +42,7 @@ public interface ResearchProjectMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "researchProjectUpdate", ignore = true)
     void updateEntityFromRequest(ResearchProjectUpdateReq req, @MappingTarget ResearchProject project);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -59,6 +61,7 @@ public interface ResearchProjectMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "researchProjectUpdate", ignore = true)
     void updateEntityFromUpdate(ResearchProjectUpdate update, @MappingTarget ResearchProject original);
 
     @Mapping(target = "id", ignore = true)

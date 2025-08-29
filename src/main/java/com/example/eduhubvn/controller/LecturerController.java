@@ -39,13 +39,14 @@ public class LecturerController {
 
     private final LecturerService lecturerService;
 
+    /// Lecturer
+    
     @GetMapping("/lecturer-profile")
     public ResponseEntity<ApiResponse<LecturerProfileDTO>> getLecturerProfile(@AuthenticationPrincipal User user) {
         LecturerProfileDTO lecturer = lecturerService.getLecturerProfile(user.getLecturer().getId());
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin giảng viên thành công", lecturer));
     }
 
-    /// Lecturer
     @PostMapping("/update-profile")
     public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturerProfile(@RequestBody LecturerUpdateReq req,
             @AuthenticationPrincipal User user) {
@@ -84,6 +85,7 @@ public class LecturerController {
         AttendedTrainingCourseDTO dto = lecturerService.editAttendedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+
     @PostMapping("/delete-attended-course")
     public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> deleteAttendedCourse(
             @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
@@ -141,12 +143,19 @@ public class LecturerController {
         ResearchProjectDTO dto = lecturerService.editResearchProject(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
+
     @PostMapping("/delete-research-project")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> deleteResearchProject(
             @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
         ResearchProjectDTO dto = lecturerService.deleteResearchProject(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa", dto));
     }
+
+
+
+
+
+
 
     @GetMapping
     @PreAuthorize("hasAuthority('lecturer:read')")

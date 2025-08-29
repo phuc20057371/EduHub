@@ -35,16 +35,14 @@ public interface OwnedTrainingCourseMapper {
 
     OwnedTrainingCourseDTO toDTO(OwnedTrainingCourseUpdate course);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "adminNote", ignore = true),
-            @Mapping(target = "course", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "lecturer", ignore = true),
-            @Mapping(target = "status", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
-    })
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "adminNote", ignore = true)
+    @Mapping(target = "course", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "lecturer", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(OwnedTrainingCourseUpdateReq req, @MappingTarget OwnedTrainingCourse course);
 

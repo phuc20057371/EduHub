@@ -170,9 +170,10 @@ public class LecturerService {
             List<Degree> degreeList = degreeRepository.saveAll(degrees);
 
             degreeRepository.flush();
+            IdRequest id = new IdRequest(lecturer.getId());
             List<DegreeDTO> dtos = degreeMapper.toDTOs(degreeList);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.CREATE_DEGREE, dtos));
+                    new MessageSocket(MessageSocketType.CREATE_DEGREE, id));
             return dtos;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -226,8 +227,9 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             DegreeUpdate savedUpdate = degreeUpdateRepository.saveAndFlush(update);
+            IdRequest id = new IdRequest(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.EDIT_DEGREE, degreeMapper.toDTO(degree)));
+                    new MessageSocket(MessageSocketType.EDIT_DEGREE, id));
             return degreeMapper.toDTO(savedUpdate);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật bằng cấp: " + e.getMessage(), e);
@@ -244,8 +246,9 @@ public class LecturerService {
         try {
             degreeRepository.delete(degree);
             degreeRepository.flush();
+            IdRequest id = new IdRequest(degree.getLecturer().getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.DELETE_DEGREE, degreeMapper.toDTO(degree)));
+                    new MessageSocket(MessageSocketType.DELETE_DEGREE, id));
             return degreeMapper.toDTO(degree);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -273,8 +276,9 @@ public class LecturerService {
             List<Certification> certificationList = certificationRepository.saveAll(certifications);
             certificationRepository.flush();
             List<CertificationDTO> dtos = certificationMapper.toDTOs(certificationList);
+            IdRequest id = new IdRequest(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.CREATE_CERTIFICATION, dtos));
+                    new MessageSocket(MessageSocketType.CREATE_CERTIFICATION, id));
             return dtos;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -331,8 +335,9 @@ public class LecturerService {
             update.setAdminNote("");
             certificationUpdateRepository.saveAndFlush(update);
             CertificationDTO dto = certificationMapper.toDTO(certification);
+            IdRequest id = new IdRequest(certification.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.EDIT_CERTIFICATION, dto));
+                    new MessageSocket(MessageSocketType.EDIT_CERTIFICATION, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật chứng chỉ: " + e.getMessage(), e);
@@ -350,8 +355,9 @@ public class LecturerService {
             certificationRepository.delete(certification);
             certificationRepository.flush();
             CertificationDTO dto = certificationMapper.toDTO(certification);
+            IdRequest id = new IdRequest(certification.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.DELETE_CERTIFICATION, dto));
+                    new MessageSocket(MessageSocketType.DELETE_CERTIFICATION, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -376,9 +382,10 @@ public class LecturerService {
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
             attendedTrainingCourseRepository.flush();
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.CREATE_ATTENDED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.CREATE_ATTENDED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -401,9 +408,10 @@ public class LecturerService {
             course.setStatus(PendingStatus.PENDING);
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -435,9 +443,10 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             attendedTrainingCourseUpdateRepository.saveAndFlush(update);
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.EDIT_ATTENDED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.EDIT_ATTENDED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật khóa học đã tham gia: " + e.getMessage(), e);
@@ -461,9 +470,10 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.CREATE_OWNED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.CREATE_OWNED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -487,9 +497,10 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_OWNED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.UPDATE_OWNED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -522,9 +533,10 @@ public class LecturerService {
             update.setAdminNote("");
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseUpdateRepository.flush();
+            IdRequest id = new IdRequest(update.getOwnedTrainingCourse().getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(update);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.EDIT_OWNED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.EDIT_OWNED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -548,9 +560,10 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
+            IdRequest id = new IdRequest(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.CREATE_RESEARCH_PROJECT, dto));
+                    new MessageSocket(MessageSocketType.CREATE_RESEARCH_PROJECT, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -574,9 +587,10 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
+            IdRequest id = new IdRequest(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_RESEARCH_PROJECT, dto));
+                    new MessageSocket(MessageSocketType.UPDATE_RESEARCH_PROJECT, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -630,9 +644,10 @@ public class LecturerService {
         try {
             researchProjectRepository.delete(project);
             researchProjectRepository.flush();
+            IdRequest id = new IdRequest(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.DELETE_RESEARCH_PROJECT, dto));
+                    new MessageSocket(MessageSocketType.DELETE_RESEARCH_PROJECT, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -698,8 +713,9 @@ public class LecturerService {
             degree.setAdminNote("");
             degreeRepository.save(degree);
             degreeRepository.flush();
+            IdRequest id = new IdRequest(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_DEGREE, degreeMapper.toDTO(degree)));
+                    new MessageSocket(MessageSocketType.UPDATE_DEGREE, id));
             return degreeMapper.toDTO(degree);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -844,8 +860,9 @@ public class LecturerService {
             certificationRepository.save(certification);
             certificationRepository.flush();
             CertificationDTO dto = certificationMapper.toDTO(certification);
+            IdRequest id = new IdRequest(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, dto));
+                    new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -882,9 +899,10 @@ public class LecturerService {
         try {
             ownedTrainingCourseRepository.delete(course);
             ownedTrainingCourseRepository.flush();
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.DELETE_OWNED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.DELETE_OWNED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -904,9 +922,10 @@ public class LecturerService {
         try {
             attendedTrainingCourseRepository.delete(course);
             attendedTrainingCourseRepository.flush();
+            IdRequest id = new IdRequest(course.getLecturer().getId());
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.DELETE_ATTENDED_COURSE, dto));
+                    new MessageSocket(MessageSocketType.DELETE_ATTENDED_COURSE, id));
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);

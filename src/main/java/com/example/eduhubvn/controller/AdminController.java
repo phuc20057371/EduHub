@@ -63,56 +63,8 @@ public class AdminController {
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
 
-    @GetMapping("/lecturer-pending-updates")
-    public ResponseEntity<ApiResponse<List<LecturerPendingDTO>>> getPendingLecturerUpdates() {
-        List<LecturerPendingDTO> pendingList = lecturerService.getPendingLecturerUpdates();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/lecturer-pending-create")
-    public ResponseEntity<ApiResponse<List<LecturerCreateDTO>>> getPendingLecturerCreate() {
-        List<LecturerCreateDTO> pendingList = lecturerService.getPendingLecturerCreate();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/partner-pending-updates")
-    public ResponseEntity<ApiResponse<List<PartnerOrganizationPendingDTO>>> getPendingPartnerUpdates() {
-        List<PartnerOrganizationPendingDTO> pendingList = partnerOrganizationService
-                .getPendingPartnerOrganizationUpdates();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/partner-pending-create")
-    public ResponseEntity<ApiResponse<List<PartnerInfoDTO>>> getPendingPartnerCreate() {
-        List<PartnerInfoDTO> pendingList = partnerOrganizationService.getPendingPartnerOrganizationCreate();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/institution-pending-updates")
-    public ResponseEntity<ApiResponse<List<EducationInstitutionPendingDTO>>> getPendingEduInstitutionUpdates() {
-        List<EducationInstitutionPendingDTO> pendingList = educationInstitutionService
-                .getPendingEducationInstitutionUpdates();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/institution-pending-create")
-    public ResponseEntity<ApiResponse<List<InstitutionInfoDTO>>> getPendingEduInstitutionCreate() {
-        List<InstitutionInfoDTO> pendingList = educationInstitutionService.getPendingEducationInstitutionCreate();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/degree-pending-updates")
-    public ResponseEntity<ApiResponse<List<DegreeUpdateDTO>>> getPendingDegreeUpdates() {
-        List<DegreeUpdateDTO> pendingList = adminService.getPendingDegreeUpdates();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
-    @GetMapping("/degree-pending-create")
-    public ResponseEntity<ApiResponse<List<DegreePendingCreateDTO>>> getPendingDegreeCreate() {
-        List<DegreePendingCreateDTO> pendingList = adminService.getPendingDegreeCreate();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
-    }
-
+    /// General
+    
     @GetMapping("/pending-updates")
     public ResponseEntity<ApiResponse<AllPendingUpdateDTO>> getAllPendingUpdates() {
         AllPendingUpdateDTO allPending = adminService.getAllPendingUpdates();
@@ -125,31 +77,62 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Danh sách tất cả yêu cầu tạo mới chờ duyệt", result));
     }
 
+    /// Lecturer
+
+    // @GetMapping("/get-lecturer-requests")
+    // public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getLecturerRequests() {
+    //     List<RequestFromLecturer<?>> requests = adminService.getLecturerRequests();
+    //     return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu từ giảng viên", requests));
+    // }
+
+    @GetMapping("/get-degree-requests")
+    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getDegreeRequests() {
+        List<RequestFromLecturer<?>> requests = adminService.getDegreeRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu bằng cấp từ giảng viên", requests));
+    }
+
+    @GetMapping("/get-certification-requests")
+    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getCertificationRequests() {
+        List<RequestFromLecturer<?>> requests = adminService.getCertificationRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu chứng chỉ từ giảng viên", requests));
+    }
+
+    @GetMapping("/get-attended-course-requests")
+    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getAttendedCourseRequests() {
+        List<RequestFromLecturer<?>> requests = adminService.getAttendedCourseRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu khóa học đã tham gia từ giảng viên", requests));
+    }
+
+    @GetMapping("/get-owned-course-requests")
+    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getOwnedCourseRequests() {
+        List<RequestFromLecturer<?>> requests = adminService.getOwnedCourseRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu khóa học sở hữu từ giảng viên", requests));
+    }
+
+    @GetMapping("/get-research-project-requests")
+    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getResearchProjectRequests() {
+        List<RequestFromLecturer<?>> requests = adminService.getResearchProjectRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu dự án nghiên cứu từ giảng viên", requests));
+    }
+
     @GetMapping("/get-all-lecturers")
     public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
         List<LecturerInfoDTO> lecturers = adminService.getAllLecturers();
         return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
     }
 
-    @GetMapping("/get-all-institutions")
-    public ResponseEntity<ApiResponse<List<EducationInstitutionDTO>>> getAllInstitutions() {
-        List<EducationInstitutionDTO> institutions = adminService.getAllInstitutions();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách cơ sở giáo dục", institutions));
+    @GetMapping("/lecturer-pending-updates")
+    public ResponseEntity<ApiResponse<List<LecturerPendingDTO>>> getPendingLecturerUpdates() {
+        List<LecturerPendingDTO> pendingList = lecturerService.getPendingLecturerUpdates();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
-    @GetMapping("/get-all-partners")
-    public ResponseEntity<ApiResponse<List<PartnerOrganizationDTO>>> getAllPartners() {
-        List<PartnerOrganizationDTO> partners = adminService.getAllPartners();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách tổ chức đối tác", partners));
+    @GetMapping("/lecturer-pending-create")
+    public ResponseEntity<ApiResponse<List<LecturerCreateDTO>>> getPendingLecturerCreate() {
+        List<LecturerCreateDTO> pendingList = lecturerService.getPendingLecturerCreate();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
 
-    @GetMapping("/get-lecturer-requests")
-    public ResponseEntity<ApiResponse<List<RequestFromLecturer<?>>>> getLecturerRequests() {
-        List<RequestFromLecturer<?>> requests = adminService.getLecturerRequests();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu từ giảng viên", requests));
-    }
-
-    /// Lecturer
     @PostMapping("/approve-lecturer")
     public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturer(@RequestBody IdRequest req) {
         LecturerDTO dto = adminService.approveLecturer(req);
@@ -187,6 +170,26 @@ public class AdminController {
     }
 
     /// Education Institution
+
+    @GetMapping("/get-all-institutions")
+    public ResponseEntity<ApiResponse<List<EducationInstitutionDTO>>> getAllInstitutions() {
+        List<EducationInstitutionDTO> institutions = adminService.getAllInstitutions();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách cơ sở giáo dục", institutions));
+    }
+
+    @GetMapping("/institution-pending-updates")
+    public ResponseEntity<ApiResponse<List<EducationInstitutionPendingDTO>>> getPendingEduInstitutionUpdates() {
+        List<EducationInstitutionPendingDTO> pendingList = educationInstitutionService
+                .getPendingEducationInstitutionUpdates();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
+    @GetMapping("/institution-pending-create")
+    public ResponseEntity<ApiResponse<List<InstitutionInfoDTO>>> getPendingEduInstitutionCreate() {
+        List<InstitutionInfoDTO> pendingList = educationInstitutionService.getPendingEducationInstitutionCreate();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
     @PostMapping("/approve-institution")
     public ResponseEntity<ApiResponse<EducationInstitutionDTO>> approveEduIns(@RequestBody IdRequest req) {
         EducationInstitutionDTO dto = adminService.approveEduIns(req);
@@ -219,6 +222,26 @@ public class AdminController {
     }
 
     /// Partner Organization
+
+    @GetMapping("/get-all-partners")
+    public ResponseEntity<ApiResponse<List<PartnerOrganizationDTO>>> getAllPartners() {
+        List<PartnerOrganizationDTO> partners = adminService.getAllPartners();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách tổ chức đối tác", partners));
+    }
+
+    @GetMapping("/partner-pending-updates")
+    public ResponseEntity<ApiResponse<List<PartnerOrganizationPendingDTO>>> getPendingPartnerUpdates() {
+        List<PartnerOrganizationPendingDTO> pendingList = partnerOrganizationService
+                .getPendingPartnerOrganizationUpdates();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
+    @GetMapping("/partner-pending-create")
+    public ResponseEntity<ApiResponse<List<PartnerInfoDTO>>> getPendingPartnerCreate() {
+        List<PartnerInfoDTO> pendingList = partnerOrganizationService.getPendingPartnerOrganizationCreate();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
     @PostMapping("/approve-partner")
     public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartner(@RequestBody IdRequest req) {
         PartnerOrganizationDTO dto = adminService.approvePartner(req);
@@ -276,6 +299,18 @@ public class AdminController {
     }
 
     /// Degree
+    @GetMapping("/degree-pending-updates")
+    public ResponseEntity<ApiResponse<List<DegreeUpdateDTO>>> getPendingDegreeUpdates() {
+        List<DegreeUpdateDTO> pendingList = adminService.getPendingDegreeUpdates();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
+    @GetMapping("/degree-pending-create")
+    public ResponseEntity<ApiResponse<List<DegreePendingCreateDTO>>> getPendingDegreeCreate() {
+        List<DegreePendingCreateDTO> pendingList = adminService.getPendingDegreeCreate();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
+    }
+
     @PostMapping("/approve-degree")
     public ResponseEntity<ApiResponse<DegreeDTO>> approveDegree(@RequestBody IdRequest req) {
         DegreeDTO dto = adminService.approveDegree(req);
