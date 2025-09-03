@@ -56,4 +56,7 @@ public class EducationInstitution {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "educationInstitution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EducationInstitutionUpdate institutionUpdate;
 }

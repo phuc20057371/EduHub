@@ -1,5 +1,7 @@
 package com.example.eduhubvn.services;
 
+import com.example.eduhubvn.dtos.MessageSocket;
+import com.example.eduhubvn.dtos.MessageSocketType;
 import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
@@ -14,6 +16,8 @@ import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,13 +33,14 @@ public class PartnerOrganizationService {
 
     private final PartnerOrganizationMapper partnerOrganizationMapper;
 
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public PartnerOrganizationDTO createPartnerFromUser(PartnerOrganizationReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
-        if( partnerOrganizationRepository.existsByBusinessRegistrationNumber(req.getBusinessRegistrationNumber())) {
+        if (partnerOrganizationRepository.existsByBusinessRegistrationNumber(req.getBusinessRegistrationNumber())) {
             throw new IllegalArgumentException("Số đăng ký kinh doanh đã tồn tại trong hệ thống.");
         }
         if (user.getPartnerOrganization() != null) {
@@ -47,12 +52,16 @@ public class PartnerOrganizationService {
             organization.setStatus(PendingStatus.PENDING);
             partnerOrganizationRepository.save(organization);
             partnerOrganizationRepository.flush();
-            return partnerOrganizationMapper.toDTO(organization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(organization);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_PARTNER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
+
     @Transactional
     public PartnerOrganizationDTO updatePartner(PartnerOrganizationReq req, User user) {
         if (req == null) {
@@ -75,13 +84,14 @@ public class PartnerOrganizationService {
             organization.setAdminNote("");
             partnerOrganizationRepository.save(organization);
             partnerOrganizationRepository.flush();
-            return partnerOrganizationMapper.toDTO(organization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(organization);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_PARTNER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
 
     @Transactional
     public PartnerOrganizationDTO updatePartnerFromUser(PartnerUpdateReq req, User user) {
@@ -93,8 +103,8 @@ public class PartnerOrganizationService {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         try {
-            Optional<PartnerOrganizationUpdate> optionalUpdate =
-                    partnerOrganizationUpdateRepository.findByPartnerOrganization(partnerOrganization);
+            Optional<PartnerOrganizationUpdate> optionalUpdate = partnerOrganizationUpdateRepository
+                    .findByPartnerOrganization(partnerOrganization);
             PartnerOrganizationUpdate update;
             if (optionalUpdate.isPresent()) {
                 update = optionalUpdate.get();
@@ -113,11 +123,10 @@ public class PartnerOrganizationService {
         }
     }
 
-
     @Transactional
     public List<PartnerOrganizationPendingDTO> getPendingPartnerOrganizationUpdates() {
-        List<PartnerOrganizationUpdate> pendingUpdates =
-                partnerOrganizationUpdateRepository.findByStatus(PendingStatus.PENDING);
+        List<PartnerOrganizationUpdate> pendingUpdates = partnerOrganizationUpdateRepository
+                .findByStatus(PendingStatus.PENDING);
 
         return pendingUpdates.stream()
                 .map(update -> {
@@ -135,8 +144,8 @@ public class PartnerOrganizationService {
     @Transactional
     public List<PartnerInfoDTO> getPendingPartnerOrganizationCreate() {
         try {
-            List<PartnerOrganization> pendingOrganizations =
-                    partnerOrganizationRepository.findByStatus(PendingStatus.PENDING);
+            List<PartnerOrganization> pendingOrganizations = partnerOrganizationRepository
+                    .findByStatus(PendingStatus.PENDING);
 
             return pendingOrganizations.stream()
                     .map(Mapper::mapToPartnerInfoDTO)
@@ -145,6 +154,7 @@ public class PartnerOrganizationService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public PartnerOrganizationDTO getPendingPartnerProfile(User user) {
         PartnerOrganization partnerOrganization = user.getPartnerOrganization();

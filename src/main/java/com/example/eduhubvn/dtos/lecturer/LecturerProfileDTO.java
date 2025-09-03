@@ -14,10 +14,10 @@ import java.util.List;
 public class LecturerProfileDTO {
     private LecturerInfoDTO lecturer;
     private LecturerDTO lecturerUpdate;
-    private List<DegreeDTO> degrees;
-    private List<CertificationDTO> certificates;
-    private List<OwnedTrainingCourseDTO> ownedTrainingCourses;
-    private List<AttendedTrainingCourseDTO> attendedTrainingCourses;
-    private List<ResearchProjectDTO> researchProjects;
+    private List<DegreeUpdateDTO> degrees;
+    private List<CertificationUpdateDTO> certificates;
+    private List<OwnedCourseUpdateDTO> ownedCourses;
+    private List<AttendedCourseUpdateDTO> attendedCourses;
+    private List<ResearchProjectUpdateDTO> researchProjects;
 
 }

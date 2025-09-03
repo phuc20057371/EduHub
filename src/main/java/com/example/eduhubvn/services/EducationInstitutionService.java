@@ -1,9 +1,12 @@
 package com.example.eduhubvn.services;
 
+import com.example.eduhubvn.dtos.MessageSocket;
+import com.example.eduhubvn.dtos.MessageSocketType;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
 import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
+import com.example.eduhubvn.dtos.edu.InstitutionProfileDTO;
 import com.example.eduhubvn.dtos.edu.request.EduInsUpdateReq;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
@@ -16,6 +19,8 @@ import com.example.eduhubvn.ulti.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,12 +36,14 @@ public class EducationInstitutionService {
     private final EducationInstitutionMapper educationInstitutionMapper;
     private final LecturerRepository lecturerRepository;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
     /// GET
     @Transactional
     public List<EducationInstitutionPendingDTO> getPendingEducationInstitutionUpdates() {
         try {
-            List<EducationInstitutionUpdate> pendingUpdates =
-                    educationInstitutionUpdateRepository.findByStatus(PendingStatus.PENDING);
+            List<EducationInstitutionUpdate> pendingUpdates = educationInstitutionUpdateRepository
+                    .findByStatus(PendingStatus.PENDING);
 
             return pendingUpdates.stream()
                     .map(update -> {
@@ -68,7 +75,10 @@ public class EducationInstitutionService {
             institution.setStatus(PendingStatus.PENDING);
             educationInstitutionRepository.save(institution);
             educationInstitutionRepository.flush();
-            return educationInstitutionMapper.toDTO(institution);
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(institution);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.CREATE_INSTITUTION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +94,7 @@ public class EducationInstitutionService {
             throw new EntityNotFoundException("Không có quyền truy cập");
         }
 
-        if (user.getRole()== Role.SCHOOL && institution.getStatus() == PendingStatus.APPROVED) {
+        if (user.getRole() == Role.SCHOOL && institution.getStatus() == PendingStatus.APPROVED) {
             throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
         }
         try {
@@ -93,7 +103,10 @@ public class EducationInstitutionService {
             institution.setAdminNote("");
             educationInstitutionRepository.save(institution);
             educationInstitutionRepository.flush();
-            return educationInstitutionMapper.toDTO(institution);
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(institution);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.UPDATE_INSTITUTION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -109,8 +122,8 @@ public class EducationInstitutionService {
             throw new EntityNotFoundException("Không có quyền truy cập");
         }
         try {
-            Optional<EducationInstitutionUpdate> optionalUpdate =
-                    educationInstitutionUpdateRepository.findByEducationInstitution(institution);
+            Optional<EducationInstitutionUpdate> optionalUpdate = educationInstitutionUpdateRepository
+                    .findByEducationInstitution(institution);
             EducationInstitutionUpdate update;
             if (optionalUpdate.isPresent()) {
                 update = optionalUpdate.get();
@@ -131,8 +144,8 @@ public class EducationInstitutionService {
     @Transactional
     public List<InstitutionInfoDTO> getPendingEducationInstitutionCreate() {
         try {
-            List<EducationInstitution> pendingInstitutions =
-                    educationInstitutionRepository.findByStatus(PendingStatus.PENDING);
+            List<EducationInstitution> pendingInstitutions = educationInstitutionRepository
+                    .findByStatus(PendingStatus.PENDING);
 
             return pendingInstitutions.stream()
                     .map(Mapper::mapToInstitutionInfoDTO)
@@ -154,6 +167,7 @@ public class EducationInstitutionService {
             throw new RuntimeException(e);
         }
     }
+
     @Transactional
     public List<LecturerInfoDTO> getLecturers(User user) {
         try {
@@ -170,6 +184,7 @@ public class EducationInstitutionService {
             throw new RuntimeException(e);
         }
     }
+
     private LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
         boolean isHidden = lecturer.isHidden();
 
@@ -196,5 +211,20 @@ public class EducationInstitutionService {
                 .createdAt(lecturer.getCreatedAt())
                 .updatedAt(lecturer.getUpdatedAt())
                 .build();
+    }
+
+    public InstitutionProfileDTO getInstitutionProfile(User user) {
+        try {
+            EducationInstitution institution = user.getEducationInstitution();
+            if (institution == null) {
+                throw new EntityNotFoundException("Không có quyền truy cập");
+            }
+            return InstitutionProfileDTO.builder()
+                    .institution(Mapper.mapToInstitutionInfoDTO(institution))
+                    .institutionUpdate(educationInstitutionMapper.toDTO(institution.getInstitutionUpdate()))
+                    .build();
+        } catch (EntityNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -212,7 +212,10 @@ public class AdminService {
             lecturer.setAdminNote("");
             lecturerRepository.save(lecturer);
             lecturerRepository.flush();
-            return lecturerMapper.toDTO(lecturer);
+            LecturerDTO dto = lecturerMapper.toDTO(lecturer);
+            messagingTemplate.convertAndSend("/topic/USER/" + lecturer.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_LECTURER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -230,7 +233,10 @@ public class AdminService {
             lecturer.setAdminNote(req.getAdminNote());
             lecturerRepository.save(lecturer);
             lecturerRepository.flush();
-            return lecturerMapper.toDTO(lecturer);
+            LecturerDTO dto = lecturerMapper.toDTO(lecturer);
+            messagingTemplate.convertAndSend("/topic/USER/" + lecturer.getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_LECTURER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -367,7 +373,10 @@ public class AdminService {
             educationInstitution.setAdminNote("");
             educationInstitutionRepository.save(educationInstitution);
             educationInstitutionRepository.flush();
-            return educationInstitutionMapper.toDTO(educationInstitution);
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(educationInstitution);
+            messagingTemplate.convertAndSend("/topic/USER/" + educationInstitution.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_INSTITUTION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -386,7 +395,10 @@ public class AdminService {
             institution.setAdminNote(req.getAdminNote());
             educationInstitutionRepository.save(institution);
             educationInstitutionRepository.flush();
-            return educationInstitutionMapper.toDTO(institution);
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(institution);
+            messagingTemplate.convertAndSend("/topic/USER/" + institution.getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_INSTITUTION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -409,7 +421,10 @@ public class AdminService {
             educationInstitutionRepository.save(educationInstitution);
             educationInstitutionUpdateRepository.save(update);
             educationInstitutionRepository.flush();
-            return educationInstitutionMapper.toDTO(educationInstitution);
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(educationInstitution);
+            messagingTemplate.convertAndSend("/topic/USER/" + educationInstitution.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_INSTITUTION_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -429,7 +444,10 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             educationInstitutionUpdateRepository.save(update);
             educationInstitutionUpdateRepository.flush();
-            return educationInstitutionMapper.toDTO(update);
+            EducationInstitutionUpdateDTO dto = educationInstitutionMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/USER/" + update.getEducationInstitution().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_INSTITUTION_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -451,7 +469,10 @@ public class AdminService {
             partnerOrganization.setStatus(PendingStatus.APPROVED);
             partnerOrganizationRepository.save(partnerOrganization);
             partnerOrganizationRepository.flush();
-            return partnerOrganizationMapper.toDTO(partnerOrganization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(partnerOrganization);
+            messagingTemplate.convertAndSend("/topic/USER/" + partnerOrganization.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_PARTNER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -474,7 +495,10 @@ public class AdminService {
             partnerOrganizationRepository.save(partnerOrganization);
             partnerOrganizationUpdateRepository.save(update);
             partnerOrganizationRepository.flush();
-            return partnerOrganizationMapper.toDTO(partnerOrganization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(partnerOrganization);
+            messagingTemplate.convertAndSend("/topic/USER/" + partnerOrganization.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_PARTNER_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -493,7 +517,10 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             partnerOrganizationUpdateRepository.save(update);
             partnerOrganizationUpdateRepository.flush();
-            return partnerOrganizationMapper.toDTO(update);
+            PartnerOrganizationUpdateDTO dto = partnerOrganizationMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/USER/" + update.getPartnerOrganization().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_PARTNER_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -512,7 +539,10 @@ public class AdminService {
             organization.setAdminNote(req.getAdminNote());
             partnerOrganizationRepository.save(organization);
             partnerOrganizationRepository.flush();
-            return partnerOrganizationMapper.toDTO(organization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(organization);
+            messagingTemplate.convertAndSend("/topic/USER/" + organization.getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_PARTNER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1334,7 +1364,7 @@ public class AdminService {
                 Set<UUID> lecturerIds = degreeUpdates.stream()
                         .map(dto -> dto.getLecturer().getId())
                         .collect(Collectors.toSet());
-                
+
                 Map<UUID, Lecturer> lecturerMap = lecturerRepository.findAllByIdWithUser(lecturerIds)
                         .stream()
                         .collect(Collectors.toMap(Lecturer::getId, Function.identity()));
