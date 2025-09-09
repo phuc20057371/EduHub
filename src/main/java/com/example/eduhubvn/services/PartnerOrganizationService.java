@@ -6,6 +6,7 @@ import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.dtos.partner.PartnerProfileDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
 import com.example.eduhubvn.dtos.partner.request.PartnerUpdateReq;
 import com.example.eduhubvn.entities.*;
@@ -117,7 +118,10 @@ public class PartnerOrganizationService {
             update.setAdminNote("");
             partnerOrganizationUpdateRepository.save(update);
             partnerOrganizationUpdateRepository.flush();
-            return partnerOrganizationMapper.toDTO(partnerOrganization);
+            PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(partnerOrganization);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_PARTNER, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi xử lý cập nhật đối tác: " + e.getMessage(), e);
         }
@@ -163,6 +167,21 @@ public class PartnerOrganizationService {
         }
         try {
             return partnerOrganizationMapper.toDTO(partnerOrganization);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public PartnerProfileDTO getPartnerProfile(User user) {
+        PartnerOrganization partnerOrganization = user.getPartnerOrganization();
+        if (partnerOrganization == null) {
+            throw new EntityNotFoundException("Không có quyền truy cập");
+        }
+        try {
+            return PartnerProfileDTO.builder()
+                    .partner(Mapper.mapToPartnerInfoDTO(partnerOrganization))
+                    .partnerUpdate(partnerOrganizationMapper.toDTO(partnerOrganization.getPartnerUpdate()))
+                    .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

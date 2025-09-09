@@ -113,7 +113,7 @@ public class EducationInstitutionService {
     }
 
     @Transactional
-    public EduInsUpdateReq updateEduInsFromUser(EduInsUpdateReq req, User user) {
+    public EducationInstitutionDTO updateEduInsFromUser(EduInsUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -135,7 +135,10 @@ public class EducationInstitutionService {
             update.setStatus(PendingStatus.PENDING);
             educationInstitutionUpdateRepository.save(update);
             educationInstitutionUpdateRepository.flush();
-            return req;
+            EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(institution);
+            messagingTemplate.convertAndSend("/topic/ADMIN",
+                    new MessageSocket(MessageSocketType.EDIT_INSTITUTION, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi xử lý cập nhật: " + e.getMessage(), e);
         }

@@ -54,4 +54,8 @@ public class PartnerOrganization {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
+
+    @OneToOne(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PartnerOrganizationUpdate partnerUpdate;
+
 }

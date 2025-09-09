@@ -259,7 +259,10 @@ public class AdminService {
             lecturerRepository.save(lecturer);
             lecturerUpdateRepository.save(update);
             lecturerRepository.flush();
-            return lecturerMapper.toDTO(lecturer);
+            LecturerDTO dto = lecturerMapper.toDTO(lecturer);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + lecturer.getUser().getId(),
+                    new MessageSocket(MessageSocketType.APPROVE_LECTURER_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -277,7 +280,11 @@ public class AdminService {
             update.setAdminNote(req.getAdminNote());
             lecturerUpdateRepository.save(update);
             lecturerUpdateRepository.flush();
-            return lecturerMapper.toDTO(update);
+
+            LecturerUpdateDTO dto = lecturerMapper.toDTO(update);
+            messagingTemplate.convertAndSend("/topic/LECTURER/" + update.getLecturer().getUser().getId(),
+                    new MessageSocket(MessageSocketType.REJECT_LECTURER_UPDATE, dto));
+            return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -422,7 +429,7 @@ public class AdminService {
             educationInstitutionUpdateRepository.save(update);
             educationInstitutionRepository.flush();
             EducationInstitutionDTO dto = educationInstitutionMapper.toDTO(educationInstitution);
-            messagingTemplate.convertAndSend("/topic/USER/" + educationInstitution.getUser().getId(),
+            messagingTemplate.convertAndSend("/topic/SCHOOL/" + educationInstitution.getUser().getId(),
                     new MessageSocket(MessageSocketType.APPROVE_INSTITUTION_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -445,7 +452,7 @@ public class AdminService {
             educationInstitutionUpdateRepository.save(update);
             educationInstitutionUpdateRepository.flush();
             EducationInstitutionUpdateDTO dto = educationInstitutionMapper.toDTO(update);
-            messagingTemplate.convertAndSend("/topic/USER/" + update.getEducationInstitution().getUser().getId(),
+            messagingTemplate.convertAndSend("/topic/SCHOOL/" + update.getEducationInstitution().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_INSTITUTION_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -496,7 +503,7 @@ public class AdminService {
             partnerOrganizationUpdateRepository.save(update);
             partnerOrganizationRepository.flush();
             PartnerOrganizationDTO dto = partnerOrganizationMapper.toDTO(partnerOrganization);
-            messagingTemplate.convertAndSend("/topic/USER/" + partnerOrganization.getUser().getId(),
+            messagingTemplate.convertAndSend("/topic/ORGANIZATION/" + partnerOrganization.getUser().getId(),
                     new MessageSocket(MessageSocketType.APPROVE_PARTNER_UPDATE, dto));
             return dto;
         } catch (Exception e) {
@@ -518,7 +525,7 @@ public class AdminService {
             partnerOrganizationUpdateRepository.save(update);
             partnerOrganizationUpdateRepository.flush();
             PartnerOrganizationUpdateDTO dto = partnerOrganizationMapper.toDTO(update);
-            messagingTemplate.convertAndSend("/topic/USER/" + update.getPartnerOrganization().getUser().getId(),
+            messagingTemplate.convertAndSend("/topic/ORGANIZATION/" + update.getPartnerOrganization().getUser().getId(),
                     new MessageSocket(MessageSocketType.REJECT_PARTNER_UPDATE, dto));
             return dto;
         } catch (Exception e) {

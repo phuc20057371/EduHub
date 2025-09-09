@@ -1,6 +1,7 @@
 package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
+import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.InstitutionProfileDTO;
 import com.example.eduhubvn.dtos.edu.request.EduInsUpdateReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
@@ -32,9 +33,9 @@ public class InstitutionController {
     
 
     @PostMapping("/update-profile")
-    public ResponseEntity<ApiResponse<EduInsUpdateReq>> updateEduInsFromUser(@RequestBody EduInsUpdateReq req, @AuthenticationPrincipal User user) {
-        EduInsUpdateReq request = educationInstitutionService.updateEduInsFromUser(req, user);
-        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
+    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateEduInsFromUser(@RequestBody EduInsUpdateReq req, @AuthenticationPrincipal User user) {
+        EducationInstitutionDTO updatedInstitution = educationInstitutionService.updateEduInsFromUser(req, user);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", updatedInstitution));
     }
 
     @GetMapping("/get-lecturers")
