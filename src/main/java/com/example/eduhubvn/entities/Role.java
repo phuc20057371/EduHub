@@ -42,6 +42,7 @@ public enum Role {
                     LECTURER_DELETE
             )
     ),
+    SUB_ADMIN(Collections.emptySet()), // Dynamic permissions will be assigned
     ADMIN (EnumSet.allOf(Permission.class));
     private final Set<Permission> permissions;
 

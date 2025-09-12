@@ -13,8 +13,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "lecturer")
 @Data
-@ToString(exclude = {"user", "certifications", "degrees",
-        "researchProjects" ,"attendedTrainingCourses", "ownedTrainingCourses"
+@ToString(exclude = { "user", "certifications", "degrees",
+        "researchProjects", "attendedTrainingCourses", "ownedTrainingCourses"
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +27,7 @@ public class Lecturer {
     @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
     private String citizenId;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -37,7 +37,7 @@ public class Lecturer {
     private String fullName;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-    @Column (name ="gender" , nullable = false)
+    @Column(name = "gender", nullable = false)
     private Boolean gender;
     @Column(name = "bio")
     private String bio;
@@ -45,7 +45,7 @@ public class Lecturer {
     private String address;
     @Column(name = "avatar_url")
     private String avatarUrl;
-    @Column (name = "academic_rank")
+    @Column(name = "academic_rank")
     @Enumerated(EnumType.STRING)
     private AcademicRank academicRank;
     @Column(name = "specialization")
@@ -84,5 +84,8 @@ public class Lecturer {
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLecturer> courseLecturers;
+
+    @OneToOne(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private LecturerUpdate lecturerUpdate;
 
 }

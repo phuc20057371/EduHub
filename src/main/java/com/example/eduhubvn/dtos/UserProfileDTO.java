@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,5 +25,8 @@ public class UserProfileDTO {
     private LecturerDTO lecturer;
     private EducationInstitutionDTO educationInstitution;
     private PartnerOrganizationDTO partnerOrganization;
+    
+    // Permissions for SUB_ADMIN role
+    private List<String> permissions;
 
 }

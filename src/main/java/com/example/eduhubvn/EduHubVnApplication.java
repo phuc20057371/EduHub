@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.transaction.annotation.Transactional;
 import static io.micrometer.common.util.StringUtils.truncate;
 
 @SpringBootApplication
@@ -54,7 +55,8 @@ public class EduHubVnApplication {
                         OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository,
                         ResearchProjectUpdateRepository researchProjectUpdateRepository,
 
-                        AuthenticationService authenticationService) {
+                        AuthenticationService authenticationService,
+                        com.example.eduhubvn.services.SubAdminService subAdminService) {
                 return args -> {
                         Faker faker = new Faker();
                         try {
@@ -369,7 +371,14 @@ public class EduHubVnApplication {
                                                         .build();
                                         lecturers.add(lecturer);
                                 }
-                                lecturerRepository.saveAll(lecturers);
+                                // Save lecturers one by one to avoid detached entity issues
+                                for (Lecturer lecturer : lecturers) {
+                                        // Re-fetch the user to ensure it's managed
+                                        User managedUser = userRepository.findById(lecturer.getUser().getId())
+                                                .orElseThrow(() -> new RuntimeException("User not found for lecturer"));
+                                        lecturer.setUser(managedUser);
+                                        lecturerRepository.saveAndFlush(lecturer);
+                                }
 
                                 List<EducationInstitution> institutions = new ArrayList<>();
                                 for (int i = 101; i <= 110; i++) {
@@ -418,7 +427,15 @@ public class EduHubVnApplication {
                                                         .build();
                                         institutions.add(inst);
                                 }
-                                educationInstitutionRepository.saveAll(institutions);
+                                // Save institutions one by one to avoid detached entity issues
+                                for (EducationInstitution institution : institutions) {
+                                        // Re-fetch the user to ensure it's managed
+                                        User managedUser = userRepository.findById(institution.getUser().getId()).orElse(null);
+                                        if (managedUser != null) {
+                                                institution.setUser(managedUser);
+                                        }
+                                        educationInstitutionRepository.saveAndFlush(institution);
+                                }
                                 List<PartnerOrganization> organizations = new ArrayList<>();
                                 for (int i = 111; i <= 120; i++) {
                                         User user = userRepository
@@ -476,7 +493,15 @@ public class EduHubVnApplication {
 
                                         organizations.add(partner);
                                 }
-                                partnerOrganizationRepository.saveAll(organizations);
+                                // Save organizations one by one to avoid detached entity issues
+                                for (PartnerOrganization organization : organizations) {
+                                        // Re-fetch the user to ensure it's managed
+                                        User managedUser = userRepository.findById(organization.getUser().getId()).orElse(null);
+                                        if (managedUser != null) {
+                                                organization.setUser(managedUser);
+                                        }
+                                        partnerOrganizationRepository.saveAndFlush(organization);
+                                }
 
                                 List<Degree> degrees = new ArrayList<>();
                                 for (Lecturer lecturer : lecturers) {
@@ -886,7 +911,7 @@ public class EduHubVnApplication {
 
                                 // Tạo DegreeUpdate
                                 List<DegreeUpdate> degreeUpdates = new ArrayList<>();
-                                for (int i = 0; i < 50; i++) { // Tạo 50 bản cập nhật cho degree
+                                for (int i = 0; i < 20; i++) { // Tạo 50 bản cập nhật cho degree
                                         Degree randomDegree = degrees.get(i);
 
                                         int startYear = faker.number().numberBetween(1995, 2018);
@@ -917,7 +942,7 @@ public class EduHubVnApplication {
 
                                 // Tạo CertificationUpdate
                                 List<CertificationUpdate> certificationUpdates = new ArrayList<>();
-                                for (int i = 0; i < 40; i++) { // Tạo 40 bản cập nhật cho certification
+                                for (int i = 0; i < 20; i++) { // Tạo 20 bản cập nhật cho certification
                                         Certification randomCert = certifications.get(i);
 
                                         LocalDate issueDate = faker.date().past(2000, TimeUnit.of(ChronoUnit.DAYS))
@@ -951,7 +976,7 @@ public class EduHubVnApplication {
 
                                 // Tạo OwnedTrainingCourseUpdate
                                 List<OwnedTrainingCourseUpdate> ownedCourseUpdates = new ArrayList<>();
-                                for (int i = 0; i < 150; i++) { // Tạo 35 bản cập nhật cho owned training course
+                                for (int i = 0; i < 30; i++) { // Tạo 35 bản cập nhật cho owned training course
                                         OwnedTrainingCourse randomOwnedCourse = ownedCourses.get(i);
 
                                         LocalDate startDate = faker.date()
@@ -998,7 +1023,7 @@ public class EduHubVnApplication {
 
                                 // Tạo AttendedTrainingCourseUpdate
                                 List<AttendedTrainingCourseUpdate> attendedCourseUpdates = new ArrayList<>();
-                                for (int i = 0; i < 150; i++) { // Tạo 150 bản cập nhật cho attended training course
+                                for (int i = 0; i < 30; i++) { // Tạo 150 bản cập nhật cho attended training course
                                         AttendedTrainingCourse randomAttendedCourse = attendedCourses.get(i);
 
                                         LocalDate startDate = faker.date()
@@ -1038,7 +1063,7 @@ public class EduHubVnApplication {
 
                                 // Tạo ResearchProjectUpdate
                                 List<ResearchProjectUpdate> researchProjectUpdates = new ArrayList<>();
-                                for (int i = 0; i < 150; i++) { // Tạo 200 bản cập nhật cho research project
+                                for (int i = 0; i < 30; i++) { // Tạo 200 bản cập nhật cho research project
                                         ResearchProject randomProject = projects.get(i);
 
                                         LocalDate startDate = faker.date()
@@ -1169,8 +1194,51 @@ public class EduHubVnApplication {
                                                 .password("SGL@2025")
                                                 .role(Role.ADMIN)
                                                 .build();
-                                System.out.println("token admin: "
-                                                + authenticationService.register(admin).getAccessToken());
+                                var sub_admin1 = RegisterRequest.builder()
+                                                .email("sub_admin1@gmail.com")
+                                                .password("SGL@2025")
+                                                .role(Role.SUB_ADMIN)
+                                                .build();
+
+                                var sub_admin2 = RegisterRequest.builder()
+                                                .email("sub_admin2@gmail.com")
+                                                .password("SGL@2025")
+                                                .role(Role.SUB_ADMIN)
+                                                .build();
+                                
+                                // Register users and get their info
+                                var adminResponse = authenticationService.register(admin);
+                                var subAdmin1Response = authenticationService.register(sub_admin1);
+                                var subAdmin2Response = authenticationService.register(sub_admin2);
+                                
+                                // Get admin user for permission assignment
+                                User adminUser = userRepository.findByEmail("admin@gmail.com").orElseThrow();
+                                User subAdmin1User = userRepository.findByEmail("sub_admin1@gmail.com").orElseThrow();
+                                User subAdmin2User = userRepository.findByEmail("sub_admin2@gmail.com").orElseThrow();
+                                
+                                // Assign permissions to sub_admin1 (có quyền về organization và lecturer)
+                                List<Permission> subAdmin1Permissions = List.of(
+                                    Permission.ORGANIZATION_READ,
+                                    Permission.ORGANIZATION_UPDATE,
+                                    Permission.ORGANIZATION_APPROVE,
+                                    Permission.LECTURER_READ,
+                                    Permission.LECTURER_UPDATE,
+                                    Permission.LECTURER_APPROVE
+                                );
+                                subAdminService.assignPermissionsToUser(subAdmin1User, subAdmin1Permissions, adminUser);
+                                
+                                // Assign permissions to sub_admin2 (có quyền về school và một số quyền lecturer)
+                                List<Permission> subAdmin2Permissions = List.of(
+                                    Permission.SCHOOL_READ,
+                                    Permission.SCHOOL_UPDATE,
+                                    Permission.SCHOOL_APPROVE,
+                                    Permission.LECTURER_READ
+                                );
+                                subAdminService.assignPermissionsToUser(subAdmin2User, subAdmin2Permissions, adminUser);
+                                
+                                System.out.println("token admin: " + adminResponse.getAccessToken());
+                                System.out.println("token sub_admin1: " + subAdmin1Response.getAccessToken());
+                                System.out.println("token sub_admin2: " + subAdmin2Response.getAccessToken());
 
                         } catch (Exception e) {
                                 throw new RuntimeException("không thể khởi tạo dữ liệu mẫu: " + e.getMessage(), e);

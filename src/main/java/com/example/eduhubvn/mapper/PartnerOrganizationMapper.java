@@ -16,6 +16,7 @@ public interface PartnerOrganizationMapper {
     PartnerOrganizationUpdateDTO toDTO(PartnerOrganizationUpdate entity);
 
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "partnerUpdate", ignore = true)
     PartnerOrganization toEntity(PartnerOrganizationDTO dto);
 
     @Mapping(target = "id", ignore = true)
@@ -24,6 +25,7 @@ public interface PartnerOrganizationMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "partnerUpdate", ignore = true)
     PartnerOrganization toEntity(PartnerOrganizationReq req);
 
     @Mapping(target = "id", ignore = true)
@@ -33,6 +35,7 @@ public interface PartnerOrganizationMapper {
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "partnerUpdate", ignore = true)
     void updateEntityFromRequest(PartnerOrganizationReq req, @MappingTarget PartnerOrganization organization);
 
     @Mapping(target = "id", ignore = true)
@@ -42,6 +45,7 @@ public interface PartnerOrganizationMapper {
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "partnerUpdate", ignore = true)
     void updateEntityFromUpdate(PartnerOrganizationUpdate update,
             @MappingTarget PartnerOrganization partnerOrganization);
 
@@ -52,6 +56,7 @@ public interface PartnerOrganizationMapper {
     @Mapping(target = "adminNote", ignore = true)
     @Mapping(target = "user", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "partnerUpdate", ignore = true)
     void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,
             @MappingTarget PartnerOrganization partnerOrganization);
 

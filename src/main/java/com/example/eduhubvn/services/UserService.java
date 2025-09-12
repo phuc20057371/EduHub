@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final SubAdminService subAdminService;
 
     private final LecturerMapper lecturerMapper;
     private final EducationInstitutionMapper educationInstitutionMapper;
@@ -44,15 +45,22 @@ public class UserService {
 
     public UserProfileDTO getCurrentUserProfile(User user) {
         try {
-            return UserProfileDTO.builder()
+            UserProfileDTO.UserProfileDTOBuilder builder = UserProfileDTO.builder()
                     .id(user.getId())
                     .email(user.getEmail())
                     .role(String.valueOf(user.getRole()))
                     .lastLogin(user.getLastLogin())
                     .lecturer(lecturerMapper.toDTO(user.getLecturer()))
                     .educationInstitution(educationInstitutionMapper.toDTO(user.getEducationInstitution()))
-                    .partnerOrganization(partnerOrganizationMapper.toDTO(user.getPartnerOrganization()))
-                    .build();
+                    .partnerOrganization(partnerOrganizationMapper.toDTO(user.getPartnerOrganization()));
+            
+            // If user is SUB_ADMIN, add their permissions
+            if (user.getRole() != null && user.getRole().name().equals("SUB_ADMIN")) {
+                List<String> permissions = subAdminService.getUserPermissions(user.getId());
+                builder.permissions(permissions);
+            }
+            
+            return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

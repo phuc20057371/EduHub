@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -17,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
+@EqualsAndHashCode(exclude = {"subAdminPermissions"})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,16 +50,22 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private PartnerOrganization partnerOrganization;
 
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<SubAdminPermission> subAdminPermissions = new HashSet<>();
 
     @Override
     public String getUsername() {
         return email;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Chỉ trả về quyền cơ bản của role
+        // SubAdmin permissions sẽ được load riêng trong security context
         return role.getGrantedAuthorities();
     }
+
     @Override
     public String getPassword() {
         return password;

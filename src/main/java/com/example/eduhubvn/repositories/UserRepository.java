@@ -3,6 +3,7 @@ package com.example.eduhubvn.repositories;
 
 import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.Lecturer;
+import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
     boolean existsByEmail(String email);
+
+    List<User> findByRole(Role role);
 
     @Query("SELECT l FROM Lecturer l WHERE " +
             "(:academicRank IS NULL OR l.academicRank = :academicRank) AND " +

@@ -24,7 +24,7 @@ public class EducationInstitution {
     @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
     private String businessRegistrationNumber;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

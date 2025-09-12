@@ -5,6 +5,7 @@ public enum MessageSocketType {
     CREATE_LECTURER,
     UPDATE_LECTURER,
     EDIT_LECTURER,
+    DELETE_LECTURER,
 
     CREATE_DEGREE,
     UPDATE_DEGREE,

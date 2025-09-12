@@ -151,16 +151,8 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", pending));
     }
 
-    @GetMapping("/find-lecturers")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION')")
-    public ResponseEntity<ApiResponse<List<LecturerDTO>>> findLecturers(@RequestParam String academicRank,
-            @RequestParam String specialization) {
-        List<LecturerDTO> lecturers = userService.findLecturers(academicRank, specialization);
-        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách giảng viên thành công", lecturers));
-    }
-
     @GetMapping("/lecturer-profile/{lecturerId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('OGANIZATION') or hasRole('LECTURER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCHOOL') or hasRole('ORGANIZATION') or hasRole('LECTURER') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:read'))")
     public ResponseEntity<ApiResponse<LecturerAllInfoDTO>> getLecturerProfile(@PathVariable UUID lecturerId,
             @AuthenticationPrincipal User user) {
         LecturerAllInfoDTO lecturer = adminService.getLecturerProfile(lecturerId, user);
