@@ -28,6 +28,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     Lecturer toEntity(LecturerDTO dto);
 
     @Mapping(target = "id", ignore = true)
@@ -43,6 +44,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Lecturer toEntity(LecturerReq req);
 
@@ -78,6 +80,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(LecturerUpdate update, @MappingTarget Lecturer lecturer);
 
@@ -94,6 +97,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(LecturerUpdateDTO update, @MappingTarget Lecturer lecturer);
 
@@ -110,6 +114,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(LecturerReq req, @MappingTarget Lecturer lecturer);
 
@@ -128,6 +133,7 @@ public interface LecturerMapper {
     @Mapping(target = "ownedTrainingCourses", ignore = true)
     @Mapping(target = "researchProjects", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "lecturerUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDTO(LecturerDTO dto, @MappingTarget Lecturer lecturer);
 

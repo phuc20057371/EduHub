@@ -17,7 +17,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.transaction.annotation.Transactional;
 import static io.micrometer.common.util.StringUtils.truncate;
 
 @SpringBootApplication
