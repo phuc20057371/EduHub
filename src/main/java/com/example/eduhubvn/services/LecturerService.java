@@ -404,7 +404,7 @@ public class LecturerService {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
@@ -414,10 +414,14 @@ public class LecturerService {
             course.setStatus(PendingStatus.PENDING);
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
+
             IdRequest id = new IdRequest(course.getLecturer().getId());
             AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
-            messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, id));
+            if (lecturer != null) {
+                messagingTemplate.convertAndSend("/topic/ADMIN",
+                        new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, id));
+                
+            }
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -492,7 +496,7 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
@@ -505,8 +509,10 @@ public class LecturerService {
             ownedTrainingCourseRepository.flush();
             IdRequest id = new IdRequest(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
-            messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_OWNED_COURSE, id));
+            if (lecturer != null) {
+                messagingTemplate.convertAndSend("/topic/ADMIN",
+                        new MessageSocket(MessageSocketType.UPDATE_OWNED_COURSE, id));
+            }
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -582,7 +588,7 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         ResearchProject project = researchProjectRepository.findById(req.getId())
@@ -595,8 +601,10 @@ public class LecturerService {
             researchProjectRepository.flush();
             IdRequest id = new IdRequest(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
-            messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_RESEARCH_PROJECT, id));
+            if (lecturer != null) {
+                messagingTemplate.convertAndSend("/topic/ADMIN",
+                        new MessageSocket(MessageSocketType.UPDATE_RESEARCH_PROJECT, id));
+            }
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -705,7 +713,7 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         Degree degree = degreeRepository.findById(req.getId())
@@ -719,9 +727,12 @@ public class LecturerService {
             degree.setAdminNote("");
             degreeRepository.save(degree);
             degreeRepository.flush();
-            IdRequest id = new IdRequest(lecturer.getId());
-            messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_DEGREE, id));
+            if (lecturer != null) {
+                IdRequest id = new IdRequest(lecturer.getId());
+                messagingTemplate.convertAndSend("/topic/ADMIN",
+                        new MessageSocket(MessageSocketType.UPDATE_DEGREE, id));
+            }
+
             return degreeMapper.toDTO(degree);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -894,9 +905,10 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
+
         Certification certification = certificationRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
         try {
@@ -906,9 +918,11 @@ public class LecturerService {
             certificationRepository.save(certification);
             certificationRepository.flush();
             CertificationDTO dto = certificationMapper.toDTO(certification);
-            IdRequest id = new IdRequest(lecturer.getId());
-            messagingTemplate.convertAndSend("/topic/ADMIN",
-                    new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, id));
+            if (lecturer != null) {
+                IdRequest id = new IdRequest(lecturer.getId());
+                messagingTemplate.convertAndSend("/topic/ADMIN",
+                        new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, id));
+            }
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
