@@ -1,7 +1,5 @@
 package com.example.eduhubvn.config;
 
-
-
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.DynamicAuthoritiesService;
 import com.example.eduhubvn.services.JwtService;
@@ -31,14 +29,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final DynamicAuthoritiesService dynamicAuthoritiesService;
 
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
-        if (request.getServletPath().contains("/api/v1/auth")) {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getServletPath();
+
+        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.equals("/swagger-ui.html")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (path.contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,6 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         jwt = authHeader.substring(7);
         try {
             userEmail = jwtService.extractUsername(jwt);
@@ -58,21 +61,20 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-//            var isTokenValid = tokenRepository.findByToken(jwt)
-//                    .map(t -> !t.isExpired() && !t.isRevoked())
-//                    .orElse(false);
-          if (jwtService.isTokenValid(jwt)) {
+            // var isTokenValid = tokenRepository.findByToken(jwt)
+            // .map(t -> !t.isExpired() && !t.isRevoked())
+            // .orElse(false);
+            if (jwtService.isTokenValid(jwt)) {
                 // Get dynamic authorities for the user (including SUB_ADMIN permissions)
-                Collection<? extends GrantedAuthority> authorities = dynamicAuthoritiesService.getAuthoritiesForUser((User) userDetails);
-                
+                Collection<? extends GrantedAuthority> authorities = dynamicAuthoritiesService
+                        .getAuthoritiesForUser((User) userDetails);
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, authorities
-                );
+                        userDetails, null, authorities);
                 authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                        new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }

@@ -3,6 +3,7 @@ package com.example.eduhubvn.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLRestriction("hidden = false")
 public class PartnerOrganization {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -53,6 +55,8 @@ public class PartnerOrganization {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    private boolean hidden;
 
 
     @OneToOne(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)

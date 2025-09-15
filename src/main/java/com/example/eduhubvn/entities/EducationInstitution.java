@@ -3,6 +3,7 @@ package com.example.eduhubvn.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "education_institution")
+@SQLRestriction("hidden = false")
 public class EducationInstitution {
 
     @Id
@@ -56,6 +58,8 @@ public class EducationInstitution {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    private boolean hidden;
 
     @OneToOne(mappedBy = "educationInstitution", cascade = CascadeType.ALL, orphanRemoval = true)
     private EducationInstitutionUpdate institutionUpdate;

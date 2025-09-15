@@ -41,6 +41,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "enabled")
+    @Builder.Default
+    private boolean enabled = true;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Lecturer lecturer;
 
@@ -88,6 +92,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

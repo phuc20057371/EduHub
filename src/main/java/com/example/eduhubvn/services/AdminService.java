@@ -323,7 +323,7 @@ public class AdminService {
         List<OwnedCourseUpdateDTO> ownedCourseUpdates = new ArrayList<>();
         List<AttendedCourseUpdateDTO> attendedCourseUpdates = new ArrayList<>();
         List<ResearchProjectUpdateDTO> researchProjectUpdates = new ArrayList<>();
-
+     
         for (Degree degree : degrees) {
             DegreeUpdateDTO deg = DegreeUpdateDTO.builder()
                     .lecturer(lecturerMapper.toDTO(degree.getLecturer()))
@@ -422,8 +422,15 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
         try {
             User user = lecturer.getUser();
-            lecturerRepository.delete(lecturer);
+            // Đánh dấu lecturer là ẩn và vô hiệu hóa user thay vì xóa
+            lecturer.setHidden(true);
+            user.setEnabled(false);
+
+            lecturerRepository.save(lecturer);
+            userRepository.save(user);
             lecturerRepository.flush();
+            userRepository.flush();
+
             messagingTemplate.convertAndSend("/topic/LECTURER/" + user.getId(),
                     new MessageSocket(MessageSocketType.DELETE_LECTURER, null));
         } catch (Exception e) {
@@ -536,8 +543,11 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tổ chức giáo dục."));
         try {
             User user = institution.getUser();
-            educationInstitutionRepository.delete(institution);
-            educationInstitutionRepository.flush();
+            // Đánh dấu institution là ẩn và vô hiệu hóa user thay vì xóa
+            institution.setHidden(true);
+            user.setEnabled(false);
+            educationInstitutionRepository.save(institution);
+            userRepository.save(user);
             messagingTemplate.convertAndSend("/topic/SCHOOL/" + user.getId(),
                     new MessageSocket(MessageSocketType.DELETE_INSTITUTION, null));
         } catch (Exception e) {
@@ -685,8 +695,11 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tổ chức đối tác."));
         try {
             User user = organization.getUser();
-            partnerOrganizationRepository.delete(organization);
-            partnerOrganizationRepository.flush();
+            // Đánh dấu organization là ẩn và vô hiệu hóa user thay vì xóa
+            organization.setHidden(true);
+            user.setEnabled(false);
+            partnerOrganizationRepository.save(organization);
+            userRepository.save(user);
             messagingTemplate.convertAndSend("/topic/ORGANIZATION/" + user.getId(),
                     new MessageSocket(MessageSocketType.DELETE_PARTNER, null));
         } catch (Exception e) {
@@ -991,7 +1004,6 @@ public class AdminService {
             throw new RuntimeException(e);
         }
     }
-    
 
     /// Attended course
     @Transactional
@@ -1097,6 +1109,7 @@ public class AdminService {
         attendedTrainingCourseRepository.save(course);
         return attendedTrainingCourseMapper.toDTO(course);
     }
+
     public void deleteAttendedCourse(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
@@ -1220,6 +1233,7 @@ public class AdminService {
         ownedTrainingCourseRepository.save(course);
         return ownedTrainingCourseMapper.toDTO(course);
     }
+
     public void deleteOwnedCourse(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
@@ -1343,6 +1357,7 @@ public class AdminService {
         researchProjectRepository.save(project);
         return researchProjectMapper.toDTO(project);
     }
+
     public void deleteResearchProject(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");

@@ -3,6 +3,7 @@ package com.example.eduhubvn.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLRestriction("hidden = false")
 public class Lecturer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

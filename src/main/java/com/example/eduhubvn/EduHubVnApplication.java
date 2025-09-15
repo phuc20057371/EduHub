@@ -363,7 +363,7 @@ public class EduHubVnApplication {
                                                                         jobFieldWithExperienceList.get(faker.random()
                                                                                         .nextInt(jobFieldWithExperienceList
                                                                                                         .size())))
-                                                        .hidden(faker.bool().bool())
+                                                        .hidden(false)
                                                         .status(PendingStatus.values()[isApproved ? 1 : 0])
                                                         // .status(PendingStatus.APPROVED)
                                                         .avatarUrl("https://picsum.photos/200")
@@ -771,7 +771,7 @@ public class EduHubVnApplication {
 
                                 List<Course> courses = new ArrayList<>();
 
-                                for (int i = 1; i <= 100; i++) {
+                                for (int i = 1; i <= 10; i++) {
                                         String title = courseTitles.get(faker.random().nextInt(courseTitles.size()));
                                         String topic = courseTopics.get(faker.random().nextInt(courseTopics.size()));
                                         CourseType courseType = CourseType.values()[faker.random()
