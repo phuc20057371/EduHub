@@ -30,26 +30,6 @@ public class OrganizationController {
     public ResponseEntity<ApiResponse<PartnerProfileDTO>> getPartnerProfile(@AuthenticationPrincipal User user) {
         PartnerProfileDTO partnerProfile = partnerOrganizationService.getPartnerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin đối tác thành công", partnerProfile));
-    }
-    
-
-
-    @GetMapping
-    public String get(){
-        return "GET:: ORGANIZATION";
-    }
-    @PostMapping
-    public String post(){
-        return "POST:: ORGANIZATION";
-    }
-    @PutMapping
-    public String put(){
-        return "PUT:: ORGANIZATION";
-    }
-    @DeleteMapping
-    public String delete(){
-        return "DELETE:: ORGANIZATION";
-    }
-
+    } 
 
 }

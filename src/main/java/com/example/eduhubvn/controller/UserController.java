@@ -1,6 +1,5 @@
 package com.example.eduhubvn.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.FileResponse;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
@@ -47,7 +45,6 @@ import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.AdminService;
 import com.example.eduhubvn.services.EducationInstitutionService;
-import com.example.eduhubvn.services.GoogleDriveService;
 import com.example.eduhubvn.services.LecturerService;
 import com.example.eduhubvn.services.PartnerOrganizationService;
 import com.example.eduhubvn.services.UserService;
@@ -60,26 +57,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final GoogleDriveService googleDriveService;
     private final UserService userService;
     private final LecturerService lecturerService;
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
     private final AdminService adminService;
 
-    /// General
-
-    @PostMapping("/upload")
-    public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return "File is empty";
-        } else {
-            File tempFile = File.createTempFile("temp", file.getOriginalFilename());
-            file.transferTo(tempFile);
-            FileResponse fileResponse = googleDriveService.uploadFileToGoogleDrive(tempFile);
-            return fileResponse;
-        }
-    }
 
     @PostMapping("/uploads")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,

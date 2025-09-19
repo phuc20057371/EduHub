@@ -189,26 +189,24 @@ public class EducationInstitutionService {
     }
 
     private LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
-        boolean isHidden = lecturer.isHidden();
+        
 
         return LecturerInfoDTO.builder()
                 .id(lecturer.getId())
-                .citizenId(isHidden ? null : lecturer.getCitizenId())
-                .email(isHidden
-                        ? null
-                        : (lecturer.getUser() != null ? lecturer.getUser().getEmail() : null))
-                .phoneNumber(isHidden ? null : lecturer.getPhoneNumber())
+                .citizenId(null)
+                .email(null)
+                .phoneNumber(null)
                 .fullName(lecturer.getFullName())
-                .dateOfBirth(isHidden ? null : lecturer.getDateOfBirth())
+                .dateOfBirth(lecturer.getDateOfBirth())
                 .gender(lecturer.getGender())
-                .bio(lecturer.getBio())
-                .address(isHidden ? null : lecturer.getAddress())
+                .bio(null)
+                .address(null)
                 .avatarUrl(lecturer.getAvatarUrl())
                 .academicRank(lecturer.getAcademicRank())
                 .specialization(lecturer.getSpecialization())
                 .experienceYears(lecturer.getExperienceYears())
                 .jobField(lecturer.getJobField())
-                .hidden(isHidden)
+                .hidden(lecturer.isHidden())
                 .adminNote(lecturer.getAdminNote())
                 .status(lecturer.getStatus())
                 .createdAt(lecturer.getCreatedAt())
