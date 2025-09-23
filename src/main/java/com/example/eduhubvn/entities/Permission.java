@@ -28,8 +28,8 @@ public enum Permission {
     COURSE_READ("course:read"),
     COURSE_CREATE("course:create"),
     COURSE_UPDATE("course:update"),
-    COURSE_DELETE("course:delete"),
-    COURSE_APPROVE("course:approve");
+    COURSE_DELETE("course:delete");
+    // COURSE_APPROVE("course:approve");
 
     private final String permission;
 }

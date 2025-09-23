@@ -163,16 +163,21 @@ public class AdminService {
                     .findByStatus(PendingStatus.PENDING);
 
             List<LecturerPendingDTO> lecturerDTOs = lecturerUpdates.stream()
+                    .filter(update -> update.getLecturer() != null && !update.getLecturer().isHidden())
                     .map(update -> new LecturerPendingDTO(
                             lecturerMapper.toDTO(update.getLecturer()),
                             lecturerMapper.toDTO(update)))
                     .toList();
             List<PartnerOrganizationPendingDTO> partnerDTOs = partnerUpdates.stream()
+                    .filter(update -> update.getPartnerOrganization() != null
+                            && !update.getPartnerOrganization().isHidden())
                     .map(update -> new PartnerOrganizationPendingDTO(
                             partnerOrganizationMapper.toDTO(update.getPartnerOrganization()),
                             partnerOrganizationMapper.toDTO(update)))
                     .toList();
             List<EducationInstitutionPendingDTO> eduDTOs = eduInsUpdates.stream()
+                    .filter(update -> update.getEducationInstitution() != null
+                            && !update.getEducationInstitution().isHidden())
                     .map(update -> new EducationInstitutionPendingDTO(
                             educationInstitutionMapper.toDTO(update.getEducationInstitution()),
                             educationInstitutionMapper.toDTO(update)))
@@ -323,7 +328,7 @@ public class AdminService {
         List<OwnedCourseUpdateDTO> ownedCourseUpdates = new ArrayList<>();
         List<AttendedCourseUpdateDTO> attendedCourseUpdates = new ArrayList<>();
         List<ResearchProjectUpdateDTO> researchProjectUpdates = new ArrayList<>();
-     
+
         for (Degree degree : degrees) {
             DegreeUpdateDTO deg = DegreeUpdateDTO.builder()
                     .lecturer(lecturerMapper.toDTO(degree.getLecturer()))
@@ -414,6 +419,7 @@ public class AdminService {
 
     }
 
+    @Transactional
     public void deleteLecturer(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
@@ -422,6 +428,10 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
         try {
             User user = lecturer.getUser();
+
+            // Clean up pending update records for this lecturer
+            cleanupLecturerPendingUpdates(lecturer);
+
             // Đánh dấu lecturer là ẩn và vô hiệu hóa user thay vì xóa
             lecturer.setHidden(true);
             user.setEnabled(false);
@@ -435,6 +445,79 @@ public class AdminService {
                     new MessageSocket(MessageSocketType.DELETE_LECTURER, null));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void cleanupLecturerPendingUpdates(Lecturer lecturer) {
+        try {
+            // Clean up degree updates
+            List<DegreeUpdate> degreeUpdates = degreeUpdateRepository.findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getDegree() != null
+                            && update.getDegree().getLecturer() != null
+                            && update.getDegree().getLecturer().getId().equals(lecturer.getId()))
+                    .toList();
+            for (DegreeUpdate update : degreeUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            degreeUpdateRepository.saveAll(degreeUpdates);
+
+            // Clean up certification updates
+            List<CertificationUpdate> certificationUpdates = certificationUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getCertification() != null
+                            && update.getCertification().getLecturer() != null
+                            && update.getCertification().getLecturer().getId().equals(lecturer.getId()))
+                    .toList();
+            for (CertificationUpdate update : certificationUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            certificationUpdateRepository.saveAll(certificationUpdates);
+
+            // Clean up attended course updates
+            List<AttendedTrainingCourseUpdate> attendedCourseUpdates = attendedTrainingCourseUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getAttendedTrainingCourse() != null
+                            && update.getAttendedTrainingCourse().getLecturer() != null
+                            && update.getAttendedTrainingCourse().getLecturer().getId().equals(lecturer.getId()))
+                    .toList();
+            for (AttendedTrainingCourseUpdate update : attendedCourseUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            attendedTrainingCourseUpdateRepository.saveAll(attendedCourseUpdates);
+
+            // Clean up owned course updates
+            List<OwnedTrainingCourseUpdate> ownedCourseUpdates = ownedTrainingCourseUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getOwnedTrainingCourse() != null
+                            && update.getOwnedTrainingCourse().getLecturer() != null
+                            && update.getOwnedTrainingCourse().getLecturer().getId().equals(lecturer.getId()))
+                    .toList();
+            for (OwnedTrainingCourseUpdate update : ownedCourseUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            ownedTrainingCourseUpdateRepository.saveAll(ownedCourseUpdates);
+
+            // Clean up research project updates
+            List<ResearchProjectUpdate> researchProjectUpdates = researchProjectUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getResearchProject() != null
+                            && update.getResearchProject().getLecturer() != null
+                            && update.getResearchProject().getLecturer().getId().equals(lecturer.getId()))
+                    .toList();
+            for (ResearchProjectUpdate update : researchProjectUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            researchProjectUpdateRepository.saveAll(researchProjectUpdates);
+
+        } catch (Exception e) {
+            // Log the error but don't fail the lecturer deletion
+            System.err.println(
+                    "Error cleaning up pending updates for lecturer " + lecturer.getId() + ": " + e.getMessage());
         }
     }
 
@@ -535,6 +618,7 @@ public class AdminService {
         }
     }
 
+    @Transactional
     public void deleteInstitution(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
@@ -543,6 +627,10 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tổ chức giáo dục."));
         try {
             User user = institution.getUser();
+
+            // Clean up pending update records for this institution
+            cleanupInstitutionPendingUpdates(institution);
+
             // Đánh dấu institution là ẩn và vô hiệu hóa user thay vì xóa
             institution.setHidden(true);
             user.setEnabled(false);
@@ -552,6 +640,27 @@ public class AdminService {
                     new MessageSocket(MessageSocketType.DELETE_INSTITUTION, null));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void cleanupInstitutionPendingUpdates(EducationInstitution institution) {
+        try {
+            // Clean up education institution updates
+            List<EducationInstitutionUpdate> institutionUpdates = educationInstitutionUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getEducationInstitution() != null
+                            && update.getEducationInstitution().getId().equals(institution.getId()))
+                    .toList();
+            for (EducationInstitutionUpdate update : institutionUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Tổ chức giáo dục đã bị xóa khỏi hệ thống");
+            }
+            educationInstitutionUpdateRepository.saveAll(institutionUpdates);
+
+        } catch (Exception e) {
+            // Log the error but don't fail the institution deletion
+            System.err.println(
+                    "Error cleaning up pending updates for institution " + institution.getId() + ": " + e.getMessage());
         }
     }
 
@@ -687,6 +796,7 @@ public class AdminService {
         }
     }
 
+    @Transactional
     public void deletePartner(IdRequest id) {
         if (id == null || id.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
@@ -695,6 +805,10 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tổ chức đối tác."));
         try {
             User user = organization.getUser();
+
+            // Clean up pending update records for this partner organization
+            cleanupPartnerPendingUpdates(organization);
+
             // Đánh dấu organization là ẩn và vô hiệu hóa user thay vì xóa
             organization.setHidden(true);
             user.setEnabled(false);
@@ -704,6 +818,27 @@ public class AdminService {
                     new MessageSocket(MessageSocketType.DELETE_PARTNER, null));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void cleanupPartnerPendingUpdates(PartnerOrganization organization) {
+        try {
+            // Clean up partner organization updates
+            List<PartnerOrganizationUpdate> partnerUpdates = partnerOrganizationUpdateRepository
+                    .findByStatus(PendingStatus.PENDING).stream()
+                    .filter(update -> update.getPartnerOrganization() != null
+                            && update.getPartnerOrganization().getId().equals(organization.getId()))
+                    .toList();
+            for (PartnerOrganizationUpdate update : partnerUpdates) {
+                update.setStatus(PendingStatus.REJECTED);
+                update.setAdminNote("Tổ chức đối tác đã bị xóa khỏi hệ thống");
+            }
+            partnerOrganizationUpdateRepository.saveAll(partnerUpdates);
+
+        } catch (Exception e) {
+            // Log the error but don't fail the partner deletion
+            System.err.println(
+                    "Error cleaning up pending updates for partner " + organization.getId() + ": " + e.getMessage());
         }
     }
 
@@ -840,7 +975,9 @@ public class AdminService {
             List<DegreeUpdate> pendingUpdates = degreeUpdateRepository.findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getDegree() != null
-                            && update.getDegree().getStatus() == PendingStatus.APPROVED)
+                            && update.getDegree().getStatus() == PendingStatus.APPROVED
+                            && update.getDegree().getLecturer() != null
+                            && !update.getDegree().getLecturer().isHidden())
                     .map(update -> DegreeUpdateDTO.builder()
                             .original(degreeMapper.toDTO(update.getDegree()))
                             .update(degreeMapper.toDTO(update))
@@ -1385,7 +1522,9 @@ public class AdminService {
                     .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getCertification() != null
-                            && update.getCertification().getStatus() == PendingStatus.APPROVED)
+                            && update.getCertification().getStatus() == PendingStatus.APPROVED
+                            && update.getCertification().getLecturer() != null
+                            && !update.getCertification().getLecturer().isHidden())
                     .map(update -> CertificationUpdateDTO.builder()
                             .original(certificationMapper.toDTO(update.getCertification()))
                             .update(certificationMapper.toDTO(update))
@@ -1393,7 +1532,7 @@ public class AdminService {
                             .build())
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching pending degree updates.", e);
+            throw new RuntimeException("Error fetching pending certification updates.", e);
         }
     }
 
@@ -1404,7 +1543,9 @@ public class AdminService {
                     .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getAttendedTrainingCourse() != null
-                            && update.getAttendedTrainingCourse().getStatus() == PendingStatus.APPROVED)
+                            && update.getAttendedTrainingCourse().getStatus() == PendingStatus.APPROVED
+                            && update.getAttendedTrainingCourse().getLecturer() != null
+                            && !update.getAttendedTrainingCourse().getLecturer().isHidden())
                     .map(update -> AttendedCourseUpdateDTO.builder()
                             .original(attendedTrainingCourseMapper.toDTO(update.getAttendedTrainingCourse()))
                             .update(attendedTrainingCourseMapper.toDTO(update))
@@ -1412,7 +1553,7 @@ public class AdminService {
                             .build())
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching pending degree updates.", e);
+            throw new RuntimeException("Error fetching pending attended course updates.", e);
         }
     }
 
@@ -1423,7 +1564,9 @@ public class AdminService {
                     .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getOwnedTrainingCourse() != null
-                            && update.getOwnedTrainingCourse().getStatus() == PendingStatus.APPROVED)
+                            && update.getOwnedTrainingCourse().getStatus() == PendingStatus.APPROVED
+                            && update.getOwnedTrainingCourse().getLecturer() != null
+                            && !update.getOwnedTrainingCourse().getLecturer().isHidden())
                     .map(update -> OwnedCourseUpdateDTO.builder()
                             .original(ownedTrainingCourseMapper.toDTO(update.getOwnedTrainingCourse()))
                             .update(ownedTrainingCourseMapper.toDTO(update))
@@ -1431,7 +1574,7 @@ public class AdminService {
                             .build())
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching pending updates.", e);
+            throw new RuntimeException("Error fetching pending owned course updates.", e);
         }
     }
 
@@ -1442,7 +1585,9 @@ public class AdminService {
                     .findByStatus(PendingStatus.PENDING);
             return pendingUpdates.stream()
                     .filter(update -> update.getResearchProject() != null
-                            && update.getResearchProject().getStatus() == PendingStatus.APPROVED)
+                            && update.getResearchProject().getStatus() == PendingStatus.APPROVED
+                            && update.getResearchProject().getLecturer() != null
+                            && !update.getResearchProject().getLecturer().isHidden())
                     .map(update -> ResearchProjectUpdateDTO.builder()
                             .original(researchProjectMapper.toDTO(update.getResearchProject()))
                             .update(researchProjectMapper.toDTO(update))
@@ -1450,7 +1595,7 @@ public class AdminService {
                             .build())
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching pending degree updates.", e);
+            throw new RuntimeException("Error fetching pending research project updates.", e);
         }
     }
 
@@ -1459,7 +1604,9 @@ public class AdminService {
         try {
             List<Degree> pending = degreeRepository.findByStatus(PendingStatus.PENDING);
             return pending.stream()
-                    .filter(d -> d.getLecturer() != null && d.getLecturer().getStatus() == PendingStatus.APPROVED)
+                    .filter(d -> d.getLecturer() != null
+                            && d.getLecturer().getStatus() == PendingStatus.APPROVED
+                            && !d.getLecturer().isHidden())
                     .map(d -> DegreePendingCreateDTO.builder()
                             .degree(degreeMapper.toDTO(d))
                             .lecturer(lecturerMapper.toDTO(d.getLecturer()))
@@ -1960,6 +2107,7 @@ public class AdminService {
         List<Course> courses = courseRepository.findAll();
         for (Course course : courses) {
             List<CourseMemberDTO> members = course.getCourseLecturers().stream()
+                    .filter(cl -> cl.getLecturer() != null && cl.getLecturer().getStatus() == PendingStatus.APPROVED)
                     .map(courseLecturer -> CourseMemberDTO.builder()
                             .lecturer(Mapper.mapToLecturerInfoDTO(courseLecturer.getLecturer()))
                             .courseRole(courseLecturer.getRole())
@@ -2136,6 +2284,24 @@ public class AdminService {
             return courseMapper.toDTO(course);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi cập nhật khóa học: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void deleteCourse(IdRequest req) {
+        if (req == null || req.getId() == null) {
+            throw new IllegalArgumentException("ID không được để trống.");
+        }
+        try {
+
+            Course course = courseRepository.findById(req.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
+            courseRepository.delete(course);
+            courseRepository.flush();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("ID không hợp lệ.");
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi xóa khóa học: " + e.getMessage(), e);
         }
     }
 

@@ -5,9 +5,13 @@ import com.example.eduhubvn.dtos.course.CourseReq;
 import com.example.eduhubvn.entities.Course;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CourseMapper {
     CourseDTO toDTO(Course course);
+
+    List<CourseDTO> toDTOs(List<Course> courses);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

@@ -60,7 +60,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/ws/**",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/public/**"
                         ).permitAll()
 
                         // ✅ Organization permissions

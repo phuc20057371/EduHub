@@ -3,6 +3,7 @@ package com.example.eduhubvn.repositories;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,8 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     boolean existsByCitizenId(String citizenId);
 
     boolean existsByCitizenIdAndIdNot(String citizenId, UUID id);
+
+    @Query("SELECT l FROM Lecturer l JOIN FETCH l.user WHERE l.id IN :ids AND l.hidden = false")
+    List<Lecturer> findAllByIdWithUser(@Param("ids") Set<UUID> ids);
+
 }

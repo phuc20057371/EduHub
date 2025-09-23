@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.BooleanRequest;
 import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.course.CourseListDTO;
 import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerProfileDTO;
@@ -147,6 +148,13 @@ public class LecturerController {
             @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
         ResearchProjectDTO dto = lecturerService.deleteResearchProject(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa", dto));
+    }
+
+    /// Course
+    @GetMapping("/get-all-courses")
+    public ResponseEntity<ApiResponse<CourseListDTO>> getAllCourses(@AuthenticationPrincipal User user) {
+        CourseListDTO courses = lecturerService.getAllCourses(user);
+        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách khóa học thành công", courses));
     }
 
 

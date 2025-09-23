@@ -178,9 +178,9 @@ public class EduHubVnApplication {
                                                 "Du lịch và nhà hàng",
                                                 "Sản xuất và kỹ thuật"));
                                 List<String> urlCert = new ArrayList<>(Arrays.asList(
-                                                "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_PMP KPS Cert.pdf",
-                                                "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtk_CCNT_5971752_certificate.pdf"));
-                                String degreeUrl = "http://demoportal.ccvi.com.vn:8080/uploads/LECTURER/1/Bangtotnghiep_Bangtk.pdf";
+                                                "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtk_PMP KPS Cert.pdf",
+                                                "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtk_CCNT_5971752_certificate.pdf"));
+                                String degreeUrl = "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtotnghiep_Bangtk.pdf";
 
                                 List<String> trainingCenters = new ArrayList<>(Arrays.asList(
                                                 "Đại học Bách Khoa Hà Nội",
@@ -627,7 +627,7 @@ public class EduHubVnApplication {
                                                                                                 addresses.size())))
                                                                 .description(faker.lorem().sentence())
                                                                 .courseUrl("https://www.google.com/"
-                                                                                + UUID.randomUUID())
+                                                                                )
                                                                 .status(PendingStatus.values()[faker.random()
                                                                                 .nextInt(2)])
                                                                 .adminNote("Đây là dữ liệu mẫu cho khóa học đã tham gia")
@@ -669,7 +669,7 @@ public class EduHubVnApplication {
                                                                 .thumbnailUrl("https://picsum.photos/200/300?random="
                                                                                 + j)
                                                                 .contentUrl("https://www.google.com/"
-                                                                                + UUID.randomUUID())
+                                                                                )
                                                                 .level(faker.options().option(
                                                                                 "Cơ bản", "Trung cấp", "Nâng cao",
                                                                                 "Chuyên gia"))
@@ -689,7 +689,7 @@ public class EduHubVnApplication {
                                                                 .endDate(endDate)
                                                                 .description(faker.lorem().sentence())
                                                                 .courseUrl("https://www.google.com/"
-                                                                                + UUID.randomUUID())
+                                                                                )
                                                                 .status(PendingStatus.values()[faker.random()
                                                                                 .nextInt(2)])
                                                                 .adminNote("Đây là dữ liệu mẫu cho khóa học sở hữu")
@@ -753,7 +753,7 @@ public class EduHubVnApplication {
                                                                                 "Thành viên", "Tư vấn",
                                                                                 "Đồng nghiên cứu"))
                                                                 .publishedUrl("https://www.google.com/"
-                                                                                + UUID.randomUUID())
+                                                                                )
                                                                 .courseStatus(faker.options().option("Đang thực hiện",
                                                                                 "Hoàn thành", "Tạm dừng"))
                                                                 .description(faker.lorem().sentence())
@@ -771,13 +771,13 @@ public class EduHubVnApplication {
 
                                 List<Course> courses = new ArrayList<>();
 
-                                for (int i = 1; i <= 10; i++) {
+                                for (int i = 1; i <= 100; i++) {
                                         String title = courseTitles.get(faker.random().nextInt(courseTitles.size()));
                                         String topic = courseTopics.get(faker.random().nextInt(courseTopics.size()));
                                         CourseType courseType = CourseType.values()[faker.random()
                                                         .nextInt(CourseType.values().length)];
                                         String description = truncate(faker.lorem().paragraph(), 255);
-                                        String thumbnailUrl = "https://picsum.photos/200/300?random=" + i;
+                                        String thumbnailUrl = "https://picsum.photos/700/1000?random=" + i;
                                         String contentUrl = "https://www.google.com/";
                                         String level = truncate(faker.options().option(
                                                         "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"), 255);
@@ -997,7 +997,7 @@ public class EduHubVnApplication {
                                                         .scale(Scale.values()[faker.random()
                                                                         .nextInt(Scale.values().length)])
                                                         .thumbnailUrl("https://picsum.photos/200/300?random=" + i)
-                                                        .contentUrl("https://www.google.com/" + UUID.randomUUID())
+                                                        .contentUrl("https://www.google.com/")
                                                         .level(faker.options().option("Cơ bản", "Trung cấp", "Nâng cao",
                                                                         "Chuyên gia"))
                                                         .requirements("Cập nhật yêu cầu khóa học")
@@ -1011,7 +1011,7 @@ public class EduHubVnApplication {
                                                         .startDate(startDate)
                                                         .endDate(endDate)
                                                         .description(faker.lorem().sentence())
-                                                        .courseUrl("https://www.google.com/" + UUID.randomUUID())
+                                                        .courseUrl("https://www.google.com/")
                                                         .adminNote("Yêu cầu cập nhật thông tin khóa học sở hữu")
                                                         .status(PendingStatus.PENDING)
                                                         .build();
@@ -1051,7 +1051,7 @@ public class EduHubVnApplication {
                                                         .location(addresses
                                                                         .get(faker.random().nextInt(addresses.size())))
                                                         .description(faker.lorem().sentence())
-                                                        .courseUrl("https://www.google.com/" + UUID.randomUUID())
+                                                        .courseUrl("https://www.google.com/")
                                                         .adminNote("Yêu cầu cập nhật thông tin khóa học đã tham gia")
                                                         .status(PendingStatus.PENDING)
                                                         .build();
@@ -1096,7 +1096,7 @@ public class EduHubVnApplication {
                                                                         .nextInt(ProjectType.values().length)])
                                                         .roleInProject(faker.options().option("Chủ nhiệm", "Thành viên",
                                                                         "Tư vấn", "Đồng nghiên cứu"))
-                                                        .publishedUrl("https://www.google.com/" + UUID.randomUUID())
+                                                        .publishedUrl("https://www.google.com/")
                                                         .courseStatus(faker.options().option("Đang thực hiện",
                                                                         "Hoàn thành", "Tạm dừng"))
                                                         .description(faker.lorem().sentence())

@@ -46,6 +46,7 @@ public class EducationInstitutionService {
                     .findByStatus(PendingStatus.PENDING);
 
             return pendingUpdates.stream()
+                    .filter(update -> update.getEducationInstitution().getStatus() == PendingStatus.APPROVED)
                     .map(update -> {
                         EducationInstitution institution = update.getEducationInstitution();
                         EducationInstitutionDTO institutionDTO = educationInstitutionMapper.toDTO(institution);

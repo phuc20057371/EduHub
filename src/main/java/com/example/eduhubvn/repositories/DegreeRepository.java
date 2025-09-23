@@ -16,6 +16,12 @@ public interface DegreeRepository extends JpaRepository<Degree, UUID> {
 
     List<Degree> findByLecturer(Lecturer lecturer);
 
-    @Query("SELECT d FROM Degree d JOIN FETCH d.lecturer l WHERE d.status = :status AND l.status = 'APPROVED'")
+    @Query("SELECT d FROM Degree d JOIN FETCH d.lecturer l WHERE d.status =:status AND l.status='APPROVED'")
+
     List<Degree> findByStatusWithApprovedLecturer(@Param("status") PendingStatus pendingStatus);
+
+    @Query("SELECT d FROM Degree d JOIN d.lecturer l " +
+            "WHERE d.status = :status AND l.hidden = false")
+    List<Degree> findByStatusWithVisibleLecturer(@Param("status") PendingStatus status);
+
 }

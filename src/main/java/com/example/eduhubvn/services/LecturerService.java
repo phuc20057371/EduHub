@@ -1,26 +1,89 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.BooleanRequest;
-import com.example.eduhubvn.dtos.IdRequest;
-import com.example.eduhubvn.dtos.MessageSocket;
-import com.example.eduhubvn.dtos.MessageSocketType;
-import com.example.eduhubvn.dtos.lecturer.*;
-import com.example.eduhubvn.dtos.lecturer.request.*;
-import com.example.eduhubvn.entities.*;
-import com.example.eduhubvn.mapper.*;
-import com.example.eduhubvn.repositories.*;
-import com.example.eduhubvn.ulti.Mapper;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import com.example.eduhubvn.dtos.BooleanRequest;
+import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.MessageSocket;
+import com.example.eduhubvn.dtos.MessageSocketType;
+import com.example.eduhubvn.dtos.course.CourseInfoDTO;
+import com.example.eduhubvn.dtos.course.CourseListDTO;
+import com.example.eduhubvn.dtos.course.CourseMemberDTO;
+import com.example.eduhubvn.dtos.lecturer.AttendedCourseUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
+import com.example.eduhubvn.dtos.lecturer.CertificationUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
+import com.example.eduhubvn.dtos.lecturer.DegreeUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerCreateDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerPendingDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerProfileDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.OwnedCourseUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.OwnedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
+import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
+import com.example.eduhubvn.dtos.lecturer.ResearchProjectUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
+import com.example.eduhubvn.dtos.lecturer.request.LecturerUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectUpdateReq;
+import com.example.eduhubvn.entities.AttendedTrainingCourse;
+import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
+import com.example.eduhubvn.entities.Certification;
+import com.example.eduhubvn.entities.CertificationUpdate;
+import com.example.eduhubvn.entities.Course;
+import com.example.eduhubvn.entities.Degree;
+import com.example.eduhubvn.entities.DegreeUpdate;
+import com.example.eduhubvn.entities.Lecturer;
+import com.example.eduhubvn.entities.LecturerUpdate;
+import com.example.eduhubvn.entities.OwnedTrainingCourse;
+import com.example.eduhubvn.entities.OwnedTrainingCourseUpdate;
+import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.entities.ResearchProject;
+import com.example.eduhubvn.entities.ResearchProjectUpdate;
+import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.mapper.AttendedTrainingCourseMapper;
+import com.example.eduhubvn.mapper.CertificationMapper;
+import com.example.eduhubvn.mapper.CourseMapper;
+import com.example.eduhubvn.mapper.DegreeMapper;
+import com.example.eduhubvn.mapper.LecturerMapper;
+import com.example.eduhubvn.mapper.OwnedTrainingCourseMapper;
+import com.example.eduhubvn.mapper.ResearchProjectMapper;
+import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
+import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.CertificationRepository;
+import com.example.eduhubvn.repositories.CertificationUpdateRepository;
+import com.example.eduhubvn.repositories.CourseRepository;
+import com.example.eduhubvn.repositories.DegreeRepository;
+import com.example.eduhubvn.repositories.DegreeUpdateRepository;
+import com.example.eduhubvn.repositories.LecturerRepository;
+import com.example.eduhubvn.repositories.LecturerUpdateRepository;
+import com.example.eduhubvn.repositories.OwnedTrainingCourseRepository;
+import com.example.eduhubvn.repositories.OwnedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.ResearchProjectRepository;
+import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
+import com.example.eduhubvn.ulti.Mapper;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -38,26 +101,47 @@ public class LecturerService {
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
 
+    private final CourseRepository courseRepository;
+
     private final LecturerMapper lecturerMapper;
     private final DegreeMapper degreeMapper;
     private final CertificationMapper certificationMapper;
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
+    private final CourseMapper courseMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
 
     /// Get
 
+    // @Transactional
+    // public List<LecturerPendingDTO> getPendingLecturerUpdates() {
+    // try {
+    // List<LecturerUpdate> pendingUpdates =
+    // lecturerUpdateRequestRepository.findByStatus(PendingStatus.PENDING);
+
+    // return pendingUpdates.stream()
+    // .map(update -> {
+    // Lecturer lecturer = update.getLecturer();
+    // LecturerDTO lecturerDTO = lecturerMapper.toDTO(lecturer);
+    // LecturerUpdateDTO lecturerUpdateDTO = lecturerMapper.toDTO(update);
+    // return new LecturerPendingDTO(lecturerDTO, lecturerUpdateDTO);
+    // })
+    // .collect(Collectors.toList());
+    // } catch (Exception e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
     @Transactional
     public List<LecturerPendingDTO> getPendingLecturerUpdates() {
         try {
-            List<LecturerUpdate> pendingUpdates = lecturerUpdateRequestRepository.findByStatus(PendingStatus.PENDING);
+            List<LecturerUpdate> pendingUpdates = lecturerUpdateRequestRepository
+                    .findByStatusAndLecturerVisible(PendingStatus.PENDING);
 
             return pendingUpdates.stream()
                     .map(update -> {
-                        Lecturer lecturer = update.getLecturer();
-                        LecturerDTO lecturerDTO = lecturerMapper.toDTO(lecturer);
+                        LecturerDTO lecturerDTO = lecturerMapper.toDTO(update.getLecturer());
                         LecturerUpdateDTO lecturerUpdateDTO = lecturerMapper.toDTO(update);
                         return new LecturerPendingDTO(lecturerDTO, lecturerUpdateDTO);
                     })
@@ -420,7 +504,7 @@ public class LecturerService {
             if (lecturer != null) {
                 messagingTemplate.convertAndSend("/topic/ADMIN",
                         new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, id));
-                
+
             }
             return dto;
         } catch (Exception e) {
@@ -649,7 +733,7 @@ public class LecturerService {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         ResearchProject project = researchProjectRepository.findById(req.getId())
@@ -951,7 +1035,7 @@ public class LecturerService {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
@@ -974,7 +1058,7 @@ public class LecturerService {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
+        if (lecturer == null && user.getRole() != Role.ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
@@ -987,6 +1071,39 @@ public class LecturerService {
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_ATTENDED_COURSE, id));
             return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /// Course
+    @Transactional
+    public CourseListDTO getAllCourses(User user) {
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không có quyền truy cập.");
+        }
+        try {
+            List<Course> courses = courseRepository.findCoursesByLecturer(lecturer);
+            List<CourseInfoDTO> courseInfoDTOs = courses.stream()
+                    .map(course -> {
+                        List<CourseMemberDTO> members = course.getCourseLecturers().stream()
+                                .map(courseLecturer -> CourseMemberDTO.builder()
+                                        .lecturer(Mapper.mapToLecturerInfoDTO(courseLecturer.getLecturer()))
+                                        .courseRole(courseLecturer.getRole())
+                                        .build())
+                                .toList();
+                        return CourseInfoDTO.builder()
+                                .course(courseMapper.toDTO(course))
+                                .members(members)
+                                .build();
+                    })
+                    .toList();
+
+            return CourseListDTO.builder()
+                    .courses(courseInfoDTOs)
+                    .total(courseInfoDTOs.size())
+                    .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
