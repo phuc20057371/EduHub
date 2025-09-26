@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +26,7 @@ public class PartnerOrganization {
     @Column(name = "business_registration_number", length = 10, nullable = false, unique = true)
     private String businessRegistrationNumber;
 
-    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = false)
+    @OneToOne(cascade = { CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -58,8 +59,10 @@ public class PartnerOrganization {
 
     private boolean hidden;
 
-
     @OneToOne(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
     private PartnerOrganizationUpdate partnerUpdate;
+
+    @OneToMany(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> projects;
 
 }

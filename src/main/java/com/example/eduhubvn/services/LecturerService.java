@@ -1109,4 +1109,23 @@ public class LecturerService {
         }
     }
 
+    @Transactional
+    public LecturerDTO updateLecturerAvatar(String avatarUrl, User user) {
+        if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("URL avatar không được trống.");
+        }
+        Lecturer lecturer = user.getLecturer();
+        if (lecturer == null) {
+            throw new IllegalStateException("Không tìm thấy thông tin giảng viên.");
+        }
+        try {
+            lecturer.setAvatarUrl(avatarUrl.trim());
+            lecturerRepository.save(lecturer);
+            lecturerRepository.flush();
+            return lecturerMapper.toDTO(lecturer);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi cập nhật avatar: " + e.getMessage(), e);
+        }
+    }
+
 }

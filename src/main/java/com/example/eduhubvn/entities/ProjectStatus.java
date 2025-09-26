@@ -1,8 +1,10 @@
 package com.example.eduhubvn.entities;
 
 public enum ProjectStatus {
-    DRAFT,
-    APPROVED,
-    IN_PROGRESS,
-    COMPLETED
+    PREPARE, // Chuẩn bị
+    REVIEW, // Đang xem xét
+    PROCESS, // Đang xử lý
+    SUCCESS, // Thành công
+    COMPLETED // Đã hoàn thành
+
 }

@@ -29,7 +29,7 @@ public class Lecturer {
     @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
     private String citizenId;
 
-    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = false)
+    @OneToOne(cascade = { CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -89,5 +89,8 @@ public class Lecturer {
 
     @OneToOne(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private LecturerUpdate lecturerUpdate;
+
+    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> applications;
 
 }

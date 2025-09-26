@@ -1,22 +1,31 @@
 
 package com.example.eduhubvn.entities;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,43 +40,62 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Project {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    /// HR fields
     private String title;
-    private String domain;
+    @Enumerated(EnumType.STRING)
+    private ProjectCategory type; // RESEARCH, COURSE
+    private String field; // Công nghệ thông tin, Kinh tế, Y dược...
+    private String description; // Mô tả ngắn gọn
+
+    // secret fields
+    @Column(name = "member_count")
+    private Integer memberCount; // Số lượng thành viên cần tuyển
+    private BigDecimal budget; // Ngân sách dự kiến
 
     @Enumerated(EnumType.STRING)
-    private ProjectCategory type; // RESEARCH, TRAINING
+    private ProjectStatus status; // PREPARE, REVIEW, PROCESS, SUCCESS, COMPLETED
 
-    private LocalDate startDate;
-    private LocalDate endDate;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", name = "job_description")
     private String jobDescription;
 
-    @Column(columnDefinition = "TEXT")
-    private String requirements;
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "project_requirements", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "requirement")
+    private List<String> requirements = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String benefits;
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "project_benefits", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "benefit")
+    private List<String> benefits = new ArrayList<>();
 
-    private Integer memberCount;
-    private String location;
+    // public fields
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
-    @Enumerated(EnumType.STRING)
-    private ProjectStatus status; // DRAFT, APPROVED, IN_PROGRESS, COMPLETED...
+    private Integer duration; // Số lượng
+    @Column(name = "duration_unit")
+    private String durationUnit; // DAYS, WEEKS, MONTHS ...
 
-    private Double budget;
-    
-    private Integer minExperienceYears;
+    @Column(name = "is_remote")
+    private boolean isRemote; // Có thể làm việc từ xa không
+    private String location; // Địa điểm thực hiện (Có thể là online)
 
+    // system fields
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createdAt;
-
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
+
+    // Relationships
 
     // Owner có thể là EducationInstitution hoặc PartnerOrganization
     @ManyToOne
@@ -78,13 +106,13 @@ public class Project {
     @JoinColumn(name = "partner_id")
     private PartnerOrganization partnerOrganization;
 
-    // Danh sách giảng viên gợi ý
-    @ManyToMany
-    @JoinTable(name = "project_suggested_lecturers", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "lecturer_id"))
-    private List<Lecturer> suggestedLecturers;
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private CourseInfo courseInfo;
 
-    // Danh sách giảng viên tham gia
-    @ManyToMany
-    @JoinTable(name = "project_participating_lecturers", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "lecturer_id"))
-    private List<Lecturer> participatingLecturers;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CourseModule> courseModules;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Application> applications;
+
 }

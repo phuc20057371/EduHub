@@ -187,4 +187,23 @@ public class PartnerOrganizationService {
             throw new RuntimeException(e);
         }
     }
+
+    @Transactional
+    public PartnerOrganizationDTO updatePartnerLogo(String logoUrl, User user) {
+        if (logoUrl == null || logoUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("URL logo không được trống.");
+        }
+        PartnerOrganization partnerOrganization = user.getPartnerOrganization();
+        if (partnerOrganization == null) {
+            throw new IllegalStateException("Không tìm thấy thông tin tổ chức đối tác.");
+        }
+        try {
+            partnerOrganization.setLogoUrl(logoUrl.trim());
+            partnerOrganizationRepository.save(partnerOrganization);
+            partnerOrganizationRepository.flush();
+            return partnerOrganizationMapper.toDTO(partnerOrganization);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi cập nhật logo: " + e.getMessage(), e);
+        }
+    }
 }

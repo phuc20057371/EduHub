@@ -229,4 +229,23 @@ public class EducationInstitutionService {
             throw new RuntimeException(e);
         }
     }
+
+    @Transactional
+    public EducationInstitutionDTO updateInstitutionLogo(String logoUrl, User user) {
+        if (logoUrl == null || logoUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("URL logo không được trống.");
+        }
+        EducationInstitution institution = user.getEducationInstitution();
+        if (institution == null) {
+            throw new IllegalStateException("Không tìm thấy thông tin trường học.");
+        }
+        try {
+            institution.setLogoUrl(logoUrl.trim());
+            educationInstitutionRepository.save(institution);
+            educationInstitutionRepository.flush();
+            return educationInstitutionMapper.toDTO(institution);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi cập nhật logo: " + e.getMessage(), e);
+        }
+    }
 }
