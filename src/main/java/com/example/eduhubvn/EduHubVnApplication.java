@@ -1,23 +1,99 @@
 package com.example.eduhubvn;
 
-import com.example.eduhubvn.dtos.auth.RegisterRequest;
-import com.example.eduhubvn.entities.*;
-import com.example.eduhubvn.repositories.*;
-import com.example.eduhubvn.services.AuthenticationService;
-import com.github.javafaker.Faker;
-import jakarta.annotation.PostConstruct;
+import static io.micrometer.common.util.StringUtils.truncate;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import com.example.eduhubvn.dtos.auth.RegisterRequest;
+import com.example.eduhubvn.entities.AcademicRank;
+import com.example.eduhubvn.entities.Application;
+import com.example.eduhubvn.entities.ApplicationModule;
+import com.example.eduhubvn.entities.ApplicationStatus;
+import com.example.eduhubvn.entities.AttendedTrainingCourse;
+import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
+import com.example.eduhubvn.entities.Certification;
+import com.example.eduhubvn.entities.CertificationUpdate;
+import com.example.eduhubvn.entities.Contract;
+import com.example.eduhubvn.entities.ContractStatus;
+import com.example.eduhubvn.entities.Course;
+import com.example.eduhubvn.entities.CourseInfo;
+import com.example.eduhubvn.entities.CourseLecturer;
+import com.example.eduhubvn.entities.CourseLevel;
+import com.example.eduhubvn.entities.CourseModule;
+import com.example.eduhubvn.entities.CourseRole;
+import com.example.eduhubvn.entities.CourseType;
+import com.example.eduhubvn.entities.Degree;
+import com.example.eduhubvn.entities.DegreeUpdate;
+import com.example.eduhubvn.entities.EducationInstitution;
+import com.example.eduhubvn.entities.EducationInstitutionType;
+import com.example.eduhubvn.entities.EducationInstitutionUpdate;
+import com.example.eduhubvn.entities.Interview;
+import com.example.eduhubvn.entities.InterviewMode;
+import com.example.eduhubvn.entities.InterviewResult;
+import com.example.eduhubvn.entities.InterviewStatus;
+import com.example.eduhubvn.entities.Lecturer;
+import com.example.eduhubvn.entities.LecturerUpdate;
+import com.example.eduhubvn.entities.OwnedTrainingCourse;
+import com.example.eduhubvn.entities.OwnedTrainingCourseUpdate;
+import com.example.eduhubvn.entities.PartnerOrganization;
+import com.example.eduhubvn.entities.PartnerOrganizationUpdate;
+import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.entities.Permission;
+import com.example.eduhubvn.entities.Project;
+import com.example.eduhubvn.entities.ProjectCategory;
+import com.example.eduhubvn.entities.ProjectStatus;
+import com.example.eduhubvn.entities.ProjectType;
+import com.example.eduhubvn.entities.ResearchProject;
+import com.example.eduhubvn.entities.ResearchProjectUpdate;
+import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.entities.Scale;
+import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.repositories.ApplicationModuleRepository;
+import com.example.eduhubvn.repositories.ApplicationRepository;
+import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
+import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.CertificationRepository;
+import com.example.eduhubvn.repositories.CertificationUpdateRepository;
+import com.example.eduhubvn.repositories.ContractRepository;
+import com.example.eduhubvn.repositories.CourseInfoRepository;
+import com.example.eduhubvn.repositories.CourseLecturerRepository;
+import com.example.eduhubvn.repositories.CourseModuleRepository;
+import com.example.eduhubvn.repositories.CourseRepository;
+import com.example.eduhubvn.repositories.DegreeRepository;
+import com.example.eduhubvn.repositories.DegreeUpdateRepository;
+import com.example.eduhubvn.repositories.EducationInstitutionRepository;
+import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
+import com.example.eduhubvn.repositories.InterviewRepository;
+import com.example.eduhubvn.repositories.LecturerRepository;
+import com.example.eduhubvn.repositories.LecturerUpdateRepository;
+import com.example.eduhubvn.repositories.OwnedTrainingCourseRepository;
+import com.example.eduhubvn.repositories.OwnedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
+import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
+import com.example.eduhubvn.repositories.ProjectRespository;
+import com.example.eduhubvn.repositories.ResearchProjectRepository;
+import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
+import com.example.eduhubvn.repositories.UserRepository;
+import com.example.eduhubvn.services.AuthenticationService;
+import com.github.javafaker.Faker;
 
-import static io.micrometer.common.util.StringUtils.truncate;
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class EduHubVnApplication {
@@ -44,6 +120,14 @@ public class EduHubVnApplication {
 
                         CourseRepository courseRepository,
                         CourseLecturerRepository courseLecturerRepository,
+
+                        ProjectRespository projectRepository,
+                        ApplicationRepository applicationRepository,
+                        ApplicationModuleRepository applicationModuleRepository,
+                        InterviewRepository interviewRepository,
+                        ContractRepository contractRepository,
+                        CourseInfoRepository courseInfoRepository,
+                        CourseModuleRepository courseModuleRepository,
 
                         LecturerUpdateRepository lecturerUpdateRepository,
                         EducationInstitutionUpdateRepository educationInstitutionUpdateRepository,
@@ -181,6 +265,40 @@ public class EduHubVnApplication {
                                                 "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtk_PMP KPS Cert.pdf",
                                                 "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtk_CCNT_5971752_certificate.pdf"));
                                 String degreeUrl = "http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/1/Bangtotnghiep_Bangtk.pdf";
+
+                                // Danh sách avatar URLs cho giảng viên - hình ảnh thực tế
+                                List<String> lecturerAvatarUrls = Arrays.asList(
+                                                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&h=200&fit=crop&crop=face",
+                                                "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face");
+
+                                // Danh sách logo URLs cho các tổ chức - hình ảnh thực tế
+                                List<String> organizationLogoUrls = Arrays.asList(
+                                                "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop",
+                                                "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop");
 
                                 List<String> trainingCenters = new ArrayList<>(Arrays.asList(
                                                 "Đại học Bách Khoa Hà Nội",
@@ -366,7 +484,8 @@ public class EduHubVnApplication {
                                                         .hidden(false)
                                                         .status(PendingStatus.values()[isApproved ? 1 : 0])
                                                         // .status(PendingStatus.APPROVED)
-                                                        .avatarUrl("https://picsum.photos/200")
+                                                        .avatarUrl(lecturerAvatarUrls.get(faker.random()
+                                                                        .nextInt(lecturerAvatarUrls.size())))
                                                         .build();
                                         lecturers.add(lecturer);
                                 }
@@ -374,7 +493,8 @@ public class EduHubVnApplication {
                                 for (Lecturer lecturer : lecturers) {
                                         // Re-fetch the user to ensure it's managed
                                         User managedUser = userRepository.findById(lecturer.getUser().getId())
-                                                .orElseThrow(() -> new RuntimeException("User not found for lecturer"));
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "User not found for lecturer"));
                                         lecturer.setUser(managedUser);
                                         lecturerRepository.saveAndFlush(lecturer);
                                 }
@@ -419,7 +539,8 @@ public class EduHubVnApplication {
                                                                                                                                         .size()))))
                                                         .position("Giám đốc")
                                                         .description(faker.lorem().sentence())
-                                                        .logoUrl("https://picsum.photos/200")
+                                                        .logoUrl(organizationLogoUrls.get(faker.random()
+                                                                        .nextInt(organizationLogoUrls.size())))
                                                         .establishedYear(faker.number().numberBetween(1990, 2022))
                                                         .adminNote("Dữ liệu mẫu")
                                                         .status(PendingStatus.values()[faker.random().nextInt(2)])
@@ -429,7 +550,8 @@ public class EduHubVnApplication {
                                 // Save institutions one by one to avoid detached entity issues
                                 for (EducationInstitution institution : institutions) {
                                         // Re-fetch the user to ensure it's managed
-                                        User managedUser = userRepository.findById(institution.getUser().getId()).orElse(null);
+                                        User managedUser = userRepository.findById(institution.getUser().getId())
+                                                        .orElse(null);
                                         if (managedUser != null) {
                                                 institution.setUser(managedUser);
                                         }
@@ -484,7 +606,8 @@ public class EduHubVnApplication {
                                                                                                                                         .size()))))
                                                         .position("Giám đốc")
                                                         .description(faker.lorem().paragraph())
-                                                        .logoUrl("https://picsum.photos/200")
+                                                        .logoUrl(organizationLogoUrls.get(faker.random()
+                                                                        .nextInt(organizationLogoUrls.size())))
                                                         .establishedYear(faker.number().numberBetween(1990, 2024))
                                                         .adminNote("Đây là dữ liệu mẫu cho tổ chức đối tác")
                                                         .status(PendingStatus.values()[faker.random().nextInt(2)])
@@ -495,7 +618,8 @@ public class EduHubVnApplication {
                                 // Save organizations one by one to avoid detached entity issues
                                 for (PartnerOrganization organization : organizations) {
                                         // Re-fetch the user to ensure it's managed
-                                        User managedUser = userRepository.findById(organization.getUser().getId()).orElse(null);
+                                        User managedUser = userRepository.findById(organization.getUser().getId())
+                                                        .orElse(null);
                                         if (managedUser != null) {
                                                 organization.setUser(managedUser);
                                         }
@@ -626,8 +750,7 @@ public class EduHubVnApplication {
                                                                                 addresses.get(faker.random().nextInt(
                                                                                                 addresses.size())))
                                                                 .description(faker.lorem().sentence())
-                                                                .courseUrl("https://www.google.com/"
-                                                                                )
+                                                                .courseUrl("https://www.google.com/")
                                                                 .status(PendingStatus.values()[faker.random()
                                                                                 .nextInt(2)])
                                                                 .adminNote("Đây là dữ liệu mẫu cho khóa học đã tham gia")
@@ -666,10 +789,8 @@ public class EduHubVnApplication {
                                                                                 .nextInt(CourseType.values().length)])
                                                                 .scale(Scale.values()[faker.random()
                                                                                 .nextInt(Scale.values().length)])
-                                                                .thumbnailUrl("https://picsum.photos/200/300?random="
-                                                                                + j)
-                                                                .contentUrl("https://www.google.com/"
-                                                                                )
+                                                                .thumbnailUrl("https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=200&h=300&fit=crop")
+                                                                .contentUrl("https://www.google.com/")
                                                                 .level(faker.options().option(
                                                                                 "Cơ bản", "Trung cấp", "Nâng cao",
                                                                                 "Chuyên gia"))
@@ -688,8 +809,7 @@ public class EduHubVnApplication {
                                                                 .startDate(startDate)
                                                                 .endDate(endDate)
                                                                 .description(faker.lorem().sentence())
-                                                                .courseUrl("https://www.google.com/"
-                                                                                )
+                                                                .courseUrl("https://www.google.com/")
                                                                 .status(PendingStatus.values()[faker.random()
                                                                                 .nextInt(2)])
                                                                 .adminNote("Đây là dữ liệu mẫu cho khóa học sở hữu")
@@ -752,8 +872,7 @@ public class EduHubVnApplication {
                                                                 .roleInProject(faker.options().option("Chủ nhiệm",
                                                                                 "Thành viên", "Tư vấn",
                                                                                 "Đồng nghiên cứu"))
-                                                                .publishedUrl("https://www.google.com/"
-                                                                                )
+                                                                .publishedUrl("https://www.google.com/")
                                                                 .courseStatus(faker.options().option("Đang thực hiện",
                                                                                 "Hoàn thành", "Tạm dừng"))
                                                                 .description(faker.lorem().sentence())
@@ -777,7 +896,7 @@ public class EduHubVnApplication {
                                         CourseType courseType = CourseType.values()[faker.random()
                                                         .nextInt(CourseType.values().length)];
                                         String description = truncate(faker.lorem().paragraph(), 255);
-                                        String thumbnailUrl = "https://picsum.photos/700/1000?random=" + i;
+                                        String thumbnailUrl = "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=700&h=1000&fit=crop";
                                         String contentUrl = "https://www.google.com/";
                                         String level = truncate(faker.options().option(
                                                         "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"), 255);
@@ -892,7 +1011,7 @@ public class EduHubVnApplication {
                                                         .bio(bios.get(faker.random().nextInt(bios.size())))
                                                         .address(addresses
                                                                         .get(faker.random().nextInt(addresses.size())))
-                                                        .avatarUrl("https://picsum.photos/200?random=" + i)
+                                                        .avatarUrl("https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face")
                                                         .academicRank(AcademicRank.values()[faker.random()
                                                                         .nextInt(AcademicRank.values().length)])
                                                         .specialization(specializationWithRankList.get(faker.random()
@@ -996,7 +1115,7 @@ public class EduHubVnApplication {
                                                                         .nextInt(CourseType.values().length)])
                                                         .scale(Scale.values()[faker.random()
                                                                         .nextInt(Scale.values().length)])
-                                                        .thumbnailUrl("https://picsum.photos/200/300?random=" + i)
+                                                        .thumbnailUrl("https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=200&h=300&fit=crop")
                                                         .contentUrl("https://www.google.com/")
                                                         .level(faker.options().option("Cơ bản", "Trung cấp", "Nâng cao",
                                                                         "Chuyên gia"))
@@ -1137,7 +1256,7 @@ public class EduHubVnApplication {
                                                                                                                         .size())))
                                                         .position("Giám đốc")
                                                         .description(faker.lorem().sentence())
-                                                        .logoUrl("https://picsum.photos/200?random=" + i)
+                                                        .logoUrl("https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop")
                                                         .establishedYear(faker.number().numberBetween(1990, 2022))
                                                         .adminNote("Yêu cầu cập nhật thông tin trường/TT")
                                                         .status(PendingStatus.PENDING)
@@ -1179,7 +1298,7 @@ public class EduHubVnApplication {
                                                                                                                         .size())))
                                                         .position("Giám đốc")
                                                         .description(faker.lorem().paragraph())
-                                                        .logoUrl("https://picsum.photos/200?random=" + i)
+                                                        .logoUrl("https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop")
                                                         .establishedYear(faker.number().numberBetween(1990, 2024))
                                                         .adminNote("Yêu cầu cập nhật thông tin tổ chức đối tác")
                                                         .status(PendingStatus.PENDING)
@@ -1204,37 +1323,43 @@ public class EduHubVnApplication {
                                                 .password("SGL@2025")
                                                 .role(Role.SUB_ADMIN)
                                                 .build();
-                                
+
                                 // Register users and get their info
                                 var adminResponse = authenticationService.register(admin);
                                 var subAdmin1Response = authenticationService.register(sub_admin1);
                                 var subAdmin2Response = authenticationService.register(sub_admin2);
-                                
+
                                 // Get admin user for permission assignment
                                 User adminUser = userRepository.findByEmail("admin@gmail.com").orElseThrow();
                                 User subAdmin1User = userRepository.findByEmail("sub_admin1@gmail.com").orElseThrow();
                                 User subAdmin2User = userRepository.findByEmail("sub_admin2@gmail.com").orElseThrow();
-                                
+
                                 // Assign permissions to sub_admin1 (có quyền về organization và lecturer)
                                 List<Permission> subAdmin1Permissions = List.of(
-                                    Permission.ORGANIZATION_READ,
-                                    Permission.ORGANIZATION_UPDATE,
-                                    Permission.ORGANIZATION_APPROVE,
-                                    Permission.LECTURER_READ,
-                                    Permission.LECTURER_UPDATE,
-                                    Permission.LECTURER_APPROVE
-                                );
+                                                Permission.ORGANIZATION_READ,
+                                                Permission.ORGANIZATION_UPDATE,
+                                                Permission.ORGANIZATION_APPROVE,
+                                                Permission.LECTURER_READ,
+                                                Permission.LECTURER_UPDATE,
+                                                Permission.LECTURER_APPROVE);
                                 subAdminService.assignPermissionsToUser(subAdmin1User, subAdmin1Permissions, adminUser);
-                                
-                                // Assign permissions to sub_admin2 (có quyền về school và một số quyền lecturer)
+
+                                // Assign permissions to sub_admin2 (có quyền về school và một số quyền
+                                // lecturer)
                                 List<Permission> subAdmin2Permissions = List.of(
-                                    Permission.SCHOOL_READ,
-                                    Permission.SCHOOL_UPDATE,
-                                    Permission.SCHOOL_APPROVE,
-                                    Permission.LECTURER_READ
-                                );
+                                                Permission.SCHOOL_READ,
+                                                Permission.SCHOOL_UPDATE,
+                                                Permission.SCHOOL_APPROVE,
+                                                Permission.LECTURER_READ);
                                 subAdminService.assignPermissionsToUser(subAdmin2User, subAdmin2Permissions, adminUser);
-                                
+
+                                // ===== TẠO DỮ LIỆU MẪU CHO PROJECT VÀ CÁC ENTITY LIÊN QUAN =====
+                                createSampleProjectData(projectRepository, applicationRepository,
+                                                applicationModuleRepository, interviewRepository,
+                                                contractRepository, courseInfoRepository, courseModuleRepository,
+                                                educationInstitutionRepository, partnerOrganizationRepository,
+                                                lecturerRepository, faker);
+
                                 System.out.println("token admin: " + adminResponse.getAccessToken());
                                 System.out.println("token sub_admin1: " + subAdmin1Response.getAccessToken());
                                 System.out.println("token sub_admin2: " + subAdmin2Response.getAccessToken());
@@ -1243,5 +1368,584 @@ public class EduHubVnApplication {
                                 throw new RuntimeException("không thể khởi tạo dữ liệu mẫu: " + e.getMessage(), e);
                         }
                 };
+        }
+
+        private void createSampleProjectData(
+                        ProjectRespository projectRepository,
+                        ApplicationRepository applicationRepository,
+                        ApplicationModuleRepository applicationModuleRepository,
+                        InterviewRepository interviewRepository,
+                        ContractRepository contractRepository,
+                        CourseInfoRepository courseInfoRepository,
+                        CourseModuleRepository courseModuleRepository,
+                        EducationInstitutionRepository educationInstitutionRepository,
+                        PartnerOrganizationRepository partnerOrganizationRepository,
+                        LecturerRepository lecturerRepository,
+                        Faker faker) {
+
+                try {
+                        // Lấy dữ liệu đã được APPROVED
+                        List<EducationInstitution> institutions = educationInstitutionRepository.findAll().stream()
+                                        .filter(institution -> institution.getStatus() == PendingStatus.APPROVED)
+                                        .toList();
+                        List<PartnerOrganization> partners = partnerOrganizationRepository.findAll().stream()
+                                        .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
+                                        .toList();
+                        List<Lecturer> lecturers = lecturerRepository.findAll().stream()
+                                        .filter(lecturer -> lecturer.getStatus() == PendingStatus.APPROVED)
+                                        .toList();
+
+                        if (institutions.isEmpty() || partners.isEmpty() || lecturers.isEmpty()) {
+                                System.out.println(
+                                                "Không có đủ dữ liệu APPROVED để tạo projects. Cần có ít nhất 1 institution, 1 partner và 1 lecturer với status APPROVED.");
+                                return;
+                        }
+
+                        List<String> projectFields = Arrays.asList(
+                                        "Công nghệ thông tin", "Khoa học máy tính", "Kỹ thuật phần mềm",
+                                        "Trí tuệ nhân tạo", "An ninh mạng", "Khoa học dữ liệu",
+                                        "Kinh tế", "Quản trị kinh doanh", "Marketing", "Tài chính",
+                                        "Y dược", "Sinh học", "Hóa học", "Vật lý",
+                                        "Giáo dục", "Tâm lý học", "Ngôn ngữ học");
+
+                        List<String> researchTitles = Arrays.asList(
+                                        "Nghiên cứu ứng dụng AI trong giáo dục",
+                                        "Phân tích dữ liệu lớn cho doanh nghiệp",
+                                        "Nghiên cứu bảo mật thông tin",
+                                        "Ứng dụng blockchain trong tài chính",
+                                        "Nghiên cứu machine learning trong y tế",
+                                        "Phát triển hệ thống IoT thông minh",
+                                        "Nghiên cứu về tâm lý học nhận thức",
+                                        "Ứng dụng VR/AR trong giáo dục",
+                                        "Nghiên cứu về kinh tế số",
+                                        "Phát triển thuật toán tối ưu hóa");
+
+                        List<String> courseTitles = Arrays.asList(
+                                        "Khóa học lập trình Java Spring Boot",
+                                        "Khóa học phát triển ứng dụng mobile",
+                                        "Khóa học thiết kế UX/UI chuyên nghiệp",
+                                        "Khóa học marketing digital",
+                                        "Khóa học quản trị dự án",
+                                        "Khóa học phân tích dữ liệu với Python",
+                                        "Khóa học phát triển web fullstack",
+                                        "Khóa học cloud computing với AWS",
+                                        "Khóa học machine learning cơ bản",
+                                        "Khóa học cyber security");
+
+                        List<Project> projects = new ArrayList<>();
+
+                        // Tạo 20 projects (10 RESEARCH, 10 COURSE)
+                        for (int i = 0; i < 20; i++) {
+                                boolean isResearch = i < 10;
+                                ProjectCategory category = isResearch ? ProjectCategory.RESEARCH
+                                                : ProjectCategory.COURSE;
+
+                                List<String> titles = isResearch ? researchTitles : courseTitles;
+                                String title = titles.get(i % titles.size());
+
+                                // Chọn owner ngẫu nhiên (institution hoặc partner)
+                                boolean useInstitution = faker.random().nextBoolean();
+                                EducationInstitution institution = useInstitution
+                                                ? institutions.get(faker.random().nextInt(institutions.size()))
+                                                : null;
+                                PartnerOrganization partner = !useInstitution
+                                                ? partners.get(faker.random().nextInt(partners.size()))
+                                                : null;
+
+                                LocalDate startDate = faker.date().between(
+                                                java.sql.Date.valueOf(LocalDate.now().minusMonths(3)),
+                                                java.sql.Date.valueOf(LocalDate.now().plusMonths(2))).toInstant()
+                                                .atZone(ZoneId.systemDefault()).toLocalDate();
+
+                                LocalDate endDate = startDate.plusMonths(faker.random().nextInt(3, 12));
+
+                                Project project = Project.builder()
+                                                .title(title.length() > 500 ? title.substring(0, 497) + "..." : title)
+                                                .type(category)
+                                                .field(projectFields.get(faker.random().nextInt(projectFields.size())))
+                                                .description(faker.lorem().paragraph(2))
+                                                .memberCount(faker.random().nextInt(2, 8))
+                                                .budget(BigDecimal.valueOf(
+                                                                faker.random().nextInt(50_000_000, 500_000_000)))
+                                                .status(ProjectStatus.values()[faker.random()
+                                                                .nextInt(ProjectStatus.values().length)])
+                                                .jobDescription(truncate(faker.lorem().paragraph(5), 2000))
+                                                .requirements(Arrays.asList(
+                                                                truncate(faker.job().keySkills(), 255),
+                                                                truncate(faker.job().keySkills(), 255),
+                                                                truncate(faker.job().keySkills(), 255)))
+                                                .benefits(Arrays.asList(
+                                                                "Lương thưởng cạnh tranh",
+                                                                "Môi trường làm việc chuyên nghiệp",
+                                                                "Cơ hội phát triển nghề nghiệp",
+                                                                "Bảo hiểm đầy đủ"))
+                                                .startDate(startDate)
+                                                .endDate(endDate)
+                                                .published(faker.random().nextBoolean())
+                                                .duration(faker.random().nextInt(1, 24))
+                                                .durationUnit(faker.options().option("MONTHS", "WEEKS", "DAYS"))
+                                                .isRemote(faker.random().nextBoolean())
+                                                .location(faker.random().nextBoolean() ? "Online"
+                                                                : (faker.address().cityName().length() > 500
+                                                                                ? faker.address().cityName().substring(
+                                                                                                0, 497) + "..."
+                                                                                : faker.address().cityName()))
+                                                .educationInstitution(institution)
+                                                .partnerOrganization(partner)
+                                                .build();
+
+                                projects.add(project);
+                        }
+
+                        // Lưu projects
+                        projectRepository.saveAll(projects);
+                        projectRepository.flush();
+
+                        // Tạo CourseInfo và CourseModule cho các project có type = COURSE
+                        List<CourseInfo> courseInfos = new ArrayList<>();
+                        List<CourseModule> courseModules = new ArrayList<>();
+
+                        // Dữ liệu có sẵn cho CourseInfo
+                        List<String> courseIntroduces = Arrays.asList(
+                                        "Khóa học này được thiết kế đặc biệt để trang bị cho học viên những kiến thức và kỹ năng cần thiết trong lĩnh vực công nghệ. Với đội ngũ giảng viên giàu kinh nghiệm và phương pháp giảng dạy hiện đại, chúng tôi cam kết mang đến trải nghiệm học tập tốt nhất.",
+                                        "Chương trình đào tạo chuyên sâu, kết hợp giữa lý thuyết và thực hành, giúp học viên nắm vững kiến thức cốt lõi và áp dụng ngay vào công việc thực tế. Nội dung được cập nhật liên tục theo xu hướng công nghệ mới nhất.",
+                                        "Khóa học toàn diện từ cơ bản đến nâng cao, phù hợp với mọi đối tượng từ người mới bắt đầu đến chuyên gia muốn nâng cao trình độ. Phương pháp học tập chủ động, kết hợp bài giảng, bài tập thực hành và dự án nhóm.",
+                                        "Được xây dựng bởi các chuyên gia hàng đầu trong ngành, khóa học này mang đến cái nhìn toàn diện về lĩnh vực, từ khái niệm cơ bản đến ứng dụng thực tế, giúp học viên tự tin làm việc trong môi trường chuyên nghiệp.",
+                                        "Khóa học tập trung vào việc phát triển kỹ năng thực tế, với các dự án thực tế và case study thực tế. Học viên sẽ được hướng dẫn bởi những giảng viên có nhiều năm kinh nghiệm trong lĩnh vực.");
+
+                        List<String> courseDescriptions = Arrays.asList(
+                                        "Khóa học lập trình Java Spring Boot toàn diện, từ cơ bản đến nâng cao với các dự án thực tế.",
+                                        "Học phát triển ứng dụng di động với React Native và Flutter, tạo ra ứng dụng đa nền tảng.",
+                                        "Thiết kế giao diện người dùng chuyên nghiệp với Figma và Adobe XD, từ ý tưởng đến prototype.",
+                                        "Marketing số toàn diện với Google Ads, Facebook Ads và SEO, tối ưu hóa hiệu quả kinh doanh.",
+                                        "Quản trị dự án Agile với Scrum và Kanban, nâng cao hiệu suất làm việc nhóm.",
+                                        "Phân tích dữ liệu với Python, từ thu thập đến trực quan hóa dữ liệu chuyên nghiệp.",
+                                        "Phát triển web fullstack với Node.js, React và MongoDB, xây dựng ứng dụng hoàn chỉnh.",
+                                        "Cloud computing với AWS, từ EC2 đến serverless, triển khai ứng dụng đám mây.",
+                                        "Machine learning cơ bản với Python, từ khái niệm đến mô hình dự đoán thực tế.",
+                                        "An ninh mạng toàn diện, từ bảo mật mạng đến ứng dụng, bảo vệ hệ thống khỏi mối đe dọa.");
+
+                        List<List<String>> courseKnowledgeData = Arrays.asList(
+                                        Arrays.asList("Java Core", "Spring Framework", "RESTful API",
+                                                        "Database Design"),
+                                        Arrays.asList("React Native", "Flutter", "Mobile UI/UX",
+                                                        "App Store Deployment"),
+                                        Arrays.asList("Figma", "Adobe XD", "User Research", "Prototyping"),
+                                        Arrays.asList("Google Ads", "Facebook Ads", "SEO", "Analytics"),
+                                        Arrays.asList("Agile", "Scrum", "Kanban", "Team Management"),
+                                        Arrays.asList("Python", "Pandas", "Matplotlib", "Data Visualization"),
+                                        Arrays.asList("Node.js", "React", "MongoDB", "Authentication"),
+                                        Arrays.asList("AWS EC2", "Lambda", "S3", "CloudFormation"),
+                                        Arrays.asList("Python ML", "Scikit-learn", "TensorFlow", "Model Deployment"),
+                                        Arrays.asList("Network Security", "Cryptography", "Penetration Testing",
+                                                        "Security Tools"));
+
+                        List<List<String>> courseRequirementsData = Arrays.asList(
+                                        Arrays.asList("Kiến thức cơ bản về lập trình",
+                                                        "Máy tính có cấu hình trung bình", "Kết nối internet ổn định"),
+                                        Arrays.asList("Smartphone hoặc máy tính bảng", "Kiến thức cơ bản về lập trình",
+                                                        "Sở thích với mobile development"),
+                                        Arrays.asList("Máy tính có phần mềm thiết kế", "Khả năng sáng tạo",
+                                                        "Kiến thức cơ bản về UX"),
+                                        Arrays.asList("Máy tính kết nối internet", "Kiến thức marketing cơ bản",
+                                                        "Kinh nghiệm sử dụng mạng xã hội"),
+                                        Arrays.asList("Kinh nghiệm làm việc nhóm", "Máy tính cá nhân",
+                                                        "Sở thích với project management"),
+                                        Arrays.asList("Kiến thức toán cơ bản", "Máy tính có Python",
+                                                        "Sở thích với data analysis"),
+                                        Arrays.asList("Kiến thức JavaScript cơ bản", "Máy tính hiện đại",
+                                                        "Kinh nghiệm web development"),
+                                        Arrays.asList("Máy tính kết nối internet", "Kiến thức IT cơ bản",
+                                                        "Sở thích với cloud computing"),
+                                        Arrays.asList("Kiến thức Python và toán", "Máy tính cấu hình tốt",
+                                                        "Sở thích với AI/ML"),
+                                        Arrays.asList("Kiến thức IT cơ bản", "Máy tính hiện đại",
+                                                        "Sở thích với cybersecurity"));
+
+                        // Danh sách thumbnail URLs đa dạng
+                        List<String> courseThumbnailUrls = Arrays.asList(
+                                        "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
+
+                                        "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&h=600&fit=crop",
+                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop");
+
+                        int dataIndex = 0; // Index để chọn dữ liệu có sẵn
+
+                        for (Project project : projects) {
+                                if (project.getType() == ProjectCategory.COURSE) {
+                                        // Lấy dữ liệu có sẵn theo index
+                                        String introduce = courseIntroduces.get(dataIndex % courseIntroduces.size());
+                                        String publicDescription = courseDescriptions
+                                                        .get(dataIndex % courseDescriptions.size());
+                                        List<String> knowledge = courseKnowledgeData
+                                                        .get(dataIndex % courseKnowledgeData.size());
+                                        List<String> requirements = courseRequirementsData
+                                                        .get(dataIndex % courseRequirementsData.size());
+
+                                        // Giới hạn độ dài dữ liệu
+                                        String safePublicTitle = project.getTitle().length() > 500
+                                                        ? project.getTitle().substring(0, 497) + "..."
+                                                        : project.getTitle();
+                                        String safeThumbnailUrl = courseThumbnailUrls
+                                                        .get(dataIndex % courseThumbnailUrls.size());
+                                        String safeAddress = project.getLocation().length() > 500
+                                                        ? project.getLocation().substring(0, 497) + "..."
+                                                        : project.getLocation();
+
+                                        // Tạo CourseInfo
+                                        CourseInfo courseInfo = CourseInfo.builder()
+                                                        .project(project)
+                                                        .publicTitle(safePublicTitle)
+                                                        .publicDescription(publicDescription)
+                                                        .thumbnailUrl(safeThumbnailUrl)
+                                                        .knowledge(knowledge.stream().map(k -> truncate(k, 255))
+                                                                        .toList())
+                                                        .requirements(requirements.stream().map(r -> truncate(r, 255))
+                                                                        .toList())
+                                                        .address(safeAddress)
+                                                        .isOnline(faker.random().nextBoolean())
+                                                        .introduce(introduce)
+                                                        .level(CourseLevel.values()[faker.random()
+                                                                        .nextInt(CourseLevel.values().length)])
+                                                        .price(BigDecimal.valueOf(
+                                                                        faker.random().nextInt(1_000_000, 10_000_000)))
+                                                        .published(faker.random().nextBoolean())
+                                                        .build();
+                                        courseInfos.add(courseInfo);
+
+                                        dataIndex++; // Tăng index cho lần sau
+                                }
+                        }
+
+                        // Dữ liệu mẫu cho CourseModule
+                        List<String> moduleTitles = Arrays.asList(
+                                        "Giới thiệu và tổng quan khóa học",
+                                        "Cài đặt môi trường phát triển",
+                                        "Ngôn ngữ lập trình cơ bản",
+                                        "Cấu trúc dữ liệu và giải thuật",
+                                        "Lập trình hướng đối tượng",
+                                        "Xử lý file và I/O",
+                                        "Làm việc với cơ sở dữ liệu",
+                                        "Tạo giao diện người dùng",
+                                        "Xử lý sự kiện và tương tác",
+                                        "Debug và testing",
+                                        "Triển khai ứng dụng",
+                                        "Bảo mật và bảo mật",
+                                        "Tối ưu hóa hiệu suất",
+                                        "Design patterns",
+                                        "Microservices và API",
+                                        "DevOps và CI/CD",
+                                        "Machine Learning cơ bản",
+                                        "Blockchain và cryptocurrency",
+                                        "Cloud computing với AWS",
+                                        "Mobile development");
+
+                        List<String> moduleDescriptions = Arrays.asList(
+                                        "Khóa học bắt đầu với việc giới thiệu tổng quan về ngành công nghệ thông tin, các khái niệm cơ bản và xu hướng phát triển. Học viên sẽ được làm quen với môi trường học tập và các công cụ cần thiết.",
+                                        "Hướng dẫn chi tiết cách cài đặt và cấu hình môi trường phát triển bao gồm JDK, IDE, và các công cụ hỗ trợ lập trình. Đảm bảo học viên có setup hoàn chỉnh trước khi bắt đầu.",
+                                        "Làm quen với cú pháp cơ bản của ngôn ngữ lập trình, khai báo biến, toán tử, câu lệnh điều kiện và vòng lặp. Đây là nền tảng quan trọng cho các bài học tiếp theo.",
+                                        "Tìm hiểu về các cấu trúc dữ liệu cơ bản như mảng, danh sách liên kết, ngăn xếp, hàng đợi và cây. Đồng thời học cách áp dụng các giải thuật sắp xếp và tìm kiếm.",
+                                        "Khám phá khái niệm lập trình hướng đối tượng với các khái niệm trừu tượng, đóng gói, kế thừa và đa hình. Thực hành với ví dụ thực tế để hiểu rõ hơn.",
+                                        "Học cách đọc và ghi file, xử lý luồng dữ liệu input/output. Bao gồm làm việc với file text, binary và xử lý exception khi thao tác với file system.",
+                                        "Tìm hiểu cách kết nối và thao tác với cơ sở dữ liệu quan hệ. Bao gồm SQL cơ bản, JDBC và các pattern phổ biến trong database programming.",
+                                        "Thiết kế và xây dựng giao diện người dùng thân thiện với HTML, CSS và JavaScript. Tập trung vào responsive design và user experience.",
+                                        "Xử lý các sự kiện từ người dùng như click, hover, form submission. Tích hợp JavaScript để tạo tính tương tác cho ứng dụng web.",
+                                        "Kỹ thuật debug code hiệu quả, sử dụng các công cụ debugging và testing. Viết unit test và integration test để đảm bảo chất lượng code.",
+                                        "Hướng dẫn cách deploy ứng dụng lên server, cấu hình production environment và monitoring. Bao gồm containerization với Docker.",
+                                        "Các khái niệm bảo mật cơ bản trong phát triển phần mềm, authentication, authorization và các best practices về security.",
+                                        "Tối ưu hóa hiệu suất ứng dụng, database optimization, caching strategies và code optimization techniques.",
+                                        "Tìm hiểu các design patterns phổ biến như Singleton, Factory, Observer. Áp dụng vào giải quyết vấn đề thực tế.",
+                                        "Kiến trúc microservices, RESTful API design, API documentation và version management.",
+                                        "DevOps practices, CI/CD pipelines, automated testing và deployment strategies.",
+                                        "Giới thiệu machine learning cơ bản, supervised và unsupervised learning, các thuật toán phổ biến.",
+                                        "Blockchain technology, smart contracts, cryptocurrency và các ứng dụng thực tế của blockchain.",
+                                        "Cloud computing với AWS, các services cơ bản như EC2, S3, Lambda và best practices.",
+                                        "Phát triển ứng dụng di động native và cross-platform, UI/UX design cho mobile apps.");
+
+                        List<List<String>> moduleRequirements = Arrays.asList(
+                                        Arrays.asList("Máy tính cá nhân", "Kết nối internet ổn định",
+                                                        "Sở thích học tập"),
+                                        Arrays.asList("Máy tính Windows/Mac/Linux", "4GB RAM", "10GB ổ cứng trống"),
+                                        Arrays.asList("Kiến thức toán cơ bản", "Máy tính có trình biên dịch",
+                                                        "Sổ tay ghi chép"),
+                                        Arrays.asList("Kiến thức lập trình cơ bản", "Máy tính cấu hình trung bình",
+                                                        "Tài liệu tham khảo"),
+                                        Arrays.asList("Hiểu biết OOP cơ bản", "IDE đã cài đặt", "Dự án thực hành"),
+                                        Arrays.asList("Kiến thức I/O cơ bản", "File system access",
+                                                        "Exception handling"),
+                                        Arrays.asList("Kiến thức SQL", "JDBC driver", "Database server"),
+                                        Arrays.asList("HTML/CSS cơ bản", "Text editor", "Web browser"),
+                                        Arrays.asList("JavaScript fundamentals", "DOM manipulation", "Event handling"),
+                                        Arrays.asList("Debugging mindset", "Testing framework", "Code review skills"),
+                                        Arrays.asList("Development environment", "Server knowledge",
+                                                        "Deployment tools"),
+                                        Arrays.asList("Security awareness", "Encryption basics",
+                                                        "Authentication concepts"),
+                                        Arrays.asList("Performance monitoring", "Profiling tools",
+                                                        "Optimization mindset"),
+                                        Arrays.asList("Problem solving", "Design thinking", "Code refactoring"),
+                                        Arrays.asList("API knowledge", "Documentation skills", "Version control"),
+                                        Arrays.asList("DevOps mindset", "Automation skills", "Monitoring tools"),
+                                        Arrays.asList("Math background", "Statistics knowledge", "Programming skills"),
+                                        Arrays.asList("Distributed systems", "Cryptography basics",
+                                                        "Smart contract logic"),
+                                        Arrays.asList("Cloud concepts", "AWS account", "Command line tools"),
+                                        Arrays.asList("Mobile development", "UI/UX design", "Cross-platform tools"));
+
+                        // Tạo 3-8 CourseModule cho mỗi course
+                        int moduleDataIndex = 0;
+                        for (Project project : projects) {
+                                if (project.getType() == ProjectCategory.COURSE) {
+                                        int moduleCount = faker.random().nextInt(3, 9);
+                                        for (int j = 0; j < moduleCount; j++) {
+                                                String moduleTitle = moduleTitles
+                                                                .get(moduleDataIndex % moduleTitles.size());
+                                                String moduleDescription = moduleDescriptions
+                                                                .get(moduleDataIndex % moduleDescriptions.size());
+                                                List<String> moduleReqs = moduleRequirements
+                                                                .get(moduleDataIndex % moduleRequirements.size());
+
+                                                CourseModule module = CourseModule.builder()
+                                                                .project(project)
+                                                                .title(moduleTitle.length() > 500
+                                                                                ? moduleTitle.substring(0, 497) + "..."
+                                                                                : moduleTitle)
+                                                                .description(moduleDescription)
+                                                                .moduleOrder(j + 1)
+                                                                .duration(faker.random().nextInt(2, 8))
+                                                                .requirements(moduleReqs.stream()
+                                                                                .map(req -> truncate(req, 255))
+                                                                                .toList())
+                                                                .build();
+                                                courseModules.add(module);
+
+                                                moduleDataIndex++;
+                                        }
+                                }
+                        }
+
+                        // Lưu CourseInfo và CourseModule
+                        if (!courseInfos.isEmpty()) {
+                                courseInfoRepository.saveAll(courseInfos);
+                                courseInfoRepository.flush();
+                        }
+                        if (!courseModules.isEmpty()) {
+                                courseModuleRepository.saveAll(courseModules);
+                                courseModuleRepository.flush();
+                        }
+
+                        // Tạo Applications cho các projects
+                        List<Application> applications = new ArrayList<>();
+                        List<ApplicationModule> applicationModules = new ArrayList<>();
+                        List<Interview> interviews = new ArrayList<>();
+                        List<Contract> contracts = new ArrayList<>();
+
+                        // Tạo nhiều Applications cho tất cả projects
+                        if (!projects.isEmpty() && !lecturers.isEmpty()) {
+                                // Tạo 2-5 Applications cho mỗi project
+                                for (Project project : projects) {
+                                        int applicationCount = faker.random().nextInt(2, 6);
+
+                                        for (int i = 0; i < applicationCount; i++) {
+                                                Lecturer randomLecturer = lecturers
+                                                                .get(faker.random().nextInt(lecturers.size()));
+
+                                                // Chỉ application đầu tiên có status APPROVED
+                                                ApplicationStatus status = (i == 0) ? ApplicationStatus.APPROVED
+                                                                : ApplicationStatus.SUBMITTED;
+
+                                                Application application = Application.builder()
+                                                                .project(project)
+                                                                .lecturer(randomLecturer)
+                                                                .cvUrl("http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/"
+                                                                                + randomLecturer.getId() + "/cv.pdf")
+                                                                .coverLetter(faker.lorem().paragraph(3))
+                                                                .expectedSalary(BigDecimal.valueOf(
+                                                                                faker.random().nextInt(15_000_000,
+                                                                                                50_000_000)))
+                                                                .status(status)
+                                                                .build();
+                                                applications.add(application);
+
+                                                // Tạo Interview cho Application có status APPROVED
+                                                if (status == ApplicationStatus.APPROVED) {
+                                                        // Tạo 1-2 Interview với PASS cho Application APPROVED
+                                                        int interviewCount = faker.random().nextInt(1, 3);
+                                                        for (int j = 0; j < interviewCount; j++) {
+                                                                Interview interview = Interview.builder()
+                                                                                .application(application)
+                                                                                .interviewDate(faker.date().between(
+                                                                                                java.sql.Date.from(
+                                                                                                                LocalDateTime.now()
+                                                                                                                                .minusWeeks(2)
+                                                                                                                                .atZone(ZoneId.systemDefault())
+                                                                                                                                .toInstant()),
+                                                                                                java.sql.Date.from(
+                                                                                                                LocalDateTime.now()
+                                                                                                                                .minusWeeks(1)
+                                                                                                                                .atZone(ZoneId.systemDefault())
+                                                                                                                                .toInstant()))
+                                                                                                .toInstant()
+                                                                                                .atZone(ZoneId.systemDefault())
+                                                                                                .toLocalDateTime())
+                                                                                .location(faker.random().nextBoolean()
+                                                                                                ? "Online"
+                                                                                                : faker.address()
+                                                                                                                .fullAddress())
+                                                                                .mode(faker.random().nextBoolean()
+                                                                                                ? InterviewMode.ONLINE
+                                                                                                : InterviewMode.OFFLINE)
+                                                                                .status(InterviewStatus.COMPLETED)
+                                                                                .feedback("Ứng viên có kiến thức vững chắc và kinh nghiệm phù hợp với yêu cầu công việc.")
+                                                                                .score(faker.random().nextInt(85, 100))
+                                                                                .result(InterviewResult.PASS)
+                                                                                .build();
+                                                                interviews.add(interview);
+                                                        }
+
+                                                        // Tạo Contract
+                                                        Contract contract = Contract.builder()
+                                                                        .application(application)
+                                                                        .contractUrl("http://demoportal.ccvi.com.vn:8880/uploads/LECTURER/"
+                                                                                        + randomLecturer.getId()
+                                                                                        + "/contract.pdf")
+                                                                        .contractNo("CT" + faker.random().nextInt(1000,
+                                                                                        9999))
+                                                                        .signedDate(faker.date().between(
+                                                                                        java.sql.Date.from(LocalDateTime
+                                                                                                        .now()
+                                                                                                        .minusWeeks(1)
+                                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                                        .toInstant()),
+                                                                                        java.sql.Date.from(LocalDateTime
+                                                                                                        .now()
+                                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                                        .toInstant()))
+                                                                                        .toInstant()
+                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                        .toLocalDateTime())
+                                                                        .status(ContractStatus.values()[faker.random()
+                                                                                        .nextInt(ContractStatus
+                                                                                                        .values().length)])
+                                                                        .build();
+                                                        contracts.add(contract);
+                                                } else {
+                                                        // Tạo Interview với FAIL cho Application không APPROVED
+                                                        Interview interview = Interview.builder()
+                                                                        .application(application)
+                                                                        .interviewDate(faker.date().between(
+                                                                                        java.sql.Date.from(LocalDateTime
+                                                                                                        .now()
+                                                                                                        .minusWeeks(2)
+                                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                                        .toInstant()),
+                                                                                        java.sql.Date.from(LocalDateTime
+                                                                                                        .now()
+                                                                                                        .minusWeeks(1)
+                                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                                        .toInstant()))
+                                                                                        .toInstant()
+                                                                                        .atZone(ZoneId.systemDefault())
+                                                                                        .toLocalDateTime())
+                                                                        .location(faker.random().nextBoolean()
+                                                                                        ? "Online"
+                                                                                        : faker.address().fullAddress())
+                                                                        .mode(faker.random().nextBoolean()
+                                                                                        ? InterviewMode.ONLINE
+                                                                                        : InterviewMode.OFFLINE)
+                                                                        .status(InterviewStatus.COMPLETED)
+                                                                        .feedback("Ứng viên chưa đáp ứng đủ yêu cầu.")
+                                                                        .score(faker.random().nextInt(40, 65))
+                                                                        .result(InterviewResult.FAIL)
+                                                                        .build();
+                                                        interviews.add(interview);
+                                                }
+                                        }
+                                }
+                        }
+
+                        // Lưu tất cả
+                        if (!applications.isEmpty()) {
+                                applicationRepository.saveAll(applications);
+                                applicationRepository.flush();
+                        }
+
+                        // Tạo ApplicationModule cho các CourseModule (chỉ cho COURSE projects)
+                        if (!applications.isEmpty() && !courseModules.isEmpty()) {
+                                // Lọc Applications APPROVED liên kết với COURSE projects
+                                List<Application> approvedCourseApplications = applications.stream()
+                                                .filter(app -> app.getProject().getType() == ProjectCategory.COURSE)
+                                                .filter(app -> app.getStatus() == ApplicationStatus.APPROVED)
+                                                .toList();
+
+                                if (!approvedCourseApplications.isEmpty()) {
+                                        // Tạo ApplicationModule cho mỗi CourseModule
+                                        int applicationIndex = 0; // Index để track Application APPROVED hiện tại
+                                        for (CourseModule courseModule : courseModules) {
+                                                // Tạo 2-4 ApplicationModule cho mỗi CourseModule
+                                                int appModuleCount = faker.random().nextInt(2, 5);
+
+                                                for (int i = 0; i < appModuleCount; i++) {
+                                                        // Gán Application APPROVED theo index (round-robin)
+                                                        Application assignedApplication = approvedCourseApplications
+                                                                        .get(applicationIndex);
+
+                                                        ApplicationModule applicationModule = ApplicationModule
+                                                                        .builder()
+                                                                        .application(assignedApplication)
+                                                                        .courseModule(courseModule)
+                                                                        .build();
+                                                        applicationModules.add(applicationModule);
+
+                                                        // Tăng index và reset về 0 khi hết danh sách
+                                                        applicationIndex = (applicationIndex + 1)
+                                                                        % approvedCourseApplications.size();
+                                                }
+                                        }
+
+                                        applicationModuleRepository.saveAll(applicationModules);
+                                        applicationModuleRepository.flush();
+                                }
+                        }
+                        if (!interviews.isEmpty()) {
+                                interviewRepository.saveAll(interviews);
+                                interviewRepository.flush();
+                        }
+                        if (!contracts.isEmpty()) {
+                                contractRepository.saveAll(contracts);
+                                contractRepository.flush();
+                        }
+
+                        System.out.println("✅ Đã tạo thành công dữ liệu mẫu cho Projects:");
+                        System.out.println("- " + projects.size()
+                                        + " Projects (10 RESEARCH - không có CourseInfo/CourseModule, 10 COURSE - có CourseInfo/CourseModule)");
+                        System.out.println("- " + courseInfos.size()
+                                        + " CourseInfos (chỉ cho projects COURSE, sử dụng dữ liệu có sẵn)");
+                        System.out.println("- " + courseModules.size()
+                                        + " CourseModules (chỉ cho projects COURSE, sử dụng dữ liệu có sẵn)");
+                        System.out.println("- " + applications.size()
+                                        + " Applications (tất cả projects, chỉ 1 với status APPROVED)");
+                        System.out.println("- " + applicationModules.size()
+                                        + " ApplicationModules (chỉ cho COURSE projects, mỗi module có đúng 1 Application APPROVED)");
+                        System.out.println("- " + interviews.size() + " Interviews (chỉ cho Applications APPROVED)");
+                        System.out.println("- " + contracts.size() + " Contracts (chỉ cho Applications APPROVED)");
+
+                } catch (Exception e) {
+                        System.err.println("Lỗi khi tạo dữ liệu mẫu cho Projects: " + e.getMessage());
+                        e.printStackTrace();
+                }
         }
 }

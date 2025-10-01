@@ -31,4 +31,6 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     @Query("SELECT l FROM Lecturer l JOIN FETCH l.user WHERE l.id IN :ids AND l.hidden = false")
     List<Lecturer> findAllByIdWithUser(@Param("ids") Set<UUID> ids);
 
+    List<Lecturer> findTop7ByHiddenFalseOrderByExperienceYearsDesc();
+
 }

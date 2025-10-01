@@ -35,17 +35,20 @@ public class CourseModule {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(length = 500)
     private String title;
+    @Column(length = 2000)
     private String description;
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "project_requirements", joinColumns = @JoinColumn(name = "project_id"))
+    @CollectionTable(name = "course_module_requirements", joinColumns = @JoinColumn(name = "course_module_id"))
     @Column(name = "requirement")
     private List<String> requirements = new ArrayList<>();
 
     private Integer duration;
-    private Integer order;
+    @Column(name = "module_order")
+    private Integer moduleOrder;
 
     // system fields
     @CreationTimestamp
@@ -60,9 +63,6 @@ public class CourseModule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "application_id")
-    private Application application;
 
     @OneToMany(mappedBy = "courseModule", fetch = FetchType.LAZY)
     private List<ApplicationModule> applicationModules;

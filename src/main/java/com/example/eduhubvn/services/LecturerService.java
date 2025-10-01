@@ -1127,5 +1127,10 @@ public class LecturerService {
             throw new RuntimeException("Lỗi cập nhật avatar: " + e.getMessage(), e);
         }
     }
+    @Transactional
+    public List<LecturerDTO> getTop7Lecturers() {
+        List<Lecturer> lecturers = lecturerRepository.findTop7ByHiddenFalseOrderByExperienceYearsDesc();
+        return lecturers.stream().map(lecturerMapper::toDTO).collect(Collectors.toList());
+    }
 
 }

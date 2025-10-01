@@ -19,6 +19,7 @@ public interface EducationInstitutionMapper {
         @Mapping(target = "user", ignore = true)
         @Mapping(target = "institutionUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
         EducationInstitution toEntity(EducationInstitutionDTO dto);
 
         @Mapping(target = "user", ignore = true)
@@ -29,6 +30,7 @@ public interface EducationInstitutionMapper {
         @Mapping(target = "updatedAt", ignore = true)
         @Mapping(target = "institutionUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
         EducationInstitution toEntity(EducationInstitutionReq req);
 
         @Mapping(target = "adminNote", ignore = true)
@@ -49,6 +51,7 @@ public interface EducationInstitutionMapper {
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "institutionUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
         void updateEntityFromRequest(EducationInstitutionReq req, @MappingTarget EducationInstitution institution);
 
         @Mapping(target = "id", ignore = true)
@@ -59,6 +62,7 @@ public interface EducationInstitutionMapper {
         @Mapping(target = "user", ignore = true)
         @Mapping(target = "institutionUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         void updateEntityFromUpdate(EducationInstitutionUpdate update,
                         @MappingTarget EducationInstitution educationInstitution);
@@ -71,6 +75,7 @@ public interface EducationInstitutionMapper {
         @Mapping(target = "user", ignore = true)
         @Mapping(target = "institutionUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         void updateEntityFromUpdate(EducationInstitutionUpdateDTO update,
                         @MappingTarget EducationInstitution educationInstitution);

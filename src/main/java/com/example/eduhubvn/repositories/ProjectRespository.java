@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.eduhubvn.entities.Project;
 
-public interface ProjectResponsitory extends JpaRepository<Project, UUID> {
+public interface ProjectRespository extends JpaRepository<Project, UUID> {
     
 }

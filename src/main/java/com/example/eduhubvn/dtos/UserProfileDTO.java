@@ -21,6 +21,7 @@ public class UserProfileDTO {
     private String email;
     private String role;
     private LocalDateTime lastLogin;
+    private List<String> subEmails;
 
     private LecturerDTO lecturer;
     private EducationInstitutionDTO educationInstitution;

@@ -27,7 +27,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -61,5 +61,5 @@ application:
         refresh: 900000000
 
 server:
-  port: 8880
+  port: 8080
 

@@ -44,10 +44,13 @@ public class Project {
     private UUID id;
 
     /// HR fields
+    @Column(length = 500)
     private String title;
     @Enumerated(EnumType.STRING)
     private ProjectCategory type; // RESEARCH, COURSE
+    @Column(length = 255)
     private String field; // Công nghệ thông tin, Kinh tế, Y dược...
+    @Column(length = 1000)
     private String description; // Mô tả ngắn gọn
 
     // secret fields
@@ -63,15 +66,18 @@ public class Project {
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "project_requirements", joinColumns = @JoinColumn(name = "project_id"))
+    @CollectionTable(name = "project_requirements", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "requirement")
     private List<String> requirements = new ArrayList<>();
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "project_benefits", joinColumns = @JoinColumn(name = "project_id"))
+    @CollectionTable(name = "project_benefits", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "benefit")
     private List<String> benefits = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean published;
 
     // public fields
     @Column(name = "start_date")
@@ -85,6 +91,7 @@ public class Project {
 
     @Column(name = "is_remote")
     private boolean isRemote; // Có thể làm việc từ xa không
+    @Column(length = 500)
     private String location; // Địa điểm thực hiện (Có thể là online)
 
     // system fields

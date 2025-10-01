@@ -1,17 +1,33 @@
 package com.example.eduhubvn.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -19,7 +35,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
-@EqualsAndHashCode(exclude = {"subAdminPermissions"})
+@EqualsAndHashCode(exclude = { "subAdminPermissions" })
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,6 +46,12 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    // @Builder.Default
+    // @ElementCollection
+    // @CollectionTable(name = "sub_emails", joinColumns = @JoinColumn(name = "id"))
+    // @Column(name = "sub_emails")
+    // private List<String> subEmails = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)

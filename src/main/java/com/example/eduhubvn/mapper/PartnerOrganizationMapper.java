@@ -11,74 +11,79 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface PartnerOrganizationMapper {
 
-    PartnerOrganizationDTO toDTO(PartnerOrganization entity);
+        PartnerOrganizationDTO toDTO(PartnerOrganization entity);
 
-    PartnerOrganizationUpdateDTO toDTO(PartnerOrganizationUpdate entity);
+        PartnerOrganizationUpdateDTO toDTO(PartnerOrganizationUpdate entity);
 
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "partnerUpdate", ignore = true)
-    @Mapping(target = "hidden", ignore = true)
-    PartnerOrganization toEntity(PartnerOrganizationDTO dto);
+        @Mapping(target = "user", ignore = true)
+        @Mapping(target = "partnerUpdate", ignore = true)
+        @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
+        PartnerOrganization toEntity(PartnerOrganizationDTO dto);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "partnerUpdate", ignore = true)
-    @Mapping(target = "hidden", ignore = true)
-    PartnerOrganization toEntity(PartnerOrganizationReq req);
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "user", ignore = true)
+        @Mapping(target = "partnerUpdate", ignore = true)
+        @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
+        PartnerOrganization toEntity(PartnerOrganizationReq req);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "partnerUpdate", ignore = true)
-    @Mapping(target = "hidden", ignore = true)
-    void updateEntityFromRequest(PartnerOrganizationReq req, @MappingTarget PartnerOrganization organization);
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "user", ignore = true)
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        @Mapping(target = "partnerUpdate", ignore = true)
+        @Mapping(target = "projects", ignore = true)
+        @Mapping(target = "hidden", ignore = true)
+        void updateEntityFromRequest(PartnerOrganizationReq req, @MappingTarget PartnerOrganization organization);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "partnerUpdate", ignore = true)
-    @Mapping(target = "hidden", ignore = true)
-    void updateEntityFromUpdate(PartnerOrganizationUpdate update,
-            @MappingTarget PartnerOrganization partnerOrganization);
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "user", ignore = true)
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        @Mapping(target = "partnerUpdate", ignore = true)
+        @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
+        void updateEntityFromUpdate(PartnerOrganizationUpdate update,
+                        @MappingTarget PartnerOrganization partnerOrganization);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "partnerUpdate", ignore = true)
-    @Mapping(target = "hidden", ignore = true)
-    void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,
-            @MappingTarget PartnerOrganization partnerOrganization);
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "user", ignore = true)
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        @Mapping(target = "partnerUpdate", ignore = true)
+        @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "projects", ignore = true)
+        void updateEntityFromUpdate(PartnerOrganizationUpdateDTO update,
+                        @MappingTarget PartnerOrganization partnerOrganization);
 
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "partnerOrganization", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    PartnerOrganizationUpdate toUpdate(PartnerUpdateReq req);
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "partnerOrganization", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        PartnerOrganizationUpdate toUpdate(PartnerUpdateReq req);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "partnerOrganization", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUpdateFromRequest(PartnerUpdateReq req, @MappingTarget PartnerOrganizationUpdate update);
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "adminNote", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "partnerOrganization", ignore = true)
+        @Mapping(target = "status", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        void updateUpdateFromRequest(PartnerUpdateReq req, @MappingTarget PartnerOrganizationUpdate update);
 }

@@ -9,13 +9,15 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,33 +26,46 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "course_infos")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseInfo {
     @Id
-    private UUID id; // dùng chung id với Project (khóa chính = project_id)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @Column(name = "public_title")
+    @Column(name = "public_title", length = 500)
     private String publicTitle;
     @Column(name = "public_description", columnDefinition = "TEXT")
     private String publicDescription;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", length = 1000)
     private String thumbnailUrl;
+
+    private CourseLevel level;
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "knowledges", joinColumns = @JoinColumn(name = "project_id"))
+    @CollectionTable(name = "knowledges", joinColumns = @JoinColumn(name = "course_info_id"))
     @Column(name = "knowledge")
     private List<String> knowledge = new ArrayList<>();
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "requirements", joinColumns = @JoinColumn(name = "course_info_id"))
+    @Column(name = "requirement")
+    private List<String> requirements = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT", name = "introduce")
     private String introduce;
     private BigDecimal price;
     private boolean published; // Đã xuất bản hay chưa
+
+    private String address;
+    @Column(name = "is_online")
+    private boolean isOnline;
 
     // system fields
     @CreationTimestamp
@@ -60,8 +75,7 @@ public class CourseInfo {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne
-    @MapsId
+    @OneToOne(cascade = { CascadeType.REFRESH, CascadeType.DETACH })
     @JoinColumn(name = "project_id")
     private Project project;
 
