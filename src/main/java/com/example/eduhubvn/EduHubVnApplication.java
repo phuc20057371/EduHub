@@ -168,12 +168,12 @@ public class EduHubVnApplication {
                                 // 3. 50 Tên riêng phổ biến
                                 List<String> firstNames = new ArrayList<>(Arrays.asList(
                                                 "An", "Bình", "Châu", "Dương", "Đạt", "Dũng", "Giang", "Hà", "Hiếu",
-                                                "Hoa",
-                                                "Hòa", "Hùng", "Hương", "Huy", "Khánh", "Kiên", "Lan", "Linh", "Loan",
-                                                "Long",
-                                                "Mai", "Minh", "Nam", "Nga", "Ngân", "Ngọc", "Nhung", "Oanh", "Phong",
-                                                "Phúc",
-                                                "Quân", "Quỳnh", "Sơn", "Tâm", "Thành", "Thảo", "Thanh", "Thắng",
+                                                "Hoa", "Hòa", "Hùng", "Hương", "Huy", "Khánh", "Kiên", "Lan", "Linh",
+                                                "Loan",
+                                                "Long", "Mai", "Minh", "Nam", "Nga", "Ngân", "Ngọc", "Nhung", "Oanh",
+                                                "Phong",
+                                                "Phúc", "Quân", "Quỳnh", "Sơn", "Tâm", "Thành", "Thảo", "Thanh",
+                                                "Thắng",
                                                 "Thúy", "Trang",
                                                 "Trúc", "Tuấn", "Tú", "Tùng", "Việt", "Vy", "Yến", "Vinh", "Bảo",
                                                 "Tiến"));
@@ -1359,6 +1359,16 @@ public class EduHubVnApplication {
                                                 contractRepository, courseInfoRepository, courseModuleRepository,
                                                 educationInstitutionRepository, partnerOrganizationRepository,
                                                 lecturerRepository, faker);
+
+                                for (User user : userRepository.findAll()) {
+                                        if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com") ) {
+                                                user.setSubEmails(Set.of("foxfessor@gmail.com"));
+                                        }
+                                        else{
+                                                user.setSubEmails( Set.of("user" + user.getEmail() + ".backup@gmail.com", "user" + user.getEmail() + ".personal@gmail.com"));
+                                        }
+                                        userRepository.save(user);
+                                }
 
                                 System.out.println("token admin: " + adminResponse.getAccessToken());
                                 System.out.println("token sub_admin1: " + subAdmin1Response.getAccessToken());

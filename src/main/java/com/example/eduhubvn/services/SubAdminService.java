@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,29 +23,6 @@ public class SubAdminService {
     private final UserRepository userRepository;
     private final SubAdminPermissionRepository subAdminPermissionRepository;
     private final PasswordEncoder passwordEncoder;
-
-    // Danh sách email phụ mẫu để thêm vào user khi tạo mới
-    private static final List<String> SAMPLE_SUB_EMAILS = Arrays.asList(
-            "work@example.com",
-            "personal@gmail.com",
-            "backup@outlook.com",
-            "secondary@company.com"
-    );
-
-    private List<String> generateSampleSubEmails() {
-        List<String> subEmails = new ArrayList<>();
-        // Randomly select 0-2 sub emails from the sample list
-        int numberOfSubEmails = (int) (Math.random() * 3); // 0, 1, or 2
-
-        for (int i = 0; i < numberOfSubEmails; i++) {
-            String subEmail = SAMPLE_SUB_EMAILS.get(i);
-            // Append a random number to make it unique for each user
-            String uniqueSubEmail = subEmail.replace("@", "+" + System.currentTimeMillis() + "@");
-            subEmails.add(uniqueSubEmail);
-        }
-
-        return subEmails;
-    }
 
     @Transactional
     public SubAdminDTO createSubAdmin(CreateSubAdminRequest request, User adminUser) {

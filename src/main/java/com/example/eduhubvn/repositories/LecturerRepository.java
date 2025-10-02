@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,5 +34,8 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     List<Lecturer> findAllByIdWithUser(@Param("ids") Set<UUID> ids);
 
     List<Lecturer> findTop7ByHiddenFalseOrderByExperienceYearsDesc();
+
+    // Pagination support
+    Page<Lecturer> findAll(Pageable pageable);
 
 }

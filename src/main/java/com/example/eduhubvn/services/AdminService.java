@@ -9,6 +9,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import com.example.eduhubvn.dtos.AllPendingUpdateDTO;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.MessageSocket;
 import com.example.eduhubvn.dtos.MessageSocketType;
+import com.example.eduhubvn.dtos.PaginatedResponse;
 import com.example.eduhubvn.dtos.RejectReq;
 import com.example.eduhubvn.dtos.RequestFromLecturer;
 import com.example.eduhubvn.dtos.RequestLabel;
@@ -1626,6 +1630,38 @@ public class AdminService {
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching all lecturers.", e);
+        }
+    }
+
+    @Transactional
+    public PaginatedResponse<LecturerInfoDTO> getAllLecturersPaginated(int page, int size) {
+        try {
+            // Validate pagination parameters
+            if (page < 0) {
+                page = 0;
+            }
+            if (size <= 0) {
+                size = 10; // Default page size
+            }
+            if (size > 100) {
+                size = 100; // Maximum page size
+            }
+
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Lecturer> lecturerPage = lecturerRepository.findAll(pageable);
+            
+            List<LecturerInfoDTO> lecturerDTOs = lecturerPage.getContent().stream()
+                    .map(this::mapToLecturerInfoDTO)
+                    .toList();
+
+            return PaginatedResponse.of(
+                    lecturerDTOs,
+                    page,
+                    size,
+                    lecturerPage.getTotalElements()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching paginated lecturers.", e);
         }
     }
 

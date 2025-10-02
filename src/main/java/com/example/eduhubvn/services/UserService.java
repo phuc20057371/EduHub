@@ -43,20 +43,26 @@ public class UserService {
     // return u;
     // }
 
+    @Transactional
     public UserProfileDTO getCurrentUserProfile(User user) {
         try {
+            // Load full user from database to get all lazy-loaded fields like subEmails
+            User fullUser = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            
             UserProfileDTO.UserProfileDTOBuilder builder = UserProfileDTO.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
-                    .role(String.valueOf(user.getRole()))
-                    .lastLogin(user.getLastLogin())
-                    .lecturer(lecturerMapper.toDTO(user.getLecturer()))
-                    .educationInstitution(educationInstitutionMapper.toDTO(user.getEducationInstitution()))
-                    .partnerOrganization(partnerOrganizationMapper.toDTO(user.getPartnerOrganization()));
+                    .id(fullUser.getId())
+                    .email(fullUser.getEmail())
+                    .role(String.valueOf(fullUser.getRole()))
+                    .lastLogin(fullUser.getLastLogin())
+                    .subEmails(fullUser.getSubEmails().stream().toList())
+                    .lecturer(lecturerMapper.toDTO(fullUser.getLecturer()))
+                    .educationInstitution(educationInstitutionMapper.toDTO(fullUser.getEducationInstitution()))
+                    .partnerOrganization(partnerOrganizationMapper.toDTO(fullUser.getPartnerOrganization()));
             
             // If user is SUB_ADMIN, add their permissions
-            if (user.getRole() != null && user.getRole().name().equals("SUB_ADMIN")) {
-                List<String> permissions = subAdminService.getUserPermissions(user.getId());
+            if (fullUser.getRole() != null && fullUser.getRole().name().equals("SUB_ADMIN")) {
+                List<String> permissions = subAdminService.getUserPermissions(fullUser.getId());
                 builder.permissions(permissions);
             }
             

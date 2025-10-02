@@ -32,4 +32,17 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("specialization") String specialization
     );
 
+    /**
+     * Tìm user bằng email chính hoặc subEmails
+     * Sử dụng JPQL để tối ưu performance
+     */
+    @Query("SELECT u FROM User u WHERE u.email = :email OR :email MEMBER OF u.subEmails")
+    Optional<User> findByEmailOrSubEmail(@Param("email") String email);
+
+    /**
+     * Tìm user có chứa email trong subEmails
+     */
+    @Query("SELECT u FROM User u WHERE :email MEMBER OF u.subEmails")
+    Optional<User> findBySubEmail(@Param("email") String email);
+
 }

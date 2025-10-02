@@ -12,7 +12,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,9 +22,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,11 +51,16 @@ public class User implements UserDetails {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    // @Builder.Default
-    // @ElementCollection
-    // @CollectionTable(name = "sub_emails", joinColumns = @JoinColumn(name = "id"))
-    // @Column(name = "sub_emails")
-    // private List<String> subEmails = new ArrayList<>();
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "sub_emails",
+        joinColumns = @JoinColumn(name = "user_id"),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"sub_email"})
+    )
+    @Column(name = "sub_email", nullable = false, unique = true)
+    private Set<String> subEmails = new HashSet<>();
+    
 
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)

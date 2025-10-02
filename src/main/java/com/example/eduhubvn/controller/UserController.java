@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.UserProfileDTO;
+import com.example.eduhubvn.dtos.auth.AddSubEmailRequest;
+import com.example.eduhubvn.dtos.auth.ChangePasswordRequest;
+import com.example.eduhubvn.dtos.auth.RemoveSubEmailRequest;
+import com.example.eduhubvn.dtos.auth.SendChangePasswordOtpRequest;
+import com.example.eduhubvn.dtos.auth.SendSubEmailOtpRequest;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
@@ -44,6 +50,7 @@ import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.AdminService;
+import com.example.eduhubvn.services.AuthenticationService;
 import com.example.eduhubvn.services.EducationInstitutionService;
 import com.example.eduhubvn.services.LecturerService;
 import com.example.eduhubvn.services.PartnerOrganizationService;
@@ -62,7 +69,7 @@ public class UserController {
     private final EducationInstitutionService educationInstitutionService;
     private final PartnerOrganizationService partnerOrganizationService;
     private final AdminService adminService;
-
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/uploads")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
@@ -240,6 +247,124 @@ public class UserController {
             @AuthenticationPrincipal User user) {
         PartnerOrganizationDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
+    }
+
+
+    @PostMapping("/send-otp-change-password")
+    public ResponseEntity<ApiResponse<String>> sendOtpChangePassword(@RequestBody SendChangePasswordOtpRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            if (request == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Request không được để trống", null));
+            }
+            
+            String message = authenticationService.sendOTPChangePassword(request, user);
+            return ResponseEntity.ok(ApiResponse.success(message, null));
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi gửi OTP", null));
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            if (request == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Request không được để trống", null));
+            }
+            
+            String message = authenticationService.changePassword(request, user);
+            return ResponseEntity.ok(ApiResponse.success(message, null));
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi thay đổi mật khẩu", null));
+        }
+    }
+
+    @PostMapping("/send-otp-add-subemail")
+    public ResponseEntity<ApiResponse<String>> sendOtpAddSubEmail(@RequestBody SendSubEmailOtpRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            if (request == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Request không được để trống", null));
+            }
+            
+            String message = authenticationService.sendOTPAddSubEmail(request, user);
+            return ResponseEntity.ok(ApiResponse.success(message, null));
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi gửi OTP", null));
+        }
+    }
+
+    @PostMapping("/add-subemail")
+    public ResponseEntity<ApiResponse<String>> addSubEmail(@RequestBody AddSubEmailRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            if (request == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Request không được để trống", null));
+            }
+            
+            String message = authenticationService.addSubEmail(request, user);
+            return ResponseEntity.ok(ApiResponse.success(message, null));
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi thêm email", null));
+        }
+    }
+
+    @PostMapping("/remove-subemail")
+    public ResponseEntity<ApiResponse<String>> removeSubEmail(@RequestBody RemoveSubEmailRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            if (request == null) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Request không được để trống", null));
+            }
+            
+            String message = authenticationService.removeSubEmail(request, user);
+            return ResponseEntity.ok(ApiResponse.success(message, null));
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi xóa email", null));
+        }
+    }
+
+    @GetMapping("/subemail-list")
+    public ResponseEntity<ApiResponse<Set<String>>> getSubEmailList(@AuthenticationPrincipal User user) {
+        try {
+            Set<String> subEmails = authenticationService.getSubEmails(user);
+            return ResponseEntity.ok(ApiResponse.success("Lấy danh sách sub-email thành công", subEmails));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Có lỗi xảy ra khi lấy danh sách email", null));
+        }
     }
 
 }

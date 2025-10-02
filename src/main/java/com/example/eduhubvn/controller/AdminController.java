@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.eduhubvn.dtos.AllPendingEntityDTO;
 import com.example.eduhubvn.dtos.AllPendingUpdateDTO;
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.PaginatedResponse;
 import com.example.eduhubvn.dtos.RejectReq;
 import com.example.eduhubvn.dtos.RequestFromLecturer;
 import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
@@ -121,6 +123,14 @@ public class AdminController {
     public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
         List<LecturerInfoDTO> lecturers = adminService.getAllLecturers();
         return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
+    }
+
+    @GetMapping("/get-all-lecturers-paginated")
+    public ResponseEntity<ApiResponse<PaginatedResponse<LecturerInfoDTO>>> getAllLecturersPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PaginatedResponse<LecturerInfoDTO> lecturers = adminService.getAllLecturersPaginated(page, size);
+        return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên có phân trang", lecturers));
     }
 
     @GetMapping("/lecturer-pending-updates")
