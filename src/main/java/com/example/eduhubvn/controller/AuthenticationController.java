@@ -1,18 +1,27 @@
 package com.example.eduhubvn.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.auth.*;
-import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.dtos.auth.AuthenResponse;
+import com.example.eduhubvn.dtos.auth.Email;
+import com.example.eduhubvn.dtos.auth.EmailSent;
+import com.example.eduhubvn.dtos.auth.ForgotPasswordRequest;
+import com.example.eduhubvn.dtos.auth.LoginRequest;
+import com.example.eduhubvn.dtos.auth.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.ResetPasswordRequest;
 import com.example.eduhubvn.services.AuthenticationService;
 import com.example.eduhubvn.services.EmailService;
 import com.example.eduhubvn.services.OtpService;
+
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
