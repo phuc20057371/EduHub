@@ -9,7 +9,6 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -31,12 +30,9 @@ import com.example.eduhubvn.entities.Certification;
 import com.example.eduhubvn.entities.CertificationUpdate;
 import com.example.eduhubvn.entities.Contract;
 import com.example.eduhubvn.entities.ContractStatus;
-import com.example.eduhubvn.entities.Course;
 import com.example.eduhubvn.entities.CourseInfo;
-import com.example.eduhubvn.entities.CourseLecturer;
 import com.example.eduhubvn.entities.CourseLevel;
 import com.example.eduhubvn.entities.CourseModule;
-import com.example.eduhubvn.entities.CourseRole;
 import com.example.eduhubvn.entities.CourseType;
 import com.example.eduhubvn.entities.Degree;
 import com.example.eduhubvn.entities.DegreeUpdate;
@@ -424,10 +420,11 @@ public class EduHubVnApplication {
                                                         .build();
                                         authenticationService.register(request);
                                 }
-
+                                int stt = 1;
                                 List<Lecturer> lecturers = new ArrayList<>();
                                 for (int i = 1; i <= 100; i++) {
                                         boolean isApproved = true;
+
                                         if (i > 80) {
                                                 isApproved = false;
                                         }
@@ -443,9 +440,10 @@ public class EduHubVnApplication {
                                                         .toInstant()
                                                         .atZone(ZoneId.systemDefault())
                                                         .toLocalDate();
-
+                                        String lecturerId = isApproved ? String.format("GV%03d", stt++) : null;
                                         Lecturer lecturer = Lecturer.builder()
                                                         .user(user)
+                                                        .lecturerId(lecturerId)
                                                         .citizenId(citizenId)
                                                         .fullName(
                                                                         faker.options().option(
@@ -891,48 +889,49 @@ public class EduHubVnApplication {
                                 // List<Course> courses = new ArrayList<>();
 
                                 // for (int i = 1; i <= 100; i++) {
-                                //         String title = courseTitles.get(faker.random().nextInt(courseTitles.size()));
-                                //         String topic = courseTopics.get(faker.random().nextInt(courseTopics.size()));
-                                //         CourseType courseType = CourseType.values()[faker.random()
-                                //                         .nextInt(CourseType.values().length)];
-                                //         String description = truncate(faker.lorem().paragraph(), 255);
-                                //         String thumbnailUrl = "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=700&h=1000&fit=crop";
-                                //         String contentUrl = "https://www.google.com/";
-                                //         String level = truncate(faker.options().option(
-                                //                         "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"), 255);
-                                //         String requirements = truncate("Không yêu cầu", 255);
-                                //         String language = truncate(faker.options().option("English", "Vietnamese",
-                                //                         "French", "Japanese"), 255);
+                                // String title = courseTitles.get(faker.random().nextInt(courseTitles.size()));
+                                // String topic = courseTopics.get(faker.random().nextInt(courseTopics.size()));
+                                // CourseType courseType = CourseType.values()[faker.random()
+                                // .nextInt(CourseType.values().length)];
+                                // String description = truncate(faker.lorem().paragraph(), 255);
+                                // String thumbnailUrl =
+                                // "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=700&h=1000&fit=crop";
+                                // String contentUrl = "https://www.google.com/";
+                                // String level = truncate(faker.options().option(
+                                // "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"), 255);
+                                // String requirements = truncate("Không yêu cầu", 255);
+                                // String language = truncate(faker.options().option("English", "Vietnamese",
+                                // "French", "Japanese"), 255);
 
-                                //         Boolean isOnline = faker.bool().bool();
-                                //         String address = isOnline ? "Zoom"
-                                //                         : addresses.get(faker.random().nextInt(researchTopics.size()));
+                                // Boolean isOnline = faker.bool().bool();
+                                // String address = isOnline ? "Zoom"
+                                // : addresses.get(faker.random().nextInt(researchTopics.size()));
 
-                                //         LocalDate startDate = LocalDate.now()
-                                //                         .plusDays(faker.number().numberBetween(0, 30));
-                                //         LocalDate endDate = startDate.plusDays(faker.number().numberBetween(5, 30));
-                                //         Double price = faker.number().randomDouble(2, 500, 5000);
-                                //         Boolean isPublished = faker.bool().bool();
+                                // LocalDate startDate = LocalDate.now()
+                                // .plusDays(faker.number().numberBetween(0, 30));
+                                // LocalDate endDate = startDate.plusDays(faker.number().numberBetween(5, 30));
+                                // Double price = faker.number().randomDouble(2, 500, 5000);
+                                // Boolean isPublished = faker.bool().bool();
 
-                                //         Course course = Course.builder()
-                                //                         .title(title)
-                                //                         .topic(topic)
-                                //                         .courseType(courseType)
-                                //                         .description(description)
-                                //                         .thumbnailUrl(thumbnailUrl)
-                                //                         .contentUrl(contentUrl)
-                                //                         .level(level)
-                                //                         .requirements(requirements)
-                                //                         .language(language)
-                                //                         .isOnline(isOnline)
-                                //                         .address(address)
-                                //                         .startDate(startDate)
-                                //                         .endDate(endDate)
-                                //                         .price(price)
-                                //                         .isPublished(isPublished)
-                                //                         .build();
+                                // Course course = Course.builder()
+                                // .title(title)
+                                // .topic(topic)
+                                // .courseType(courseType)
+                                // .description(description)
+                                // .thumbnailUrl(thumbnailUrl)
+                                // .contentUrl(contentUrl)
+                                // .level(level)
+                                // .requirements(requirements)
+                                // .language(language)
+                                // .isOnline(isOnline)
+                                // .address(address)
+                                // .startDate(startDate)
+                                // .endDate(endDate)
+                                // .price(price)
+                                // .isPublished(isPublished)
+                                // .build();
 
-                                //         courses.add(course);
+                                // courses.add(course);
                                 // }
 
                                 // courseRepository.saveAll(courses);
@@ -940,38 +939,38 @@ public class EduHubVnApplication {
                                 // List<CourseLecturer> courseLecturers = new ArrayList<>();
 
                                 // for (Course course : courses) {
-                                //         int numberOfLecturers = faker.number().numberBetween(1, 4); // 1-3 lecturers
-                                //         Set<Lecturer> selectedLecturers = new HashSet<>();
+                                // int numberOfLecturers = faker.number().numberBetween(1, 4); // 1-3 lecturers
+                                // Set<Lecturer> selectedLecturers = new HashSet<>();
 
-                                //         while (selectedLecturers.size() < numberOfLecturers) {
-                                //                 Lecturer randomLecturer = lecturers
-                                //                                 .get(faker.number().numberBetween(0, lecturers.size()));
-                                //                 selectedLecturers.add(randomLecturer);
-                                //         }
+                                // while (selectedLecturers.size() < numberOfLecturers) {
+                                // Lecturer randomLecturer = lecturers
+                                // .get(faker.number().numberBetween(0, lecturers.size()));
+                                // selectedLecturers.add(randomLecturer);
+                                // }
 
-                                //         List<Lecturer> lecturerList = new ArrayList<>(selectedLecturers);
+                                // List<Lecturer> lecturerList = new ArrayList<>(selectedLecturers);
 
-                                //         int authorIndex = faker.number().numberBetween(0, lecturerList.size());
-                                //         Lecturer author = lecturerList.get(authorIndex);
+                                // int authorIndex = faker.number().numberBetween(0, lecturerList.size());
+                                // Lecturer author = lecturerList.get(authorIndex);
 
-                                //         for (Lecturer lecturer : lecturerList) {
-                                //                 CourseRole role;
+                                // for (Lecturer lecturer : lecturerList) {
+                                // CourseRole role;
 
-                                //                 if (lecturer.equals(author)) {
-                                //                         role = CourseRole.AUTHOR;
-                                //                 } else {
-                                //                         role = faker.options().option(CourseRole.ASSIGNED,
-                                //                                         CourseRole.ASSISTANT);
-                                //                 }
+                                // if (lecturer.equals(author)) {
+                                // role = CourseRole.AUTHOR;
+                                // } else {
+                                // role = faker.options().option(CourseRole.ASSIGNED,
+                                // CourseRole.ASSISTANT);
+                                // }
 
-                                //                 CourseLecturer courseLecturer = CourseLecturer.builder()
-                                //                                 .course(course)
-                                //                                 .lecturer(lecturer)
-                                //                                 .role(role)
-                                //                                 .build();
+                                // CourseLecturer courseLecturer = CourseLecturer.builder()
+                                // .course(course)
+                                // .lecturer(lecturer)
+                                // .role(role)
+                                // .build();
 
-                                //                 courseLecturers.add(courseLecturer);
-                                //         }
+                                // courseLecturers.add(courseLecturer);
+                                // }
                                 // }
 
                                 // courseLecturerRepository.saveAll(courseLecturers);
@@ -1361,11 +1360,11 @@ public class EduHubVnApplication {
                                                 lecturerRepository, faker);
 
                                 for (User user : userRepository.findAll()) {
-                                        if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com") ) {
+                                        if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com")) {
                                                 user.setSubEmails(Set.of("foxfessor@gmail.com"));
-                                        }
-                                        else{
-                                                user.setSubEmails( Set.of("user" + user.getEmail() + ".backup@gmail.com", "user" + user.getEmail() + ".personal@gmail.com"));
+                                        } else {
+                                                user.setSubEmails(Set.of("user" + user.getEmail() + ".backup@gmail.com",
+                                                                "user" + user.getEmail() + ".personal@gmail.com"));
                                         }
                                         userRepository.save(user);
                                 }

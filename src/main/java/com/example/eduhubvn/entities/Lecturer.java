@@ -26,6 +26,9 @@ public class Lecturer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "lecturer_id", unique = true)
+    private String lecturerId;
+
     @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
     private String citizenId;
 

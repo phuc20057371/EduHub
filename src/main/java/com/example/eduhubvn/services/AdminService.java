@@ -232,6 +232,9 @@ public class AdminService {
             lecturer.getUser().setRole(Role.LECTURER);
             lecturer.setStatus(PendingStatus.APPROVED);
             lecturer.setAdminNote("");
+            if (lecturer.getLecturerId() == null || lecturer.getLecturerId().isBlank()) {
+                lecturer.setLecturerId(generateNextLecturerId());
+            }
             lecturerRepository.save(lecturer);
             lecturerRepository.flush();
             LecturerDTO dto = lecturerMapper.toDTO(lecturer);
@@ -241,6 +244,17 @@ public class AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String generateNextLecturerId() {
+        Optional<Lecturer> lastLecturerOpt = lecturerRepository.findTopByOrderByLecturerIdDesc();
+        int nextNumber = 1;
+        if (lastLecturerOpt.isPresent()) {
+            String lastId = lastLecturerOpt.get().getLecturerId(); // VD: GV023
+            String numberPart = lastId.substring(2); // "023"
+            nextNumber = Integer.parseInt(numberPart) + 1;
+        }
+        return String.format("GV%03d", nextNumber); // => GV001, GV002, GV123
     }
 
     @Transactional
@@ -1649,7 +1663,7 @@ public class AdminService {
 
             Pageable pageable = PageRequest.of(page, size);
             Page<Lecturer> lecturerPage = lecturerRepository.findAll(pageable);
-            
+
             List<LecturerInfoDTO> lecturerDTOs = lecturerPage.getContent().stream()
                     .map(this::mapToLecturerInfoDTO)
                     .toList();
@@ -1658,8 +1672,7 @@ public class AdminService {
                     lecturerDTOs,
                     page,
                     size,
-                    lecturerPage.getTotalElements()
-            );
+                    lecturerPage.getTotalElements());
         } catch (Exception e) {
             throw new RuntimeException("Error fetching paginated lecturers.", e);
         }
@@ -1668,6 +1681,7 @@ public class AdminService {
     private LecturerInfoDTO mapToLecturerInfoDTO(Lecturer lecturer) {
         return LecturerInfoDTO.builder()
                 .id(lecturer.getId())
+                .lecturerId(lecturer.getLecturerId())
                 .citizenId(lecturer.getCitizenId())
                 .email(lecturer.getUser() != null ? lecturer.getUser().getEmail() : null)
                 .phoneNumber(lecturer.getPhoneNumber())

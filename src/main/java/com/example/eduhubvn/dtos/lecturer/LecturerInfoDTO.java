@@ -18,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class LecturerInfoDTO {
     private UUID id;
+    private String lecturerId;
     private String citizenId;
     private String email;
     private String phoneNumber;

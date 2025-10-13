@@ -35,6 +35,9 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
 
     List<Lecturer> findTop7ByHiddenFalseOrderByExperienceYearsDesc();
 
+    @Query(value = "SELECT * FROM lecturer WHERE lecturer_id IS NOT NULL ORDER BY lecturer_id DESC LIMIT 1", nativeQuery = true)
+    Optional<Lecturer> findTopByOrderByLecturerIdDesc();
+
     // Pagination support
     Page<Lecturer> findAll(Pageable pageable);
 
