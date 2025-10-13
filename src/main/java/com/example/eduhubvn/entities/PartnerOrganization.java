@@ -65,4 +65,9 @@ public class PartnerOrganization {
     @OneToMany(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects;
 
+    @OneToMany(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrainingProgramRequest> trainingProgramRequests;
+
+    @OneToMany(mappedBy = "partnerOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrainingProgram> trainingPrograms;
 }

@@ -24,9 +24,6 @@ import com.example.eduhubvn.dtos.RequestFromLecturer;
 import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterLecturerFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterPartnerFromAdminRequest;
-import com.example.eduhubvn.dtos.course.CourseDTO;
-import com.example.eduhubvn.dtos.course.CourseInfoDTO;
-import com.example.eduhubvn.dtos.course.CourseReq;
 import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
@@ -648,55 +645,7 @@ public class AdminController {
     }
 
     /// Course
-    @GetMapping("get-all-courses")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:read'))")
-    public ResponseEntity<ApiResponse<List<CourseInfoDTO>>> getAllCourses() {
-        List<CourseInfoDTO> courses = adminService.getAllCourses();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học", courses));
-    }
 
-    @GetMapping("/get-course/{id}")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:read'))")
-    public ResponseEntity<ApiResponse<CourseDTO>> getCourseById(@PathVariable("id") String id) {
-        CourseDTO course = adminService.getCourseById(id);
-        return ResponseEntity.ok(ApiResponse.success("Thông tin khóa học", course));
-    }
-
-    @PostMapping("/update-course-member")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:update'))")
-    public ResponseEntity<ApiResponse<CourseInfoDTO>> updateCourseMember(@RequestBody CourseInfoDTO req) {
-        CourseInfoDTO courseInfo = adminService.updateCourseMember(req);
-        return ResponseEntity.ok(ApiResponse.success("Thêm thành viên vào khóa học thành công", courseInfo));
-    }
-
-    @PostMapping("create-course")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:create'))")
-    public ResponseEntity<ApiResponse<CourseInfoDTO>> createCourse(@RequestBody CourseReq req) {
-        CourseInfoDTO course = adminService.createCourse(req);
-        return ResponseEntity.ok(ApiResponse.success("Tạo khóa học thành công", course));
-    }
-
-    @PostMapping("/update-course")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:update'))")
-    public ResponseEntity<ApiResponse<CourseDTO>> updateCourse(@RequestBody CourseDTO req) {
-        CourseDTO course = adminService.updateCourse(req);
-        return ResponseEntity.ok(ApiResponse.success("Cập nhật khóa học thành công", course));
-    }
-
-    @PostMapping("/delete-course")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('course:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteCourse(@RequestBody IdRequest req) {
-        try {
-            adminService.deleteCourse(req);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ApiResponse.<Void>builder()
-                    .success(false)
-                    .message(e.getMessage())
-                    .build());
-        }
-
-        return ResponseEntity.ok(ApiResponse.success("Xóa thành công", null));
-    }
 
 
 

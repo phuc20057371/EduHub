@@ -14,7 +14,6 @@ public interface OwnedTrainingCourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "course", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "status", ignore = true)
@@ -37,7 +36,6 @@ public interface OwnedTrainingCourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "course", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "status", ignore = true)
@@ -60,7 +58,6 @@ public interface OwnedTrainingCourseMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "course", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "ownedTrainingCourseUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

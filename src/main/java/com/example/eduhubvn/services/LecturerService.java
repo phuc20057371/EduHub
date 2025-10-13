@@ -12,9 +12,6 @@ import com.example.eduhubvn.dtos.BooleanRequest;
 import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.MessageSocket;
 import com.example.eduhubvn.dtos.MessageSocketType;
-import com.example.eduhubvn.dtos.course.CourseInfoDTO;
-import com.example.eduhubvn.dtos.course.CourseListDTO;
-import com.example.eduhubvn.dtos.course.CourseMemberDTO;
 import com.example.eduhubvn.dtos.lecturer.AttendedCourseUpdateDTO;
 import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
@@ -47,7 +44,6 @@ import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
 import com.example.eduhubvn.entities.Certification;
 import com.example.eduhubvn.entities.CertificationUpdate;
-import com.example.eduhubvn.entities.Course;
 import com.example.eduhubvn.entities.Degree;
 import com.example.eduhubvn.entities.DegreeUpdate;
 import com.example.eduhubvn.entities.Lecturer;
@@ -61,7 +57,6 @@ import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.mapper.AttendedTrainingCourseMapper;
 import com.example.eduhubvn.mapper.CertificationMapper;
-import com.example.eduhubvn.mapper.CourseMapper;
 import com.example.eduhubvn.mapper.DegreeMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.mapper.OwnedTrainingCourseMapper;
@@ -70,7 +65,6 @@ import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
 import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
 import com.example.eduhubvn.repositories.CertificationRepository;
 import com.example.eduhubvn.repositories.CertificationUpdateRepository;
-import com.example.eduhubvn.repositories.CourseRepository;
 import com.example.eduhubvn.repositories.DegreeRepository;
 import com.example.eduhubvn.repositories.DegreeUpdateRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
@@ -101,15 +95,12 @@ public class LecturerService {
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
 
-    private final CourseRepository courseRepository;
-
     private final LecturerMapper lecturerMapper;
     private final DegreeMapper degreeMapper;
     private final CertificationMapper certificationMapper;
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
-    private final CourseMapper courseMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -1076,38 +1067,7 @@ public class LecturerService {
         }
     }
 
-    /// Course
-    @Transactional
-    public CourseListDTO getAllCourses(User user) {
-        Lecturer lecturer = user.getLecturer();
-        if (lecturer == null) {
-            throw new IllegalStateException("Không có quyền truy cập.");
-        }
-        try {
-            List<Course> courses = courseRepository.findCoursesByLecturer(lecturer);
-            List<CourseInfoDTO> courseInfoDTOs = courses.stream()
-                    .map(course -> {
-                        List<CourseMemberDTO> members = course.getCourseLecturers().stream()
-                                .map(courseLecturer -> CourseMemberDTO.builder()
-                                        .lecturer(Mapper.mapToLecturerInfoDTO(courseLecturer.getLecturer()))
-                                        .courseRole(courseLecturer.getRole())
-                                        .build())
-                                .toList();
-                        return CourseInfoDTO.builder()
-                                .course(courseMapper.toDTO(course))
-                                .members(members)
-                                .build();
-                    })
-                    .toList();
 
-            return CourseListDTO.builder()
-                    .courses(courseInfoDTOs)
-                    .total(courseInfoDTOs.size())
-                    .build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Transactional
     public LecturerDTO updateLecturerAvatar(String avatarUrl, User user) {

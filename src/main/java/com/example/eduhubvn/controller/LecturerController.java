@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.BooleanRequest;
 import com.example.eduhubvn.dtos.IdRequest;
-import com.example.eduhubvn.dtos.course.CourseListDTO;
 import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerProfileDTO;
@@ -164,11 +163,6 @@ public class LecturerController {
     }
 
     /// Course
-    @GetMapping("/get-all-courses")
-    public ResponseEntity<ApiResponse<CourseListDTO>> getAllCourses(@AuthenticationPrincipal User user) {
-        CourseListDTO courses = lecturerService.getAllCourses(user);
-        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách khóa học thành công", courses));
-    }
 
     /// Avatar
     @PostMapping("/update-avatar")

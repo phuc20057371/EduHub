@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.dtos.project.Response.CourseModuleGuestDTO;
-import com.example.eduhubvn.entities.ApplicationStatus;
 import com.example.eduhubvn.entities.CourseModule;
 import com.example.eduhubvn.entities.Lecturer;
 

@@ -29,10 +29,6 @@ import com.example.eduhubvn.dtos.RequestLecturerType;
 import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterLecturerFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterPartnerFromAdminRequest;
-import com.example.eduhubvn.dtos.course.CourseDTO;
-import com.example.eduhubvn.dtos.course.CourseInfoDTO;
-import com.example.eduhubvn.dtos.course.CourseMemberDTO;
-import com.example.eduhubvn.dtos.course.CourseReq;
 import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
@@ -66,9 +62,6 @@ import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
 import com.example.eduhubvn.entities.Certification;
 import com.example.eduhubvn.entities.CertificationUpdate;
-import com.example.eduhubvn.entities.Course;
-import com.example.eduhubvn.entities.CourseLecturer;
-import com.example.eduhubvn.entities.CourseRole;
 import com.example.eduhubvn.entities.Degree;
 import com.example.eduhubvn.entities.DegreeUpdate;
 import com.example.eduhubvn.entities.EducationInstitution;
@@ -86,7 +79,6 @@ import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.mapper.AttendedTrainingCourseMapper;
 import com.example.eduhubvn.mapper.CertificationMapper;
-import com.example.eduhubvn.mapper.CourseMapper;
 import com.example.eduhubvn.mapper.DegreeMapper;
 import com.example.eduhubvn.mapper.EducationInstitutionMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
@@ -97,8 +89,6 @@ import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
 import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
 import com.example.eduhubvn.repositories.CertificationRepository;
 import com.example.eduhubvn.repositories.CertificationUpdateRepository;
-import com.example.eduhubvn.repositories.CourseLecturerRepository;
-import com.example.eduhubvn.repositories.CourseRepository;
 import com.example.eduhubvn.repositories.DegreeRepository;
 import com.example.eduhubvn.repositories.DegreeUpdateRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
@@ -139,7 +129,6 @@ public class AdminService {
     private final OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository;
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
-    private final CourseRepository courseRepository;
 
     private final LecturerMapper lecturerMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
@@ -149,8 +138,6 @@ public class AdminService {
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
-    private final CourseMapper courseMapper;
-    private final CourseLecturerRepository courseLecturerRepository;
 
     private final SimpMessagingTemplate messagingTemplate;
     private final PasswordEncoder passwordEncoder;
@@ -2152,112 +2139,13 @@ public class AdminService {
     }
 
     @Transactional
-    public List<CourseInfoDTO> getAllCourses() {
-        List<CourseInfoDTO> courseInfoDTOS = new ArrayList<>();
-        List<Course> courses = courseRepository.findAll();
-        for (Course course : courses) {
-            List<CourseMemberDTO> members = course.getCourseLecturers().stream()
-                    .filter(cl -> cl.getLecturer() != null && cl.getLecturer().getStatus() == PendingStatus.APPROVED)
-                    .map(courseLecturer -> CourseMemberDTO.builder()
-                            .lecturer(Mapper.mapToLecturerInfoDTO(courseLecturer.getLecturer()))
-                            .courseRole(courseLecturer.getRole())
-                            .build())
-                    .toList();
-            CourseInfoDTO courseInfo = CourseInfoDTO.builder()
-                    .course(courseMapper.toDTO(course))
-                    .members(members)
-                    .build();
-            courseInfoDTOS.add(courseInfo);
-        }
-        return courseInfoDTOS;
-    }
-
-    @Transactional
-    public CourseDTO getCourseById(String id) {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalArgumentException("ID không được để trống.");
-        }
-        try {
-            UUID courseId;
-            courseId = UUID.fromString(id);
-            Course course = courseRepository.findById(courseId)
-                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + id));
-            return courseMapper.toDTO(course);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("ID không hợp lệ.");
-        }
-
-    }
-
-    @Transactional
-    public CourseInfoDTO updateCourseMember(CourseInfoDTO req) {
-        if (req == null || req.getCourse() == null || req.getCourse().getId() == null) {
-            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
-        }
-        Course course = courseRepository.findById(req.getCourse().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học."));
-        try {
-            // Update course details
-            // courseMapper. updateEntityFromDTO(req.getCourse(), course);
-            // courseRepository.save(course);
-            // courseRepository.flush();
-
-            // Update course members
-            List<CourseLecturer> existingMembers = course.getCourseLecturers();
-            List<CourseLecturer> updatedMembers = req.getMembers().stream()
-                    .map(member -> CourseLecturer.builder()
-                            .course(course)
-                            .lecturer(lecturerRepository.findById(member.getLecturer().getId())
-                                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên.")))
-                            .role(member.getCourseRole())
-                            .build())
-                    .toList();
-
-            for (CourseLecturer existing : existingMembers) {
-                for (CourseLecturer updated : updatedMembers) {
-                    if (existing.getLecturer().getId().equals(updated.getLecturer().getId())) {
-                        // Nếu role khác thì cập nhật
-                        if (!existing.getRole().equals(updated.getRole())) {
-                            existing.setRole(updated.getRole());
-                        }
-                    }
-                }
-            }
-
-            // Remove old members not in the updated list
-            existingMembers.removeIf(existingMember -> updatedMembers.stream().noneMatch(
-                    updatedMember -> updatedMember.getLecturer().getId().equals(existingMember.getLecturer().getId())));
-
-            // Add new members
-            for (CourseLecturer updated : updatedMembers) {
-                boolean alreadyExists = existingMembers.stream()
-                        .anyMatch(existing -> existing.getLecturer().getId().equals(updated.getLecturer().getId()));
-                if (!alreadyExists) {
-                    existingMembers.add(updated);
-                }
-            }
-
-            course.setCourseLecturers(existingMembers);
-            courseRepository.save(course);
-            return CourseInfoDTO.builder()
-                    .course(courseMapper.toDTO(course))
-                    .members(req.getMembers())
-                    .build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Transactional
     public List<OwnedCourseInfoDTO> getOwnedCourses() {
         try {
             List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findAll();
             return ownedCourses.stream()
                     .filter(ownedTrainingCourse -> ownedTrainingCourse.getStatus() == PendingStatus.APPROVED
                             && ownedTrainingCourse.getLecturer() != null
-                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED
-                            && ownedTrainingCourse.getCourse() == null)
+                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED)
                     .map(course -> OwnedCourseInfoDTO.builder()
                             .ownedCourse(ownedTrainingCourseMapper.toDTO(course))
                             .lecturer(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
@@ -2265,93 +2153,6 @@ public class AdminService {
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching owned courses.", e);
-        }
-    }
-
-    @Transactional
-    public CourseInfoDTO createCourse(CourseReq req) {
-        if (req == null) {
-            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
-        }
-        try {
-            Course course = courseMapper.toEntity(req);
-            if (req.getOwnedCourseId() != null) {
-                Optional<OwnedTrainingCourse> ownedCourseOpt = ownedTrainingCourseRepository
-                        .findById(req.getOwnedCourseId());
-                if (ownedCourseOpt.isPresent()) {
-                    OwnedTrainingCourse ownedCourse = ownedCourseOpt.get();
-                    // Gán 2 chiều
-                    course.setOwnedTrainingCourse(ownedCourse);
-                    ownedCourse.setCourse(course);
-                    ownedTrainingCourseRepository.save(ownedCourse);
-                }
-            }
-
-            courseRepository.save(course);
-            courseRepository.flush();
-
-            CourseMemberDTO authorMember = null;
-            if (req.getAuthorId() != null) {
-                Lecturer lecturer = lecturerRepository.findById(req.getAuthorId())
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Không tìm thấy giảng viên với ID: " + req.getAuthorId()));
-
-                CourseLecturer courseLecturer = CourseLecturer.builder()
-                        .course(course)
-                        .lecturer(lecturer)
-                        .role(CourseRole.AUTHOR)
-                        .build();
-
-                courseLecturerRepository.save(courseLecturer);
-                courseLecturerRepository.flush();
-
-                authorMember = CourseMemberDTO.builder()
-                        .lecturer(Mapper.mapToLecturerInfoDTO(lecturer))
-                        .courseRole(CourseRole.AUTHOR)
-                        .build();
-            }
-
-            return CourseInfoDTO.builder()
-                    .course(courseMapper.toDTO(course))
-                    .members(authorMember != null ? List.of(authorMember) : List.of())
-                    .build();
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi tạo khóa học: " + e.getMessage(), e);
-        }
-    }
-
-    @Transactional
-    public CourseDTO updateCourse(CourseDTO req) {
-        if (req == null || req.getId() == null) {
-            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
-        }
-        Course course = courseRepository.findById(req.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
-        try {
-            courseMapper.updateEntityFromDTO(req, course);
-            courseRepository.save(course);
-            courseRepository.flush();
-            return courseMapper.toDTO(course);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi cập nhật khóa học: " + e.getMessage(), e);
-        }
-    }
-
-    @Transactional
-    public void deleteCourse(IdRequest req) {
-        if (req == null || req.getId() == null) {
-            throw new IllegalArgumentException("ID không được để trống.");
-        }
-        try {
-
-            Course course = courseRepository.findById(req.getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khóa học với ID: " + req.getId()));
-            courseRepository.delete(course);
-            courseRepository.flush();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("ID không hợp lệ.");
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi xóa khóa học: " + e.getMessage(), e);
         }
     }
 

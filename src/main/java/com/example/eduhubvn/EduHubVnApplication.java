@@ -59,6 +59,12 @@ import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.Scale;
+import com.example.eduhubvn.entities.TrainingProgram;
+import com.example.eduhubvn.entities.TrainingProgramMode;
+import com.example.eduhubvn.entities.TrainingProgramRequest;
+import com.example.eduhubvn.entities.TrainingProgramStatus;
+import com.example.eduhubvn.entities.TrainingProgramType;
+import com.example.eduhubvn.entities.TrainingUnit;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.ApplicationModuleRepository;
 import com.example.eduhubvn.repositories.ApplicationRepository;
@@ -68,9 +74,7 @@ import com.example.eduhubvn.repositories.CertificationRepository;
 import com.example.eduhubvn.repositories.CertificationUpdateRepository;
 import com.example.eduhubvn.repositories.ContractRepository;
 import com.example.eduhubvn.repositories.CourseInfoRepository;
-import com.example.eduhubvn.repositories.CourseLecturerRepository;
 import com.example.eduhubvn.repositories.CourseModuleRepository;
-import com.example.eduhubvn.repositories.CourseRepository;
 import com.example.eduhubvn.repositories.DegreeRepository;
 import com.example.eduhubvn.repositories.DegreeUpdateRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionRepository;
@@ -85,6 +89,9 @@ import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
 import com.example.eduhubvn.repositories.ProjectRespository;
 import com.example.eduhubvn.repositories.ResearchProjectRepository;
 import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
+import com.example.eduhubvn.repositories.TrainingProgramRepository;
+import com.example.eduhubvn.repositories.TrainingProgramRequestRepository;
+import com.example.eduhubvn.repositories.TrainingUnitRepository;
 import com.example.eduhubvn.repositories.UserRepository;
 import com.example.eduhubvn.services.AuthenticationService;
 import com.github.javafaker.Faker;
@@ -114,9 +121,6 @@ public class EduHubVnApplication {
                         OwnedTrainingCourseRepository ownedTrainingCourseRepository,
                         ResearchProjectRepository researchProjectRepository,
 
-                        CourseRepository courseRepository,
-                        CourseLecturerRepository courseLecturerRepository,
-
                         ProjectRespository projectRepository,
                         ApplicationRepository applicationRepository,
                         ApplicationModuleRepository applicationModuleRepository,
@@ -133,6 +137,10 @@ public class EduHubVnApplication {
                         AttendedTrainingCourseUpdateRepository attendedTrainingCourseUpdateRepository,
                         OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository,
                         ResearchProjectUpdateRepository researchProjectUpdateRepository,
+
+                        TrainingProgramRequestRepository trainingProgramRequestRepository,
+                        TrainingProgramRepository trainingProgramRepository,
+                        TrainingUnitRepository trainingUnitRepository,
 
                         AuthenticationService authenticationService,
                         com.example.eduhubvn.services.SubAdminService subAdminService) {
@@ -812,8 +820,6 @@ public class EduHubVnApplication {
                                                                                 .nextInt(2)])
                                                                 .adminNote("Đây là dữ liệu mẫu cho khóa học sở hữu")
                                                                 .lecturer(lecturer)
-                                                                .course(null) // có thể gán course nếu muốn liên kết đến
-                                                                              // entity Course
                                                                 .build();
 
                                                 ownedCourses.add(course);
@@ -1368,6 +1374,12 @@ public class EduHubVnApplication {
                                         }
                                         userRepository.save(user);
                                 }
+
+                                // ===== TẠO DỮ LIỆU MẪU CHO TRAINING PROGRAM =====
+                                createSampleTrainingProgramData(trainingProgramRequestRepository, 
+                                                trainingProgramRepository, trainingUnitRepository,
+                                                partnerOrganizationRepository, lecturerRepository, 
+                                                userRepository, faker);
 
                                 System.out.println("token admin: " + adminResponse.getAccessToken());
                                 System.out.println("token sub_admin1: " + subAdmin1Response.getAccessToken());
@@ -1953,6 +1965,185 @@ public class EduHubVnApplication {
 
                 } catch (Exception e) {
                         System.err.println("Lỗi khi tạo dữ liệu mẫu cho Projects: " + e.getMessage());
+                        e.printStackTrace();
+                }
+        }
+
+        private void createSampleTrainingProgramData(
+                        TrainingProgramRequestRepository trainingProgramRequestRepository,
+                        TrainingProgramRepository trainingProgramRepository,
+                        TrainingUnitRepository trainingUnitRepository,
+                        PartnerOrganizationRepository partnerOrganizationRepository,
+                        LecturerRepository lecturerRepository,
+                        UserRepository userRepository,
+                        Faker faker) {
+
+                try {
+                        // Lấy dữ liệu đã được APPROVED
+                        List<PartnerOrganization> partners = partnerOrganizationRepository.findAll().stream()
+                                        .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
+                                        .toList();
+                        List<Lecturer> lecturers = lecturerRepository.findAll().stream()
+                                        .filter(lecturer -> lecturer.getStatus() == PendingStatus.APPROVED)
+                                        .toList();
+                        List<User> users = userRepository.findAll();
+
+                        if (partners.isEmpty() || lecturers.isEmpty() || users.isEmpty()) {
+                                System.err.println("Không đủ dữ liệu để tạo Training Programs (cần partners, lecturers, users)");
+                                return;
+                        }
+
+                        // Dữ liệu mẫu cho Training Program
+                        List<String> programTitles = Arrays.asList(
+                                        "Chương trình đào tạo Java Spring Boot Advanced",
+                                        "Khóa học Python Data Science Comprehensive", 
+                                        "Chương trình đào tạo React Native Mobile Development",
+                                        "Khóa học AI & Machine Learning Professional",
+                                        "Chương trình đào tạo DevOps & Cloud Computing",
+                                        "Khóa học Cybersecurity Specialist",
+                                        "Chương trình đào tạo Full-stack Web Development",
+                                        "Khóa học Digital Marketing Professional",
+                                        "Chương trình đào tạo Business Analysis",
+                                        "Khóa học Project Management với Agile/Scrum"
+                        );
+
+                        List<String> programDescriptions = Arrays.asList(
+                                        "Chương trình đào tạo chuyên sâu về Java Spring Boot dành cho developer có kinh nghiệm",
+                                        "Khóa học toàn diện về Data Science với Python, từ cơ bản đến nâng cao",
+                                        "Chương trình đào tạo phát triển ứng dụng mobile đa nền tảng với React Native",
+                                        "Khóa học chuyên nghiệp về AI và Machine Learning với ứng dụng thực tế",
+                                        "Chương trình đào tạo DevOps và Cloud Computing cho doanh nghiệp",
+                                        "Khóa học chuyên gia an ninh mạng với các case study thực tế",
+                                        "Chương trình đào tạo Full-stack từ Frontend đến Backend",
+                                        "Khóa học Digital Marketing chuyên nghiệp cho doanh nghiệp",
+                                        "Chương trình đào tạo Business Analyst với phương pháp hiện đại",
+                                        "Khóa học quản lý dự án với Agile và Scrum methodology"
+                        );
+
+                        List<String> unitTitles = Arrays.asList(
+                                        "Giới thiệu và cài đặt môi trường",
+                                        "Kiến thức cơ bản và nền tảng",
+                                        "Thực hành và ứng dụng",
+                                        "Dự án thực tế",
+                                        "Kiểm tra và đánh giá",
+                                        "Nâng cao và mở rộng",
+                                        "Workshop và thảo luận",
+                                        "Capstone Project",
+                                        "Review và tổng kết",
+                                        "Hướng dẫn triển khai thực tế"
+                        );
+
+                        List<TrainingProgramRequest> requests = new ArrayList<>();
+                        List<TrainingProgram> programs = new ArrayList<>();
+                        List<TrainingUnit> units = new ArrayList<>();
+
+                        // Tạo 10 Training Program Requests
+                        for (int i = 0; i < 10; i++) {
+                                PartnerOrganization partner = partners.get(faker.random().nextInt(partners.size()));
+                                
+                                TrainingProgramRequest request = TrainingProgramRequest.builder()
+                                                .partnerOrganization(partner)
+                                                .title(programTitles.get(i))
+                                                .description(programDescriptions.get(i))
+                                                .status(i < 7 ? PendingStatus.APPROVED : 
+                                                       i < 9 ? PendingStatus.PENDING : PendingStatus.REJECTED)
+                                                .fileUrl("https://example.com/training-program-file-" + (i + 1) + ".pdf")
+                                                .build();
+                                requests.add(request);
+                        }
+
+                        // Lưu requests trước
+                        trainingProgramRequestRepository.saveAll(requests);
+                        trainingProgramRequestRepository.flush();
+
+                        // Tạo Training Programs cho các requests đã APPROVED
+                        for (int i = 0; i < requests.size(); i++) {
+                                TrainingProgramRequest request = requests.get(i);
+                                if (request.getStatus() == PendingStatus.APPROVED) {
+                                        User user = users.get(faker.random().nextInt(users.size()));
+                                        LocalDate startDate = LocalDate.now().plusDays(faker.random().nextInt(30, 90));
+                                        LocalDate endDate = startDate.plusDays(faker.random().nextInt(30, 120));
+
+                                        TrainingProgram program = TrainingProgram.builder()
+                                                        .trainingProgramRequest(request)
+                                                        .user(user)
+                                                        .partnerOrganization(request.getPartnerOrganization())
+                                                        .programStatus(TrainingProgramStatus.values()[faker.random()
+                                                                        .nextInt(TrainingProgramStatus.values().length)])
+                                                        .programMode(TrainingProgramMode.values()[faker.random()
+                                                                        .nextInt(TrainingProgramMode.values().length)])
+                                                        .programType(TrainingProgramType.values()[faker.random()
+                                                                        .nextInt(TrainingProgramType.values().length)])
+                                                        .startDate(startDate)
+                                                        .endDate(endDate)
+                                                        .durationHours(faker.random().nextInt(40, 200))
+                                                        .durationSessions(faker.random().nextInt(10, 40))
+                                                        .scheduleDetail("Thứ 2, 4, 6 từ 19h00-21h30")
+                                                        .maxStudents(faker.random().nextInt(20, 50))
+                                                        .minStudents(faker.random().nextInt(10, 20))
+                                                        .openingCondition("Đủ số lượng học viên tối thiểu")
+                                                        .equipmentRequirement("Laptop, Internet ổn định")
+                                                        .classroomLink(i % 2 == 0 ? "https://meet.google.com/abc-xyz-123" : null)
+                                                        .targetAudience("Developers, Students, IT Professionals")
+                                                        .requirements("Kiến thức cơ bản về lập trình")
+                                                        .scale("Enterprise")
+                                                        .listedPrice(new BigDecimal(faker.random().nextInt(2000000, 8000000)))
+                                                        .internalPrice(new BigDecimal(faker.random().nextInt(1500000, 6000000)))
+                                                        .publicPrice(new BigDecimal(faker.random().nextInt(2500000, 10000000)))
+                                                        .isPriceVisible(faker.bool().bool())
+                                                        .bannerUrl("https://example.com/banner-" + (i + 1) + ".jpg")
+                                                        .contentUrl("https://example.com/content-" + (i + 1) + ".html")
+                                                        .syllabusFileUrl("https://example.com/syllabus-" + (i + 1) + ".pdf")
+                                                        .tags(Set.of("Programming", "Technology", "Online Learning"))
+                                                        .entryRequirements("Tốt nghiệp đại học hoặc có kinh nghiệm tương đương")
+                                                        .learningOutcomes("Thành thạo framework, Xây dựng được ứng dụng thực tế")
+                                                        .completionCertificateType("Certificate of Completion")
+                                                        .certificateIssuer(request.getPartnerOrganization().getOrganizationName())
+                                                        .title(request.getTitle())
+                                                        .subTitle("Professional Training Program")
+                                                        .shortDescription(request.getDescription())
+                                                        .learningObjectives("Nắm vững kiến thức và kỹ năng chuyên môn")
+                                                        .targetLearners("IT Professionals, Developers, Students")
+                                                        .rating(4.0 + faker.random().nextDouble() * 1.0) // 4.0 - 5.0
+                                                        .build();
+                                        programs.add(program);
+                                }
+                        }
+
+                        // Lưu programs trước
+                        trainingProgramRepository.saveAll(programs);
+                        trainingProgramRepository.flush();
+
+                        // Tạo Training Units cho mỗi program
+                        for (TrainingProgram program : programs) {
+                                int numUnits = faker.random().nextInt(3, 8); // Mỗi program có 3-7 units
+                                for (int j = 0; j < numUnits; j++) {
+                                        Lecturer lecturer = lecturers.get(faker.random().nextInt(lecturers.size()));
+                                        
+                                        TrainingUnit unit = TrainingUnit.builder()
+                                                        .trainingProgram(program)
+                                                        .lecturer(lecturer)
+                                                        .title(unitTitles.get(faker.random().nextInt(unitTitles.size())) + " - Phần " + (j + 1))
+                                                        .description("Chi tiết nội dung cho " + unitTitles.get(faker.random().nextInt(unitTitles.size())))
+                                                        .durationSection(faker.random().nextInt(2, 6)) // 2-5 tiếng
+                                                        .orderSection(j + 1)
+                                                        .isLead(j == 0) // Unit đầu tiên là lead
+                                                        .build();
+                                        units.add(unit);
+                                }
+                        }
+
+                        // Lưu units
+                        trainingUnitRepository.saveAll(units);
+                        trainingUnitRepository.flush();
+
+                        System.out.println("✅ Đã tạo thành công dữ liệu mẫu cho Training Programs:");
+                        System.out.println("- " + requests.size() + " Training Program Requests (7 APPROVED, 2 PENDING, 1 REJECTED)");
+                        System.out.println("- " + programs.size() + " Training Programs (chỉ cho requests APPROVED)");
+                        System.out.println("- " + units.size() + " Training Units (3-7 units per program)");
+
+                } catch (Exception e) {
+                        System.err.println("Lỗi khi tạo dữ liệu mẫu cho Training Programs: " + e.getMessage());
                         e.printStackTrace();
                 }
         }

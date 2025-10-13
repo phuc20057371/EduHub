@@ -87,8 +87,6 @@ public class Lecturer {
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OwnedTrainingCourse> ownedTrainingCourses;
 
-    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CourseLecturer> courseLecturers;
 
     @OneToOne(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private LecturerUpdate lecturerUpdate;

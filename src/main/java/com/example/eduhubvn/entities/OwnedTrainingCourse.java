@@ -70,9 +70,4 @@ public class OwnedTrainingCourse {
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 
-    @OneToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
-
-
 }
