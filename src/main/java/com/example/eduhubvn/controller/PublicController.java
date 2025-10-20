@@ -5,9 +5,12 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.eduhubvn.dtos.ApiResponse;
+import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
@@ -50,13 +53,27 @@ public class PublicController {
         List<LecturerDTO> lecturers = lecturerService.getTop7Lecturers();
         return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
     }
-    // @GetMapping("/get-top-6-lecturers")
-    // public ResponseEntity<ApiResponse<List<LecturerBasicPublicDTO>>>
-    // getTop6Lecturers() {
-    // List<LecturerBasicPublicDTO> lecturers = lecturerService.getTop6Lecturers();
-    // return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên",
-    // lecturers));
-    // }
+
+    @GetMapping("/get-top-6-lecturers")
+    public ResponseEntity<ApiResponse<List<LecturerBasicPublicDTO>>> getTop6Lecturers() {
+        List<LecturerBasicPublicDTO> lecturers = lecturerService.getTop6Lecturers();
+        return ResponseEntity.ok(
+                ApiResponse.success("Danh sách 6 giảng viên có rating cao nhất ở các lĩnh vực khác nhau", lecturers));
+    }
+
+    @GetMapping("/get-all-lecturers-with-rating")
+    public ResponseEntity<ApiResponse<List<LecturerBasicPublicDTO>>> getAllLecturersWithRating() {
+        List<LecturerBasicPublicDTO> lecturers = lecturerService.getAllLecturersWithRating();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên có rating", lecturers));
+    }
+
+    @GetMapping("/get-lecturer-by-id-with-rating")
+    public ResponseEntity<ApiResponse<LecturerBasicPublicDTO>> getLecturerByIdWithRating(@RequestParam("id") String lecturerId) {
+        IdRequest idRequest = new IdRequest();
+        idRequest.setId(java.util.UUID.fromString(lecturerId));
+        LecturerBasicPublicDTO lecturer = lecturerService.getLecturerByIdWithRating(idRequest);
+        return ResponseEntity.ok(ApiResponse.success("Thông tin giảng viên", lecturer));
+    }
 
     @GetMapping("/get-all-training-programs")
     public ResponseEntity<ApiResponse<List<TrainingProgramDTO>>> getAllTrainingPrograms() {

@@ -1,6 +1,8 @@
 package com.example.eduhubvn.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.CertificationUpdateDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeUpdateDTO;
+import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerCreateDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerPendingDTO;
@@ -1093,9 +1096,73 @@ public class LecturerService {
         return lecturers.stream().map(lecturerMapper::toDTO).collect(Collectors.toList());
     }
 
-    // @Transactional
-    // public List<LecturerBasicPublicDTO> getTop6Lecturers() {
+    @Transactional
+    public List<LecturerBasicPublicDTO> getTop6Lecturers() {
+        // Get all lecturers who have training programs with ratings
+        List<Lecturer> lecturers = lecturerRepository.findLecturersWithRating();
+        
+        // Calculate rating for each lecturer and group by job field
+        Map<String, LecturerBasicPublicDTO> topLecturersByJobField = new HashMap<>();
+        
+        for (Lecturer lecturer : lecturers) {
+            Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
+            if (avgRating != null && avgRating > 0) {
+                String jobField = lecturer.getJobField();
+                LecturerBasicPublicDTO dto = lecturerMapper.toBasicPublicDTO(lecturer);
+                dto.setRating(avgRating);
+                
+                // Keep only the lecturer with highest rating in each job field
+                if (!topLecturersByJobField.containsKey(jobField) ||
+                    topLecturersByJobField.get(jobField).getRating() < avgRating) {
+                    topLecturersByJobField.put(jobField, dto);
+                }
+            }
+        }
+        
+        // Sort by rating descending and limit to 6
+        return topLecturersByJobField.values().stream()
+                .sorted((a, b) -> Double.compare(b.getRating(), a.getRating()))
+                .limit(6)
+                .collect(Collectors.toList());
+    }
 
-    // }
+    @Transactional
+    public List<LecturerBasicPublicDTO> getAllLecturersWithRating() {
+        // Get all lecturers that are not hidden
+        List<Lecturer> allLecturers = lecturerRepository.findAll().stream()
+                .filter(lecturer -> !lecturer.isHidden() && lecturer.getStatus() == PendingStatus.APPROVED)
+                .collect(Collectors.toList());
+        
+        return allLecturers.stream()
+                .map(lecturer -> {
+                    Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
+                    LecturerBasicPublicDTO dto = lecturerMapper.toBasicPublicDTO(lecturer);
+                    // Set rating to 0.0 if null or no rating available
+                    dto.setRating(avgRating != null ? avgRating : 0.0);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public LecturerBasicPublicDTO getLecturerByIdWithRating(IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() == null) {
+            throw new IllegalArgumentException("ID không được trống.");
+        }
+        
+        Lecturer lecturer = lecturerRepository.findById(idRequest.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + idRequest.getId()));
+        
+        if (lecturer.isHidden()) {
+            throw new EntityNotFoundException("Giảng viên không khả dụng.");
+        }
+        
+        Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
+        LecturerBasicPublicDTO dto = lecturerMapper.toBasicPublicDTO(lecturer);
+        // Set rating to 0.0 if null or no rating available
+        dto.setRating(avgRating != null ? avgRating : 0.0);
+        
+        return dto;
+    }
 
 }

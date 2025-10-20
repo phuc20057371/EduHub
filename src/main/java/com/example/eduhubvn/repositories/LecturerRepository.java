@@ -38,6 +38,19 @@ public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     @Query(value = "SELECT * FROM lecturer WHERE lecturer_id IS NOT NULL ORDER BY lecturer_id DESC LIMIT 1", nativeQuery = true)
     Optional<Lecturer> findTopByOrderByLecturerIdDesc();
 
+    @Query("SELECT AVG(tp.rating) FROM TrainingProgram tp JOIN tp.units tu WHERE tu.lecturer.id = :lecturerId AND tp.rating IS NOT NULL")
+    Double calculateAverageRatingForLecturer(@Param("lecturerId") UUID lecturerId);
+
+    @Query("""
+        SELECT l FROM Lecturer l 
+        WHERE l.hidden = false AND l.jobField IS NOT NULL
+        AND EXISTS (
+            SELECT 1 FROM TrainingUnit tu JOIN tu.trainingProgram tp 
+            WHERE tu.lecturer.id = l.id AND tp.rating IS NOT NULL
+        )
+        """)
+    List<Lecturer> findLecturersWithRating();
+
     // Pagination support
     Page<Lecturer> findAll(Pageable pageable);
 

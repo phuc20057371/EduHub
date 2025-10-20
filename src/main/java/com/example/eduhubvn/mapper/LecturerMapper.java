@@ -1,5 +1,6 @@
 package com.example.eduhubvn.mapper;
 
+import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerUpdateDTO;
 import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
@@ -14,6 +15,9 @@ import java.util.List;
 public interface LecturerMapper {
 
     LecturerDTO toDTO(Lecturer lecturer);
+
+    @Mapping(target = "rating", ignore = true)
+    LecturerBasicPublicDTO toBasicPublicDTO(Lecturer lecturer);
 
     @Mapping(target = "citizenId", source = "citizenId")
     @Mapping(target = "hidden", ignore = true)
