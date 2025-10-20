@@ -1093,4 +1093,9 @@ public class LecturerService {
         return lecturers.stream().map(lecturerMapper::toDTO).collect(Collectors.toList());
     }
 
+    // @Transactional
+    // public List<LecturerBasicPublicDTO> getTop6Lecturers() {
+
+    // }
+
 }

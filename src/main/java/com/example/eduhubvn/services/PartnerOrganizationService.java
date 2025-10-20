@@ -1,5 +1,12 @@
 package com.example.eduhubvn.services;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
 import com.example.eduhubvn.dtos.MessageSocket;
 import com.example.eduhubvn.dtos.MessageSocketType;
 import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
@@ -9,21 +16,24 @@ import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
 import com.example.eduhubvn.dtos.partner.PartnerProfileDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
 import com.example.eduhubvn.dtos.partner.request.PartnerUpdateReq;
-import com.example.eduhubvn.entities.*;
+import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramRequestReq;
+import com.example.eduhubvn.entities.PartnerOrganization;
+import com.example.eduhubvn.entities.PartnerOrganizationUpdate;
+import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.entities.TrainingProgramRequest;
+import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
+import com.example.eduhubvn.mapper.TrainingProgramRequestMapper;
 import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
 import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
+import com.example.eduhubvn.repositories.TrainingProgramRequestRepository;
 import com.example.eduhubvn.ulti.Mapper;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +41,10 @@ public class PartnerOrganizationService {
 
     private final PartnerOrganizationRepository partnerOrganizationRepository;
     private final PartnerOrganizationUpdateRepository partnerOrganizationUpdateRepository;
+    private final TrainingProgramRequestRepository trainingProgramRequestRepository;
 
     private final PartnerOrganizationMapper partnerOrganizationMapper;
+    private final TrainingProgramRequestMapper trainingProgramRequestMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -204,6 +216,43 @@ public class PartnerOrganizationService {
             return partnerOrganizationMapper.toDTO(partnerOrganization);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi cập nhật logo: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public List<TrainingProgramRequestDTO> getAllTrainingProgramRequests(User user) {
+        PartnerOrganization partnerOrganization = user.getPartnerOrganization();
+        if (partnerOrganization == null) {
+            throw new EntityNotFoundException("Không có quyền truy cập");
+        }
+        try {
+            List<TrainingProgramRequest> requests = trainingProgramRequestRepository.findByPartnerOrganization(partnerOrganization);
+            return requests.stream()
+                    .map(trainingProgramRequestMapper::toDto)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Transactional
+    public TrainingProgramRequestDTO createTrainingProgramRequest(TrainingProgramRequestReq request, User user) {
+        PartnerOrganization partnerOrganization = user.getPartnerOrganization();
+        if (partnerOrganization == null) {
+            throw new EntityNotFoundException("Không có quyền truy cập");
+        }
+        try {
+            TrainingProgramRequest programRequest = TrainingProgramRequest.builder()
+                    .partnerOrganization(partnerOrganization)
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .status(PendingStatus.PENDING)
+                    .fileUrl(request.getFileUrl())
+                    .build();
+            trainingProgramRequestRepository.save(programRequest);
+            trainingProgramRequestRepository.flush();
+            return trainingProgramRequestMapper.toDto(programRequest);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -19,6 +19,8 @@ public interface PartnerOrganizationMapper {
         @Mapping(target = "partnerUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
         @Mapping(target = "projects", ignore = true)
+        @Mapping(target = "trainingProgramRequests", ignore = true)
+        @Mapping(target = "trainingPrograms", ignore = true)
         PartnerOrganization toEntity(PartnerOrganizationDTO dto);
 
         @Mapping(target = "id", ignore = true)
@@ -30,6 +32,8 @@ public interface PartnerOrganizationMapper {
         @Mapping(target = "partnerUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
         @Mapping(target = "projects", ignore = true)
+        @Mapping(target = "trainingProgramRequests", ignore = true)
+        @Mapping(target = "trainingPrograms", ignore = true)
         PartnerOrganization toEntity(PartnerOrganizationReq req);
 
         @Mapping(target = "id", ignore = true)
@@ -42,6 +46,8 @@ public interface PartnerOrganizationMapper {
         @Mapping(target = "partnerUpdate", ignore = true)
         @Mapping(target = "projects", ignore = true)
         @Mapping(target = "hidden", ignore = true)
+        @Mapping(target = "trainingProgramRequests", ignore = true)
+        @Mapping(target = "trainingPrograms", ignore = true)
         void updateEntityFromRequest(PartnerOrganizationReq req, @MappingTarget PartnerOrganization organization);
 
         @Mapping(target = "id", ignore = true)
@@ -50,6 +56,8 @@ public interface PartnerOrganizationMapper {
         @Mapping(target = "status", ignore = true)
         @Mapping(target = "adminNote", ignore = true)
         @Mapping(target = "user", ignore = true)
+        @Mapping(target = "trainingProgramRequests", ignore = true)
+        @Mapping(target = "trainingPrograms", ignore = true)
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "partnerUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)
@@ -63,6 +71,8 @@ public interface PartnerOrganizationMapper {
         @Mapping(target = "status", ignore = true)
         @Mapping(target = "adminNote", ignore = true)
         @Mapping(target = "user", ignore = true)
+        @Mapping(target = "trainingProgramRequests", ignore = true)
+        @Mapping(target = "trainingPrograms", ignore = true)
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "partnerUpdate", ignore = true)
         @Mapping(target = "hidden", ignore = true)

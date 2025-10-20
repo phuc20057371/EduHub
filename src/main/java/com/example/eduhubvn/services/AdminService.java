@@ -3,6 +3,7 @@ package com.example.eduhubvn.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -29,7 +30,6 @@ import com.example.eduhubvn.dtos.RequestLecturerType;
 import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterLecturerFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterPartnerFromAdminRequest;
-import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -58,6 +58,10 @@ import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramReq;
+import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
+import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
 import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
 import com.example.eduhubvn.entities.Certification;
@@ -76,6 +80,10 @@ import com.example.eduhubvn.entities.PendingStatus;
 import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;
 import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.entities.TrainingProgram;
+import com.example.eduhubvn.entities.TrainingProgramRequest;
+import com.example.eduhubvn.entities.TrainingProgramStatus;
+import com.example.eduhubvn.entities.TrainingUnit;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.mapper.AttendedTrainingCourseMapper;
 import com.example.eduhubvn.mapper.CertificationMapper;
@@ -85,6 +93,8 @@ import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.mapper.OwnedTrainingCourseMapper;
 import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
 import com.example.eduhubvn.mapper.ResearchProjectMapper;
+import com.example.eduhubvn.mapper.TrainingProgramMapper;
+import com.example.eduhubvn.mapper.TrainingProgramRequestMapper;
 import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
 import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
 import com.example.eduhubvn.repositories.CertificationRepository;
@@ -101,6 +111,8 @@ import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
 import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
 import com.example.eduhubvn.repositories.ResearchProjectRepository;
 import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
+import com.example.eduhubvn.repositories.TrainingProgramRepository;
+import com.example.eduhubvn.repositories.TrainingProgramRequestRepository;
 import com.example.eduhubvn.repositories.UserRepository;
 import com.example.eduhubvn.ulti.Mapper;
 
@@ -129,6 +141,10 @@ public class AdminService {
     private final OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository;
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
+    private final TrainingProgramRepository trainingProgramRepository;
+    private final TrainingProgramRequestRepository trainingProgramRequestRepository;
+
+    private final IdGeneratorService idGeneratorService;
 
     private final LecturerMapper lecturerMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
@@ -138,6 +154,8 @@ public class AdminService {
     private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
     private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
+    private final TrainingProgramMapper trainingProgramMapper;
+    private final TrainingProgramRequestMapper trainingProgramRequestMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
     private final PasswordEncoder passwordEncoder;
@@ -404,6 +422,7 @@ public class AdminService {
         userRepository.save(newUser);
         Lecturer lecturer = Lecturer.builder()
                 .citizenId(req.getCitizenId())
+                .lecturerId(generateNextLecturerId())
                 .phoneNumber(req.getPhoneNumber())
                 .fullName(req.getFullName())
                 .dateOfBirth(req.getDateOfBirth())
@@ -2138,22 +2157,191 @@ public class AdminService {
         }
     }
 
-    @Transactional
-    public List<OwnedCourseInfoDTO> getOwnedCourses() {
+    /// Training Program
+    public List<TrainingProgramDTO> getAllTrainingPrograms() {
         try {
-            List<OwnedTrainingCourse> ownedCourses = ownedTrainingCourseRepository.findAll();
-            return ownedCourses.stream()
-                    .filter(ownedTrainingCourse -> ownedTrainingCourse.getStatus() == PendingStatus.APPROVED
-                            && ownedTrainingCourse.getLecturer() != null
-                            && ownedTrainingCourse.getLecturer().getStatus() == PendingStatus.APPROVED)
-                    .map(course -> OwnedCourseInfoDTO.builder()
-                            .ownedCourse(ownedTrainingCourseMapper.toDTO(course))
-                            .lecturer(Mapper.mapToLecturerInfoDTO(course.getLecturer()))
-                            .build())
+            List<TrainingProgram> programs = trainingProgramRepository.findAll();
+            return programs.stream()
+                    .map(trainingProgramMapper::toDto)
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching owned courses.", e);
+            throw new RuntimeException("Error fetching training programs.", e);
         }
     }
 
+    public List<TrainingProgramDTO> getAllPublishedTrainingPrograms() {
+        try {
+            List<TrainingProgram> programs = trainingProgramRepository.findAll();
+            return programs.stream()
+                    .filter(p -> p.getProgramStatus() == TrainingProgramStatus.PUBLISHED)
+                    .map(trainingProgramMapper::toDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching training programs.", e);
+        }
+    }
+
+    public PaginatedResponse<TrainingProgramDTO> getAllTrainingProgramsPaginated(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<TrainingProgram> programsPage = trainingProgramRepository.findAll(pageable);
+
+            List<TrainingProgramDTO> programDTOs = programsPage.getContent().stream()
+                    .map(trainingProgramMapper::toDto)
+                    .toList();
+
+            return PaginatedResponse.<TrainingProgramDTO>builder()
+                    .content(programDTOs)
+                    .page(programsPage.getNumber())
+                    .size(programsPage.getSize())
+                    .totalElements(programsPage.getTotalElements())
+                    .totalPages(programsPage.getTotalPages())
+                    .first(programsPage.isFirst())
+                    .last(programsPage.isLast())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching training programs with pagination.", e);
+        }
+    }
+
+    public TrainingProgramDTO createTrainingProgram(TrainingProgramReq req) {
+        if (req == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+        try {
+            TrainingProgram program = trainingProgramMapper.fromReq(req);
+            program.setTrainingProgramId(idGeneratorService.generateTrainingProgramId());
+            // Hidden fields set by system/admin
+            program.setProgramStatus(TrainingProgramStatus.PUBLISHED);
+
+            if (req.getPartnerOrganization() != null) {
+                PartnerOrganization partnerOrganization = partnerOrganizationRepository
+                        .findById(req.getPartnerOrganization().getId())
+                        .orElse(null);
+                program.setPartnerOrganization(partnerOrganization);
+            }
+            if (req.getTrainingProgramRequest() != null) {
+                TrainingProgramRequest trainingProgramRequest = trainingProgramRequestRepository
+                        .findById(req.getTrainingProgramRequest().getId())
+                        .orElse(null);
+                program.setTrainingProgramRequest(trainingProgramRequest);
+                trainingProgramRequest.setStatus(PendingStatus.APPROVED);
+            }
+
+            trainingProgramRepository.save(program);
+            return trainingProgramMapper.toDto(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating training program.", e);
+        }
+    }
+
+    @Transactional
+    public TrainingProgramDTO updateProgramUnits(UUID programId, List<TrainingUnitDTO> req) {
+        if (req == null || programId == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgram program = trainingProgramRepository.findById(programId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chương trình đào tạo."));
+
+        try {
+            // B1: Lấy danh sách hiện tại từ DB
+            List<TrainingUnit> existingUnits = program.getUnits();
+
+            // B2: Tạo map để tra nhanh theo ID
+            Map<UUID, TrainingUnit> existingMap = existingUnits.stream()
+                    .collect(Collectors.toMap(TrainingUnit::getId, u -> u));
+
+            // B3: Danh sách mới sau khi cập nhật
+            List<TrainingUnit> updatedUnits = new ArrayList<>();
+
+            for (TrainingUnitDTO dto : req) {
+                TrainingUnit unit;
+
+                if (dto.getId() != null && existingMap.containsKey(dto.getId())) {
+                    // --- Cập nhật TrainingUnit cũ
+                    unit = existingMap.get(dto.getId());
+                    unit.setTitle(dto.getTitle());
+                    unit.setDescription(dto.getDescription());
+                    unit.setDurationSection(dto.getDurationSection());
+                    unit.setOrderSection(dto.getOrderSection());
+                    unit.setLead(dto.isLead());
+                    // Cập nhật giảng viên (nếu có)
+                    if (dto.getLecturer() != null && dto.getLecturer().getId() != null) {
+                        Lecturer lecturer = lecturerRepository.findById(dto.getLecturer().getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
+                        unit.setLecturer(lecturer);
+                    }
+                } else {
+                    // --- Tạo mới TrainingUnit
+                    unit = new TrainingUnit();
+                    unit.setTitle(dto.getTitle());
+                    unit.setDescription(dto.getDescription());
+                    unit.setDurationSection(dto.getDurationSection());
+                    unit.setOrderSection(dto.getOrderSection());
+                    unit.setLead(dto.isLead());
+                    unit.setTrainingProgram(program);
+
+                    if (dto.getLecturer() != null && dto.getLecturer().getId() != null) {
+                        Lecturer lecturer = lecturerRepository.findById(dto.getLecturer().getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên."));
+                        unit.setLecturer(lecturer);
+                    }
+                }
+
+                updatedUnits.add(unit);
+            }
+
+            // B4: Xóa các TrainingUnit không còn trong danh sách mới
+            List<TrainingUnit> toRemove = existingUnits.stream()
+                    .filter(u -> updatedUnits.stream().noneMatch(newU -> Objects.equals(newU.getId(), u.getId())))
+                    .collect(Collectors.toList());
+
+            program.getUnits().removeAll(toRemove);
+            program.getUnits().clear();
+            program.getUnits().addAll(updatedUnits);
+
+            // B5: Lưu lại
+            trainingProgramRepository.save(program);
+
+            // B6: Trả về DTO
+            return trainingProgramMapper.toDto(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật đơn vị đào tạo: " + e.getMessage(), e);
+        }
+    }
+
+    public PaginatedResponse<TrainingProgramRequestDTO> getAllTrainingRequestsPaginated(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<TrainingProgramRequest> requestsPage = trainingProgramRequestRepository.findAll(pageable);
+
+            List<TrainingProgramRequestDTO> requestDTOs = requestsPage.getContent().stream()
+                    .map(trainingProgramRequestMapper::toDto)
+                    .toList();
+
+            return PaginatedResponse.<TrainingProgramRequestDTO>builder()
+                    .content(requestDTOs)
+                    .page(requestsPage.getNumber())
+                    .size(requestsPage.getSize())
+                    .totalElements(requestsPage.getTotalElements())
+                    .totalPages(requestsPage.getTotalPages())
+                    .first(requestsPage.isFirst())
+                    .last(requestsPage.isLast())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching training program requests with pagination.", e);
+        }
+    }
+
+    public List<TrainingProgramRequestDTO> getAllProgramRequests() {
+        try {
+            List<TrainingProgramRequest> requests = trainingProgramRequestRepository.findAll();
+            return requests.stream()
+                    .map(trainingProgramRequestMapper::toDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching training program requests.", e);
+        }
+    }
 }

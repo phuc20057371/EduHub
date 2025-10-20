@@ -14,9 +14,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "lecturer")
 @Data
+@EqualsAndHashCode(exclude = { "lecturerUpdate" })
 @ToString(exclude = { "user", "certifications", "degrees",
         "researchProjects", "attendedTrainingCourses", "ownedTrainingCourses"
 })
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,7 +31,7 @@ public class Lecturer {
     @Column(name = "lecturer_id", unique = true)
     private String lecturerId;
 
-    @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
+    @Column(name = "citizen_id", length = 12, nullable = false, unique = true)
     private String citizenId;
 
     @OneToOne(cascade = { CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval = false)
@@ -44,9 +46,9 @@ public class Lecturer {
     private LocalDate dateOfBirth;
     @Column(name = "gender", nullable = false)
     private Boolean gender;
-    @Column(name = "bio")
+    @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "TEXT")
     private String address;
     @Column(name = "avatar_url")
     private String avatarUrl;
@@ -57,7 +59,7 @@ public class Lecturer {
     private String specialization;
     @Column(name = "experience_years")
     private Integer experienceYears;
-    @Column(name = "job_field")
+    @Column(name = "job_field" , columnDefinition = "TEXT")
     private String jobField;
 
     private boolean hidden;
@@ -86,7 +88,6 @@ public class Lecturer {
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OwnedTrainingCourse> ownedTrainingCourses;
-
 
     @OneToOne(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private LecturerUpdate lecturerUpdate;

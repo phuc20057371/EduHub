@@ -2,6 +2,9 @@ package com.example.eduhubvn.entities;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,18 +30,22 @@ public class TrainingUnit {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "training_program_id")
+    @JsonIgnore
     private TrainingProgram trainingProgram;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Integer durationSection;
     private Integer orderSection;
-    private boolean isLead;
+    private boolean lead;
 
 }

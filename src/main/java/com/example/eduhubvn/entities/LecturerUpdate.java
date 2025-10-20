@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "lecturer_update")
 @Data
+@EqualsAndHashCode(exclude = { "lecturer" })  
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,7 +29,7 @@ public class LecturerUpdate {
     @JoinColumn(name = "lecturer_id", nullable = false)
     private Lecturer lecturer;
 
-    @Column(name = "citizen_id", length = 11, nullable = false, unique = true)
+    @Column(name = "citizen_id", length = 12, nullable = false, unique = true)
     private String citizenId;
 
     @Column(name = "phone_number")
@@ -38,9 +40,9 @@ public class LecturerUpdate {
     private LocalDate dateOfBirth;
     @Column(name = "gender")
     private Boolean gender;
-    @Column(name = "bio")
+    @Column(name = "bio" , columnDefinition = "TEXT")
     private String bio;
-    @Column(name = "address")
+    @Column(name = "address" , columnDefinition = "TEXT")
     private String address;
     @Column(name = "avatar_url")
     private String avatarUrl;
@@ -51,7 +53,7 @@ public class LecturerUpdate {
     private String specialization;
     @Column(name = "experience_years")
     private Integer experienceYears;
-    @Column(name = "job_field")
+    @Column(name = "job_field" , columnDefinition = "TEXT")
     private String jobField;
 
     @Column(name = "admin_note")

@@ -24,7 +24,6 @@ import com.example.eduhubvn.dtos.RequestFromLecturer;
 import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterLecturerFromAdminRequest;
 import com.example.eduhubvn.dtos.admin.request.RegisterPartnerFromAdminRequest;
-import com.example.eduhubvn.dtos.course.OwnedCourseInfoDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
 import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
@@ -49,6 +48,10 @@ import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramReq;
+import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
+import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.AdminService;
 import com.example.eduhubvn.services.EducationInstitutionService;
@@ -559,12 +562,6 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
-    @GetMapping("/get-new-owned-courses")
-    public ResponseEntity<ApiResponse<List<OwnedCourseInfoDTO>>> getOwnedCourses() {
-        List<OwnedCourseInfoDTO> ownedCourses = adminService.getOwnedCourses();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học sở hữu", ownedCourses));
-    }
-
     @PostMapping("/create-owned-course/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> createOwnedCourse(
@@ -644,11 +641,47 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Xóa thành công", null));
     }
 
-    /// Course
+    /// Training Program
+    @GetMapping("/get-all-training-programs")
+    public ResponseEntity<ApiResponse<List<TrainingProgramDTO>>> getAllTrainingPrograms() {
+        List<TrainingProgramDTO> programs = adminService.getAllTrainingPrograms();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo", programs));
+    }
 
+    @GetMapping("/get-all-training-programs-paginated")
+    public ResponseEntity<ApiResponse<PaginatedResponse<TrainingProgramDTO>>> getAllTrainingProgramsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        PaginatedResponse<TrainingProgramDTO> programs = adminService.getAllTrainingProgramsPaginated(page, size);
+        return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo có phân trang", programs));
+    }
+    
 
-
-
+    @PostMapping("/create-training-program")
+    public ResponseEntity<ApiResponse<TrainingProgramDTO>> createTrainingProgram(@RequestBody TrainingProgramReq req) {
+        TrainingProgramDTO dto = adminService.createTrainingProgram(req);
+        return ResponseEntity.ok(ApiResponse.success("Tạo chương trình đào tạo thành công", dto));
+    }
+    
+    @PostMapping("/update-training-program-units/{programId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
+    public ResponseEntity<ApiResponse<TrainingProgramDTO>> updateProgramUnits(@PathVariable UUID programId,
+            @RequestBody List<TrainingUnitDTO> req) {
+        TrainingProgramDTO dto = adminService.updateProgramUnits(programId, req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật chương trình đào tạo thành công", dto));
+    }
+    @PostMapping("/get-all-training-requests-paginated")
+    public ResponseEntity<ApiResponse<PaginatedResponse<TrainingProgramRequestDTO>>> getAllTrainingRequestsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PaginatedResponse<TrainingProgramRequestDTO> requests = adminService.getAllTrainingRequestsPaginated(page, size);
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu đào tạo có phân trang", requests));
+    }
+    @GetMapping("/get-all-program-requests")
+    public ResponseEntity<ApiResponse<List<TrainingProgramRequestDTO>>> getAllProgramRequests() {
+        List<TrainingProgramRequestDTO> requests = adminService.getAllProgramRequests();
+        return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu đào tạo", requests));
+    }
 
     /// Other
 

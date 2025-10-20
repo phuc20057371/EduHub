@@ -40,7 +40,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
-@EqualsAndHashCode(exclude = { "subAdminPermissions" })
+@EqualsAndHashCode(exclude = { "subAdminPermissions" , "trainingPrograms", "lecturer", "educationInstitution", "partnerOrganization" })
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -29,6 +29,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -43,9 +44,13 @@ public class TrainingProgram {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy = "trainingProgram", cascade = CascadeType.ALL)
+    private String trainingProgramId;
+
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "trainingProgram", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrainingUnit> units;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne
     @JoinColumn(name = "training_program_request_id")
     private TrainingProgramRequest trainingProgramRequest;
@@ -79,18 +84,22 @@ public class TrainingProgram {
     private LocalDate endDate;
     private Integer durationHours;
     private Integer durationSessions;
+    @Column(columnDefinition = "TEXT")
     private String scheduleDetail;
 
     private Integer maxStudents;
     private Integer minStudents;
+    @Column(columnDefinition = "TEXT")
     private String openingCondition;
+    @Column(columnDefinition = "TEXT")
     private String equipmentRequirement;
+    @Column(columnDefinition = "TEXT")
     private String classroomLink;
-
+    @Column(columnDefinition = "TEXT")
     private String targetAudience;
     @Column(columnDefinition = "TEXT")
     private String requirements;
-
+    @Column(columnDefinition = "TEXT")
     private String scale;
 
     private BigDecimal listedPrice;
@@ -109,20 +118,21 @@ public class TrainingProgram {
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
 
-    private String entryRequirements;
+    @Column(columnDefinition = "TEXT")
     private String learningOutcomes;
-
+    @Column(columnDefinition = "TEXT")
     private String completionCertificateType;
+    @Column(columnDefinition = "TEXT")
     private String certificateIssuer;
-
+    @Column(columnDefinition = "TEXT")
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String subTitle;
     @Column(columnDefinition = "TEXT")
     private String shortDescription;
+    @Column(columnDefinition = "TEXT")
     private String learningObjectives;
-    private String targetLearners;
 
     private Double rating;
-
 
 }

@@ -71,40 +71,53 @@ public class UserController {
     private final AdminService adminService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/uploads")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
-            HttpServletRequest request) {
+@PostMapping("/uploads")
+public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
+                                    HttpServletRequest request) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-        User user = (User) authentication.getPrincipal();
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        if (file.isEmpty() || (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") &&
-                !fileName.endsWith(".png") && !fileName.endsWith(".pdf"))) {
-            return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
-        }
-
-        try {
-            Path uploadPath = Paths.get("uploads", String.valueOf(user.getRole()), String.valueOf(user.getId()));
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            // Build file access URL
-            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-            String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + fileName;
-
-            return ResponseEntity.ok().body(fileUrl);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload file: " + e.getMessage());
-        }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
+
+    User user = (User) authentication.getPrincipal();
+    String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+    if (file.isEmpty() || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".jpeg") &&
+            !originalFileName.endsWith(".png") && !originalFileName.endsWith(".pdf"))) {
+        return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
+    }
+
+    try {
+        // Lấy phần tên và phần đuôi file
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String baseName = originalFileName.substring(0, originalFileName.lastIndexOf("."))
+                .replaceAll("[^a-zA-Z0-9_-]", "_"); // tránh ký tự đặc biệt
+
+        // Tạo tên file mới có timestamp
+        String newFileName = baseName + "_" + System.currentTimeMillis() + fileExtension;
+
+        // Đường dẫn upload
+        Path uploadPath = Paths.get("uploads", String.valueOf(user.getRole()), String.valueOf(user.getId()));
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(newFileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Tạo URL truy cập
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + newFileName;
+
+        return ResponseEntity.ok().body(fileUrl);
+
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to upload file: " + e.getMessage());
+    }
+}
+
 
     @GetMapping("/user-profile")
     public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfile(@AuthenticationPrincipal User user) {
@@ -249,7 +262,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
     }
 
-
     @PostMapping("/send-otp-change-password")
     public ResponseEntity<ApiResponse<String>> sendOtpChangePassword(@RequestBody SendChangePasswordOtpRequest request,
             @AuthenticationPrincipal User user) {
@@ -258,10 +270,10 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error("Request không được để trống", null));
             }
-            
+
             String message = authenticationService.sendOTPChangePassword(request, user);
             return ResponseEntity.ok(ApiResponse.success(message, null));
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(e.getMessage(), null));
@@ -279,10 +291,10 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error("Request không được để trống", null));
             }
-            
+
             String message = authenticationService.changePassword(request, user);
             return ResponseEntity.ok(ApiResponse.success(message, null));
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(e.getMessage(), null));
@@ -300,10 +312,10 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error("Request không được để trống", null));
             }
-            
+
             String message = authenticationService.sendOTPAddSubEmail(request, user);
             return ResponseEntity.ok(ApiResponse.success(message, null));
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(e.getMessage(), null));
@@ -321,10 +333,10 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error("Request không được để trống", null));
             }
-            
+
             String message = authenticationService.addSubEmail(request, user);
             return ResponseEntity.ok(ApiResponse.success(message, null));
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(e.getMessage(), null));
@@ -342,10 +354,10 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error("Request không được để trống", null));
             }
-            
+
             String message = authenticationService.removeSubEmail(request, user);
             return ResponseEntity.ok(ApiResponse.success(message, null));
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(e.getMessage(), null));
@@ -360,7 +372,7 @@ public class UserController {
         try {
             Set<String> subEmails = authenticationService.getSubEmails(user);
             return ResponseEntity.ok(ApiResponse.success("Lấy danh sách sub-email thành công", subEmails));
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Có lỗi xảy ra khi lấy danh sách email", null));
