@@ -1,5 +1,6 @@
 package com.example.eduhubvn.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +59,12 @@ import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.dtos.program.LecturerUnitPublicDTO;
 import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramPublicDTO;
 import com.example.eduhubvn.dtos.program.TrainingProgramReq;
 import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramUnitPublicDTO;
 import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
 import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
@@ -2384,6 +2388,93 @@ public class AdminService {
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching training program requests.", e);
+        }
+    }
+
+    public List<TrainingProgramPublicDTO> getAllPublicTrainingPrograms() {
+        try {
+            List<TrainingProgram> programs = trainingProgramRepository.findAll();
+            return programs.stream()
+                    .filter(p -> p.getProgramStatus() == TrainingProgramStatus.PUBLISHED)
+                    .map(this::convertToPublicDTO)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching public training programs.", e);
+        }
+    }
+    
+    private TrainingProgramPublicDTO convertToPublicDTO(TrainingProgram program) {
+        return TrainingProgramPublicDTO.builder()
+                .id(program.getId())
+                .units(program.getUnits() != null ? 
+                    program.getUnits().stream()
+                        .map(this::convertToUnitPublicDTO)
+                        .toList() : null)
+                .programMode(program.getProgramMode())
+                .programType(program.getProgramType())
+                .startDate(program.getStartDate())
+                .endDate(program.getEndDate())
+                .durationHours(program.getDurationHours())
+                .durationSessions(program.getDurationSessions())
+                .scheduleDetail(program.getScheduleDetail())
+                .equipmentRequirement(program.getEquipmentRequirement())
+                .classroomLink(program.getClassroomLink())
+                .targetAudience(program.getTargetAudience())
+                .requirements(program.getRequirements())
+                .scale(program.getScale())
+                .publicPrice(program.isPriceVisible() ? program.getPublicPrice() : BigDecimal.ZERO)
+                .isPriceVisible(program.isPriceVisible())
+                .bannerUrl(program.getBannerUrl())
+                .contentUrl(program.getContentUrl())
+                .tags(program.getTags())
+                .learningOutcomes(program.getLearningOutcomes())
+                .completionCertificateType(program.getCompletionCertificateType())
+                .certificateIssuer(program.getCertificateIssuer())
+                .title(program.getTitle())
+                .subTitle(program.getSubTitle())
+                .shortDescription(program.getShortDescription())
+                .learningObjectives(program.getLearningObjectives())
+                .rating(program.getRating())
+                .build();
+    }
+    
+    private TrainingProgramUnitPublicDTO convertToUnitPublicDTO(TrainingUnit unit) {
+        return TrainingProgramUnitPublicDTO.builder()
+                .id(unit.getId())
+                .lecturer(unit.getLecturer() != null ? convertToLecturerUnitPublicDTO(unit.getLecturer()) : null)
+                .title(unit.getTitle())
+                .description(unit.getDescription())
+                .durationSection(unit.getDurationSection())
+                .orderSection(unit.getOrderSection())
+                .lead(unit.isLead())
+                .build();
+    }
+    
+    private LecturerUnitPublicDTO convertToLecturerUnitPublicDTO(Lecturer lecturer) {
+        return LecturerUnitPublicDTO.builder()
+                .id(lecturer.getId())
+                .fullName(lecturer.getFullName())
+                .gender(lecturer.getGender())
+                .bio(lecturer.getBio())
+                .avatarUrl(lecturer.getAvatarUrl())
+                .academicRank(lecturer.getAcademicRank())
+                .specialization(lecturer.getSpecialization())
+                .experienceYears(lecturer.getExperienceYears())
+                .jobField(lecturer.getJobField())
+                .rating(null) // Rating would need to be calculated separately if needed
+                .build();
+    }
+
+    public TrainingProgramPublicDTO getPublicTrainingProgramById(IdRequest idRequest) {
+        try {
+            TrainingProgram program = trainingProgramRepository.findById(idRequest.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chương trình đào tạo."));
+            if (program.getProgramStatus() != TrainingProgramStatus.PUBLISHED) {
+                throw new IllegalStateException("Chương trình đào tạo không công khai.");
+            }
+            return convertToPublicDTO(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching public training program by ID.", e);
         }
     }
 }

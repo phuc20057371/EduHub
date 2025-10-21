@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -1361,21 +1362,21 @@ public class EduHubVnApplication {
                                 subAdminService.assignPermissionsToUser(subAdmin2User, subAdmin2Permissions, adminUser);
 
                                 // ===== TẠO DỮ LIỆU MẪU CHO PROJECT VÀ CÁC ENTITY LIÊN QUAN =====
-                                createSampleProjectData(projectRepository, applicationRepository,
-                                                applicationModuleRepository, interviewRepository,
-                                                contractRepository, courseInfoRepository, courseModuleRepository,
-                                                educationInstitutionRepository, partnerOrganizationRepository,
-                                                lecturerRepository, faker);
+                                // createSampleProjectData(projectRepository, applicationRepository,
+                                //                 applicationModuleRepository, interviewRepository,
+                                //                 contractRepository, courseInfoRepository, courseModuleRepository,
+                                //                 educationInstitutionRepository, partnerOrganizationRepository,
+                                //                 lecturerRepository, faker);
 
-                                for (User user : userRepository.findAll()) {
-                                        if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com")) {
-                                                user.setSubEmails(Set.of("foxfessor@gmail.com"));
-                                        } else {
-                                                user.setSubEmails(Set.of("user" + user.getEmail() + ".backup@gmail.com",
-                                                                "user" + user.getEmail() + ".personal@gmail.com"));
-                                        }
-                                        userRepository.save(user);
-                                }
+                                // for (User user : userRepository.findAll()) {
+                                //         if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com")) {
+                                //                 user.setSubEmails(Set.of("foxfessor@gmail.com"));
+                                //         } else {
+                                //                 user.setSubEmails(Set.of("user" + user.getEmail() + ".backup@gmail.com",
+                                //                                 "user" + user.getEmail() + ".personal@gmail.com"));
+                                //         }
+                                //         userRepository.save(user);
+                                // }
 
                                 // ===== TẠO DỮ LIỆU MẪU CHO TRAINING PROGRAM =====
                                 createSampleTrainingProgramData(trainingProgramRequestRepository, 
@@ -2235,6 +2236,30 @@ public class EduHubVnApplication {
                                         "https://us02web.zoom.us/j/45678901234?pwd=abc890"
                         );
 
+                        // Danh sách các tags cho training programs (ưu tiên từ ngắn và viết tắt)
+                        List<String> availableTags = Arrays.asList(
+                                        "Java", "Python", "React", "Angular", "Vue", "Node.js", "Spring",
+                                        "AI", "ML", "DL", "NLP", "CV", "BigData", "DataScience",
+                                        "AWS", "Azure", "GCP", "Docker", "K8s", "DevOps", "CI/CD",
+                                        "API", "REST", "GraphQL", "Microservices", "Blockchain", "DeFi",
+                                        "Mobile", "iOS", "Android", "Flutter", "ReactNative", "Unity",
+                                        "UI/UX", "Frontend", "Backend", "Fullstack", "Database", "SQL",
+                                        "Security", "CEH", "CISSP", "Pentest", "Ethical", "Cyber",
+                                        "Agile", "Scrum", "PMP", "BA", "PM", "Marketing", "SEO", "SEM",
+                                        "Enterprise", "Certification", "Hands-on", "Advanced", "Beginner"
+                        );
+
+                        // Helper method để tạo random tags
+                        java.util.function.Supplier<Set<String>> generateRandomTags = () -> {
+                                Set<String> tags = new HashSet<>();
+                                int numTags = faker.random().nextInt(2, 5); // 2-4 tags
+                                while (tags.size() < numTags) {
+                                        String randomTag = availableTags.get(faker.random().nextInt(availableTags.size()));
+                                        tags.add(randomTag);
+                                }
+                                return tags;
+                        };
+
                         // Tạo Training Programs cho các requests đã APPROVED
                         int programCounter = 0;
                         for (int i = 0; i < requests.size(); i++) {
@@ -2308,7 +2333,7 @@ public class EduHubVnApplication {
                                                         .bannerUrl(bannerUrls.get(i % bannerUrls.size()))
                                                         .contentUrl(pdfUrls.get(i % pdfUrls.size()))
                                                         .syllabusFileUrl("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
-                                                        .tags(Set.of("Programming", "Technology", "Online Learning"))
+                                                        .tags(generateRandomTags.get())
                                 
                                                         .learningOutcomes("Thành thạo framework, Xây dựng được ứng dụng thực tế")
                                                         .completionCertificateType("Certificate of Completion")
@@ -2413,7 +2438,7 @@ public class EduHubVnApplication {
                                                 .bannerUrl(bannerUrls.get((i + 5) % bannerUrls.size())) // Sử dụng banner khác
                                                 .contentUrl(pdfUrls.get((i + 5) % pdfUrls.size())) // Sử dụng PDF khác
                                                 .syllabusFileUrl("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
-                                                .tags(Set.of("Technology", "Advanced", "Professional"))
+                                                .tags(generateRandomTags.get())
                                
                                                 .learningOutcomes("Thành thạo công nghệ mới, Áp dụng vào dự án thực tế")
                                                 .completionCertificateType("Professional Certificate")

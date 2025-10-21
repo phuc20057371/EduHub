@@ -13,7 +13,7 @@ import com.example.eduhubvn.dtos.IdRequest;
 import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
-import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
+import com.example.eduhubvn.dtos.program.TrainingProgramPublicDTO;
 import com.example.eduhubvn.dtos.project.Response.CourseGuestDTO;
 import com.example.eduhubvn.services.AdminService;
 import com.example.eduhubvn.services.LecturerService;
@@ -76,9 +76,16 @@ public class PublicController {
     }
 
     @GetMapping("/get-all-training-programs")
-    public ResponseEntity<ApiResponse<List<TrainingProgramDTO>>> getAllTrainingPrograms() {
-        List<TrainingProgramDTO> programs = adminService.getAllTrainingPrograms();
+    public ResponseEntity<ApiResponse<List<TrainingProgramPublicDTO>>> getAllTrainingPrograms() {
+        List<TrainingProgramPublicDTO> programs = adminService.getAllPublicTrainingPrograms();
         return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo", programs));
+    }
+    @GetMapping("/get-training-program-by-id")
+    public ResponseEntity<ApiResponse<TrainingProgramPublicDTO>> getTrainingProgramById(@RequestParam("id") String programId) {
+        IdRequest idRequest = new IdRequest();
+        idRequest.setId(java.util.UUID.fromString(programId));
+        TrainingProgramPublicDTO program = adminService.getPublicTrainingProgramById(idRequest);
+        return ResponseEntity.ok(ApiResponse.success("Thông tin chương trình đào tạo", program));
     }
 
 }
