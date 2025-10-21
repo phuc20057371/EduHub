@@ -20,4 +20,6 @@ public interface CertificationRepository extends JpaRepository<Certification, UU
 
     @Query("SELECT d FROM Certification d JOIN FETCH d.lecturer l WHERE d.status = :status AND l.status = 'APPROVED'")
     List<Certification> findByStatusWithApprovedLecturer(@Param("status") PendingStatus pendingStatus);
+
+    List<Certification> findByLecturerIdAndStatus(UUID id, PendingStatus pending);
 }

@@ -24,4 +24,7 @@ public interface DegreeRepository extends JpaRepository<Degree, UUID> {
             "WHERE d.status = :status AND l.hidden = false")
     List<Degree> findByStatusWithVisibleLecturer(@Param("status") PendingStatus status);
 
+    List<Degree> findByLecturerIdAndStatus(UUID id, PendingStatus pending);
+
+
 }

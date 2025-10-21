@@ -474,6 +474,46 @@ public class AdminService {
 
     private void cleanupLecturerPendingUpdates(Lecturer lecturer) {
         try {
+            // Clean up pending degrees
+            List<Degree> pendingDegrees = degreeRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            for (Degree degree : pendingDegrees) {
+                degree.setStatus(PendingStatus.REJECTED);
+                degree.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            degreeRepository.saveAll(pendingDegrees);
+
+            // Clean up pending certifications
+            List<Certification> pendingCertifications = certificationRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            for (Certification certification : pendingCertifications) {
+                certification.setStatus(PendingStatus.REJECTED);
+                certification.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            certificationRepository.saveAll(pendingCertifications);
+
+            // Clean up pending attended training courses
+            List<AttendedTrainingCourse> pendingAttendedCourses = attendedTrainingCourseRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            for (AttendedTrainingCourse course : pendingAttendedCourses) {
+                course.setStatus(PendingStatus.REJECTED);
+                course.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            attendedTrainingCourseRepository.saveAll(pendingAttendedCourses);
+
+            // Clean up pending owned training courses
+            List<OwnedTrainingCourse> pendingOwnedCourses = ownedTrainingCourseRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            for (OwnedTrainingCourse course : pendingOwnedCourses) {
+                course.setStatus(PendingStatus.REJECTED);
+                course.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            ownedTrainingCourseRepository.saveAll(pendingOwnedCourses);
+
+            // Clean up pending research projects
+            List<ResearchProject> pendingResearchProjects = researchProjectRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            for (ResearchProject project : pendingResearchProjects) {
+                project.setStatus(PendingStatus.REJECTED);
+                project.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
+            }
+            researchProjectRepository.saveAll(pendingResearchProjects);
+
             // Clean up degree updates
             List<DegreeUpdate> degreeUpdates = degreeUpdateRepository.findByStatus(PendingStatus.PENDING).stream()
                     .filter(update -> update.getDegree() != null
@@ -1646,6 +1686,7 @@ public class AdminService {
         try {
             List<Lecturer> lecturers = lecturerRepository.findAll();
             return lecturers.stream()
+                    .filter(lecturer -> !lecturer.isHidden())
                     .map(this::mapToLecturerInfoDTO)
                     .toList();
         } catch (Exception e) {
@@ -1734,7 +1775,7 @@ public class AdminService {
         try {
             List<EducationInstitution> institutions = educationInstitutionRepository.findAll();
             return institutions.stream()
-                    // .filter(institution -> institution.getStatus() == PendingStatus.APPROVED)
+                    .filter(institution -> institution.isHidden() == false)
                     .map(educationInstitutionMapper::toDTO)
                     .toList();
         } catch (Exception e) {
@@ -1789,7 +1830,7 @@ public class AdminService {
         try {
             List<PartnerOrganization> partners = partnerOrganizationRepository.findAll();
             return partners.stream()
-                    // .filter(partner -> partner.getStatus() == PendingStatus.APPROVED)
+                    .filter(partner -> partner.isHidden() == false)
                     .map(partnerOrganizationMapper::toDTO)
                     .toList();
         } catch (Exception e) {
@@ -2338,6 +2379,7 @@ public class AdminService {
         try {
             List<TrainingProgramRequest> requests = trainingProgramRequestRepository.findAll();
             return requests.stream()
+                    .filter(r -> r.getPartnerOrganization() != null && !r.getPartnerOrganization().isHidden())
                     .map(trainingProgramRequestMapper::toDto)
                     .toList();
         } catch (Exception e) {

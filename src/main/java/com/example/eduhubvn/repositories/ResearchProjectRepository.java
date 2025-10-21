@@ -17,4 +17,6 @@ public interface ResearchProjectRepository extends JpaRepository<ResearchProject
 
     @Query("SELECT o FROM ResearchProject o JOIN FETCH o.lecturer l WHERE o.status = :status AND l.status = 'APPROVED'")
     List<ResearchProject> findByStatusWithApprovedLecturer(@Param("status") PendingStatus pendingStatus);
+
+    List<ResearchProject> findByLecturerIdAndStatus(UUID id, PendingStatus pending);
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
@@ -33,7 +32,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Entity
 @Table(name = "education_institution")
-@SQLRestriction("hidden = false")
 public class EducationInstitution {
 
     @Id

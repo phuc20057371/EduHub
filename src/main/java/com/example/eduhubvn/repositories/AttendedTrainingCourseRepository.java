@@ -17,4 +17,6 @@ public interface AttendedTrainingCourseRepository extends JpaRepository<Attended
 
     @Query("SELECT d FROM AttendedTrainingCourse d JOIN FETCH d.lecturer l WHERE d.status = :status AND l.status = 'APPROVED'")
     List<AttendedTrainingCourse> findByStatusWithApprovedLecturer(@Param("status")  PendingStatus pendingStatus);
+
+    List<AttendedTrainingCourse> findByLecturerIdAndStatus(UUID id, PendingStatus pending);
 }

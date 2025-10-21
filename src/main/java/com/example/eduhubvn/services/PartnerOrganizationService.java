@@ -145,7 +145,7 @@ public class PartnerOrganizationService {
                 .findByStatus(PendingStatus.PENDING);
 
         return pendingUpdates.stream()
-                .filter(update -> update.getPartnerOrganization().getStatus() == PendingStatus.APPROVED)
+                .filter(update -> update.getPartnerOrganization().getStatus() == PendingStatus.APPROVED && !update.getPartnerOrganization().isHidden()) 
                 .map(update -> {
                     PartnerOrganization organization = update.getPartnerOrganization();
                     PartnerOrganizationDTO orgDTO = partnerOrganizationMapper.toDTO(organization);

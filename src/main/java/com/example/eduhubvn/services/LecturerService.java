@@ -109,24 +109,6 @@ public class LecturerService {
 
     /// Get
 
-    // @Transactional
-    // public List<LecturerPendingDTO> getPendingLecturerUpdates() {
-    // try {
-    // List<LecturerUpdate> pendingUpdates =
-    // lecturerUpdateRequestRepository.findByStatus(PendingStatus.PENDING);
-
-    // return pendingUpdates.stream()
-    // .map(update -> {
-    // Lecturer lecturer = update.getLecturer();
-    // LecturerDTO lecturerDTO = lecturerMapper.toDTO(lecturer);
-    // LecturerUpdateDTO lecturerUpdateDTO = lecturerMapper.toDTO(update);
-    // return new LecturerPendingDTO(lecturerDTO, lecturerUpdateDTO);
-    // })
-    // .collect(Collectors.toList());
-    // } catch (Exception e) {
-    // throw new RuntimeException(e);
-    // }
-    // }
     @Transactional
     public List<LecturerPendingDTO> getPendingLecturerUpdates() {
         try {

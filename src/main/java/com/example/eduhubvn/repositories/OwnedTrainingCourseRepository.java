@@ -21,4 +21,6 @@ public interface OwnedTrainingCourseRepository extends JpaRepository<OwnedTraini
     // In OwnedTrainingCourseRepository
     @Query("SELECT o FROM OwnedTrainingCourse o JOIN FETCH o.lecturer l WHERE o.status = :status AND l.status = 'APPROVED'")
     List<OwnedTrainingCourse> findByStatusWithApprovedLecturer(@Param("status") PendingStatus status);
+
+    List<OwnedTrainingCourse> findByLecturerIdAndStatus(UUID id, PendingStatus pending);
 }
