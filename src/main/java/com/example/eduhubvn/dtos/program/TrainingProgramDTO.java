@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.entities.TrainingProgramLevel;
 import com.example.eduhubvn.entities.TrainingProgramMode;
 import com.example.eduhubvn.entities.TrainingProgramStatus;
 import com.example.eduhubvn.entities.TrainingProgramType;
@@ -52,6 +53,8 @@ public class TrainingProgramDTO {
     private Integer durationSessions;
     private String scheduleDetail;
 
+    private TrainingProgramLevel programLevel;
+
     private Integer maxStudents;
     private Integer minStudents;
     private String openingCondition;
@@ -66,7 +69,7 @@ public class TrainingProgramDTO {
     private BigDecimal listedPrice;
     private BigDecimal internalPrice;
     private BigDecimal publicPrice;
-    private boolean isPriceVisible;
+    private boolean priceVisible;
 
     private String bannerUrl;
     private String contentUrl;
@@ -74,7 +77,7 @@ public class TrainingProgramDTO {
     private String syllabusFileUrl;
 
     private Set<String> tags;
-    
+
     private String learningOutcomes;
 
     private String completionCertificateType;
@@ -83,6 +86,7 @@ public class TrainingProgramDTO {
     private String title;
     private String subTitle;
     private String shortDescription;
+    private String description;
     private String learningObjectives;
 
     private Double rating;

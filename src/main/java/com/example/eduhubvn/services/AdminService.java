@@ -479,7 +479,8 @@ public class AdminService {
     private void cleanupLecturerPendingUpdates(Lecturer lecturer) {
         try {
             // Clean up pending degrees
-            List<Degree> pendingDegrees = degreeRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            List<Degree> pendingDegrees = degreeRepository.findByLecturerIdAndStatus(lecturer.getId(),
+                    PendingStatus.PENDING);
             for (Degree degree : pendingDegrees) {
                 degree.setStatus(PendingStatus.REJECTED);
                 degree.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
@@ -487,7 +488,8 @@ public class AdminService {
             degreeRepository.saveAll(pendingDegrees);
 
             // Clean up pending certifications
-            List<Certification> pendingCertifications = certificationRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            List<Certification> pendingCertifications = certificationRepository
+                    .findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
             for (Certification certification : pendingCertifications) {
                 certification.setStatus(PendingStatus.REJECTED);
                 certification.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
@@ -495,7 +497,8 @@ public class AdminService {
             certificationRepository.saveAll(pendingCertifications);
 
             // Clean up pending attended training courses
-            List<AttendedTrainingCourse> pendingAttendedCourses = attendedTrainingCourseRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            List<AttendedTrainingCourse> pendingAttendedCourses = attendedTrainingCourseRepository
+                    .findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
             for (AttendedTrainingCourse course : pendingAttendedCourses) {
                 course.setStatus(PendingStatus.REJECTED);
                 course.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
@@ -503,7 +506,8 @@ public class AdminService {
             attendedTrainingCourseRepository.saveAll(pendingAttendedCourses);
 
             // Clean up pending owned training courses
-            List<OwnedTrainingCourse> pendingOwnedCourses = ownedTrainingCourseRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            List<OwnedTrainingCourse> pendingOwnedCourses = ownedTrainingCourseRepository
+                    .findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
             for (OwnedTrainingCourse course : pendingOwnedCourses) {
                 course.setStatus(PendingStatus.REJECTED);
                 course.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
@@ -511,7 +515,8 @@ public class AdminService {
             ownedTrainingCourseRepository.saveAll(pendingOwnedCourses);
 
             // Clean up pending research projects
-            List<ResearchProject> pendingResearchProjects = researchProjectRepository.findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
+            List<ResearchProject> pendingResearchProjects = researchProjectRepository
+                    .findByLecturerIdAndStatus(lecturer.getId(), PendingStatus.PENDING);
             for (ResearchProject project : pendingResearchProjects) {
                 project.setStatus(PendingStatus.REJECTED);
                 project.setAdminNote("Giảng viên đã bị xóa khỏi hệ thống");
@@ -2257,7 +2262,7 @@ public class AdminService {
             TrainingProgram program = trainingProgramMapper.fromReq(req);
             program.setTrainingProgramId(idGeneratorService.generateTrainingProgramId());
             // Hidden fields set by system/admin
-            program.setProgramStatus(TrainingProgramStatus.PUBLISHED);
+            program.setProgramStatus(TrainingProgramStatus.REVIEW);
 
             if (req.getPartnerOrganization() != null) {
                 PartnerOrganization partnerOrganization = partnerOrganizationRepository
@@ -2277,6 +2282,57 @@ public class AdminService {
             return trainingProgramMapper.toDto(program);
         } catch (Exception e) {
             throw new RuntimeException("Error creating training program.", e);
+        }
+    }
+
+    @Transactional
+    public TrainingProgramDTO updateTrainingProgram(UUID programId, TrainingProgramReq req) {
+        if (req == null || programId == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgram program = trainingProgramRepository.findById(programId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chương trình đào tạo."));
+
+        try {
+
+            trainingProgramMapper.updateFromReq(req, program);
+            trainingProgramRepository.save(program);
+            return trainingProgramMapper.toDto(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating training program.", e);
+        }
+    }
+    @Transactional
+    public void archiveTrainingProgram(UUID programId) {
+        if (programId == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgram program = trainingProgramRepository.findById(programId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chương trình đào tạo."));
+
+        try {
+            program.setProgramStatus(TrainingProgramStatus.ARCHIVED);
+            trainingProgramRepository.save(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Error archiving training program.", e);
+        }
+    }
+    @Transactional
+    public void unarchiveTrainingProgram(UUID programId) {
+        if (programId == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgram program = trainingProgramRepository.findById(programId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chương trình đào tạo."));
+
+        try {
+            program.setProgramStatus(TrainingProgramStatus.REVIEW);
+            trainingProgramRepository.save(program);
+        } catch (Exception e) {
+            throw new RuntimeException("Error unarchiving training program.", e);
         }
     }
 
@@ -2402,12 +2458,11 @@ public class AdminService {
             throw new RuntimeException("Error fetching public training programs.", e);
         }
     }
-    
+
     private TrainingProgramPublicDTO convertToPublicDTO(TrainingProgram program) {
         return TrainingProgramPublicDTO.builder()
                 .id(program.getId())
-                .units(program.getUnits() != null ? 
-                    program.getUnits().stream()
+                .units(program.getUnits() != null ? program.getUnits().stream()
                         .map(this::convertToUnitPublicDTO)
                         .toList() : null)
                 .programMode(program.getProgramMode())
@@ -2423,7 +2478,7 @@ public class AdminService {
                 .requirements(program.getRequirements())
                 .scale(program.getScale())
                 .publicPrice(program.isPriceVisible() ? program.getPublicPrice() : BigDecimal.ZERO)
-                .isPriceVisible(program.isPriceVisible())
+                .priceVisible(program.isPriceVisible())
                 .bannerUrl(program.getBannerUrl())
                 .contentUrl(program.getContentUrl())
                 .tags(program.getTags())
@@ -2437,7 +2492,7 @@ public class AdminService {
                 .rating(program.getRating())
                 .build();
     }
-    
+
     private TrainingProgramUnitPublicDTO convertToUnitPublicDTO(TrainingUnit unit) {
         return TrainingProgramUnitPublicDTO.builder()
                 .id(unit.getId())
@@ -2449,7 +2504,7 @@ public class AdminService {
                 .lead(unit.isLead())
                 .build();
     }
-    
+
     private LecturerUnitPublicDTO convertToLecturerUnitPublicDTO(Lecturer lecturer) {
         return LecturerUnitPublicDTO.builder()
                 .id(lecturer.getId())
@@ -2477,4 +2532,60 @@ public class AdminService {
             throw new RuntimeException("Error fetching public training program by ID.", e);
         }
     }
+
+    @Transactional
+    public void rejectTrainingProgramRequest(IdRequest request) {
+        if (request == null || request.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgramRequest programRequest = trainingProgramRequestRepository.findById(request.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy yêu cầu đào tạo."));
+
+        try {
+            programRequest.setStatus(PendingStatus.REJECTED);
+            trainingProgramRequestRepository.save(programRequest);
+        } catch (Exception e) {
+            throw new RuntimeException("Error rejecting training program request.", e);
+        }
+    }
+    @Transactional
+    public void unrejectTrainingProgramRequest(IdRequest request) {
+        if (request == null || request.getId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
+        }
+
+        TrainingProgramRequest programRequest = trainingProgramRequestRepository.findById(request.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy yêu cầu đào tạo."));
+
+        try {
+            programRequest.setStatus(PendingStatus.PENDING);
+            trainingProgramRequestRepository.save(programRequest);
+        } catch (Exception e) {
+            throw new RuntimeException("Error unrejecting training program request.", e);
+        }
+    }
+    public Integer getLecturerApprovedCount() {
+        try {
+            return lecturerRepository.findByStatus(PendingStatus.APPROVED).size();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching lecturer count.", e);
+        }
+    }
+    public Integer getInstitutionApprovedCount() {
+        try {
+            return educationInstitutionRepository.findByStatus(PendingStatus.APPROVED).size();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching institution count.", e);
+        }
+    }
+    public Integer getOrganizationApprovedCount() {
+        try {
+            return partnerOrganizationRepository.findByStatus(PendingStatus.APPROVED).size();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching organization count.", e);
+        }
+    }
+
+
 }

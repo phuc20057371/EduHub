@@ -643,44 +643,88 @@ public class AdminController {
 
     /// Training Program
     @GetMapping("/get-all-training-programs")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:read'))")
     public ResponseEntity<ApiResponse<List<TrainingProgramDTO>>> getAllTrainingPrograms() {
         List<TrainingProgramDTO> programs = adminService.getAllTrainingPrograms();
         return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo", programs));
     }
 
     @GetMapping("/get-all-training-programs-paginated")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:read'))")
     public ResponseEntity<ApiResponse<PaginatedResponse<TrainingProgramDTO>>> getAllTrainingProgramsPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
         PaginatedResponse<TrainingProgramDTO> programs = adminService.getAllTrainingProgramsPaginated(page, size);
         return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo có phân trang", programs));
     }
-    
 
     @PostMapping("/create-training-program")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:create'))")
     public ResponseEntity<ApiResponse<TrainingProgramDTO>> createTrainingProgram(@RequestBody TrainingProgramReq req) {
         TrainingProgramDTO dto = adminService.createTrainingProgram(req);
         return ResponseEntity.ok(ApiResponse.success("Tạo chương trình đào tạo thành công", dto));
     }
-    
-    @PostMapping("/update-training-program-units/{programId}")
+
+    @PostMapping("/update-training-program/{programId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
+    public ResponseEntity<ApiResponse<TrainingProgramDTO>> updateTrainingProgram(@PathVariable UUID programId,
+            @RequestBody TrainingProgramReq req) {
+
+        TrainingProgramDTO dto = adminService.updateTrainingProgram(programId, req);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật chương trình đào tạo thành công", dto));
+    }
+
+    @PostMapping("/archive-training-program/{programId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:archive'))")
+    public ResponseEntity<ApiResponse<Void>> archiveTrainingProgram(@PathVariable UUID programId) {
+        adminService.archiveTrainingProgram(programId);
+        return ResponseEntity.ok(ApiResponse.success("Lưu trữ chương trình đào tạo thành công", null));
+    }
+
+    @PostMapping("/unarchive-training-program/{programId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:archive'))")
+    public ResponseEntity<ApiResponse<Void>> unarchiveTrainingProgram(@PathVariable UUID programId) {
+        adminService.unarchiveTrainingProgram(programId);
+        return ResponseEntity.ok(ApiResponse.success("Khôi phục chương trình đào tạo thành công", null));
+    }
+
+    @PostMapping("/update-training-program-units/{programId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update')) or (hasRole('SUB_ADMIN') and hasAuthority('program:create'))")
     public ResponseEntity<ApiResponse<TrainingProgramDTO>> updateProgramUnits(@PathVariable UUID programId,
             @RequestBody List<TrainingUnitDTO> req) {
         TrainingProgramDTO dto = adminService.updateProgramUnits(programId, req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật chương trình đào tạo thành công", dto));
     }
+
     @PostMapping("/get-all-training-requests-paginated")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:read'))")
     public ResponseEntity<ApiResponse<PaginatedResponse<TrainingProgramRequestDTO>>> getAllTrainingRequestsPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        PaginatedResponse<TrainingProgramRequestDTO> requests = adminService.getAllTrainingRequestsPaginated(page, size);
+        PaginatedResponse<TrainingProgramRequestDTO> requests = adminService.getAllTrainingRequestsPaginated(page,
+                size);
         return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu đào tạo có phân trang", requests));
     }
+
     @GetMapping("/get-all-program-requests")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:read'))")
     public ResponseEntity<ApiResponse<List<TrainingProgramRequestDTO>>> getAllProgramRequests() {
         List<TrainingProgramRequestDTO> requests = adminService.getAllProgramRequests();
         return ResponseEntity.ok(ApiResponse.success("Danh sách yêu cầu đào tạo", requests));
+    }
+
+    @PostMapping("/reject-training-program-request")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
+    public ResponseEntity<ApiResponse<Void>> rejectTrainingProgramRequest(@RequestBody IdRequest request) {
+        adminService.rejectTrainingProgramRequest(request);
+        return ResponseEntity.ok(ApiResponse.success("Từ chối yêu cầu đào tạo thành công", null));
+    }
+
+    @PostMapping("/unreject-training-program-request")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
+    public ResponseEntity<ApiResponse<Void>> unrejectTrainingProgramRequest(@RequestBody IdRequest request) {
+        adminService.unrejectTrainingProgramRequest(request);
+        return ResponseEntity.ok(ApiResponse.success("Khôi phục yêu cầu đào tạo thành công", null));
     }
 
     /// Other
@@ -690,5 +734,21 @@ public class AdminController {
         Boolean exists = userService.checkCitizenIdExists(citizenId);
         return ResponseEntity.ok(ApiResponse.success("Kiểm tra thành công", exists));
     }
+    @GetMapping("/lecturer-count")
+    public ResponseEntity<ApiResponse<Integer>> getLecturerApprovedCount() {
+        Integer count = adminService.getLecturerApprovedCount();
+        return ResponseEntity.ok(ApiResponse.success("Lấy số lượng giảng viên đã phê duyệt thành công", count));
+    }
+    @GetMapping("/institution-count")
+    public ResponseEntity<ApiResponse<Integer>> getInstitutionApprovedCount() {
+        Integer count = adminService.getInstitutionApprovedCount();
+        return ResponseEntity.ok(ApiResponse.success("Lấy số lượng cơ sở giáo dục đã phê duyệt thành công", count));
+    }
+    @GetMapping("/organization-count")
+    public ResponseEntity<ApiResponse<Integer>> getOrganizationApprovedCount() {
+        Integer count = adminService.getOrganizationApprovedCount();
+        return ResponseEntity.ok(ApiResponse.success("Lấy số lượng tổ chức đối tác đã phê duyệt thành công", count));
+    }
+
 
 }

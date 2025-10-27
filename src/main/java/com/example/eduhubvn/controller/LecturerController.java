@@ -51,7 +51,7 @@ public class LecturerController {
     private final LecturerService lecturerService;
 
     /// Lecturer
-    
+
     @GetMapping("/lecturer-profile")
     public ResponseEntity<ApiResponse<LecturerProfileDTO>> getLecturerProfile(@AuthenticationPrincipal User user) {
         LecturerProfileDTO lecturer = lecturerService.getLecturerProfile(user.getLecturer().getId());
@@ -83,6 +83,7 @@ public class LecturerController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:update'))")
     @PostMapping("/update-attended-course")
     public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> updateAttendedCourse(
             @RequestBody AttendedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
@@ -112,6 +113,7 @@ public class LecturerController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:update'))")
     @PostMapping("/update-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> updateOwnedCourse(
             @RequestBody OwnedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
@@ -141,6 +143,7 @@ public class LecturerController {
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:update'))")
     @PostMapping("/update-research-project")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> updateResearchProject(
             @RequestBody ResearchProjectUpdateReq req, @AuthenticationPrincipal User user) {
@@ -168,15 +171,16 @@ public class LecturerController {
     @PostMapping("/update-avatar")
     public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturerAvatar(@RequestParam("file") MultipartFile file,
             HttpServletRequest request, @AuthenticationPrincipal User user) {
-        
+
         // Validate file
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(ApiResponse.error("File không được trống", null));
         }
-        
+
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
-            return ResponseEntity.badRequest().body(ApiResponse.error("File phải có định dạng .jpg, .jpeg hoặc .png", null));
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("File phải có định dạng .jpg, .jpeg hoặc .png", null));
         }
 
         try {
@@ -197,7 +201,7 @@ public class LecturerController {
             // Update lecturer avatar
             LecturerDTO dto = lecturerService.updateLecturerAvatar(fileUrl, user);
             return ResponseEntity.ok(ApiResponse.success("Cập nhật avatar thành công", dto));
-            
+
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Lỗi upload file: " + e.getMessage(), null));

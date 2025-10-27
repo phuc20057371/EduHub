@@ -1,6 +1,5 @@
 package com.example.eduhubvn.entities;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +27,13 @@ public enum Permission {
     COURSE_READ("course:read"),
     COURSE_CREATE("course:create"),
     COURSE_UPDATE("course:update"),
-    COURSE_DELETE("course:delete");
+    COURSE_DELETE("course:delete"),
     // COURSE_APPROVE("course:approve");
+
+    PROGRAM_READ("program:read"),
+    PROGRAM_CREATE("program:create"),
+    PROGRAM_UPDATE("program:update"),
+    PROGRAM_ARCHIVE("program:archive");
 
     private final String permission;
 }

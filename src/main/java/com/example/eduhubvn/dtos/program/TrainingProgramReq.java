@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.entities.TrainingProgramLevel;
 import com.example.eduhubvn.entities.TrainingProgramMode;
 import com.example.eduhubvn.entities.TrainingProgramStatus;
 import com.example.eduhubvn.entities.TrainingProgramType;
@@ -30,6 +31,8 @@ public class TrainingProgramReq {
     private Integer durationSessions;
     private String scheduleDetail;
 
+    private TrainingProgramLevel programLevel;
+
     private Integer maxStudents;
     private Integer minStudents;
     private String openingCondition;
@@ -44,7 +47,7 @@ public class TrainingProgramReq {
     private BigDecimal listedPrice;
     private BigDecimal internalPrice;
     private BigDecimal publicPrice;
-    private boolean isPriceVisible;
+    private boolean priceVisible;
 
     private String bannerUrl;
     private String contentUrl;
@@ -58,5 +61,7 @@ public class TrainingProgramReq {
     private String title;
     private String subTitle;
     private String shortDescription;
+    private String description;
     private String learningObjectives;
+    private Double rating;
 }

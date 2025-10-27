@@ -464,14 +464,14 @@ public class LecturerService {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null && user.getRole() != Role.ADMIN) {
+        if (lecturer == null && user.getRole() != Role.ADMIN && user.getRole() != Role.SUB_ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         AttendedTrainingCourse course = attendedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
         try {
             attendedTrainingCourseMapper.updateEntityFromReq(req, course);
-            course.setStatus(PendingStatus.PENDING);
+            course.setStatus(user.getRole() == Role.LECTURER ? PendingStatus.PENDING : course.getStatus());
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
 
@@ -555,15 +555,16 @@ public class LecturerService {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
+        System.out.println(user.getRole());
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null && user.getRole() != Role.ADMIN) {
+        if (lecturer == null && user.getRole() != Role.ADMIN && user.getRole() != Role.SUB_ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         OwnedTrainingCourse course = ownedTrainingCourseRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
         try {
             ownedTrainingCourseMapper.updateEntityFromRequest(req, course);
-            course.setStatus(PendingStatus.PENDING);
+            course.setStatus(user.getRole() == Role.LECTURER ? PendingStatus.PENDING : course.getStatus());
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
@@ -648,14 +649,14 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null && user.getRole() != Role.ADMIN) {
+        if (lecturer == null && user.getRole() != Role.ADMIN && user.getRole() != Role.SUB_ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         ResearchProject project = researchProjectRepository.findById(req.getId())
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy."));
         try {
             researchProjectMapper.updateEntityFromRequest(req, project);
-            project.setStatus(PendingStatus.PENDING);
+            project.setStatus(user.getRole() == Role.LECTURER ? PendingStatus.PENDING : project.getStatus());
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
@@ -773,17 +774,18 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null && user.getRole() != Role.ADMIN) {
+        if (lecturer == null && user.getRole() != Role.ADMIN && user.getRole() != Role.SUB_ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
         Degree degree = degreeRepository.findById(req.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
-        if (degree.getStatus() == PendingStatus.APPROVED) {
-            throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được phê duyệt.");
-        }
+        // if (degree.getStatus() == PendingStatus.APPROVED) {
+        // throw new IllegalStateException("Bạn không thể cập nhật thông tin khi đã được
+        // phê duyệt.");
+        // }
         try {
             degreeMapper.updateEntityFromReq(req, degree);
-            degree.setStatus(PendingStatus.PENDING);
+            degree.setStatus(user.getRole() == Role.LECTURER ? PendingStatus.PENDING : degree.getStatus());
             degree.setAdminNote("");
             degreeRepository.save(degree);
             degreeRepository.flush();
@@ -965,7 +967,7 @@ public class LecturerService {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
         Lecturer lecturer = user.getLecturer();
-        if (lecturer == null && user.getRole() != Role.ADMIN) {
+        if (lecturer == null && user.getRole() != Role.ADMIN && user.getRole() != Role.SUB_ADMIN) {
             throw new IllegalStateException("Không có quyền truy cập.");
         }
 
@@ -973,7 +975,8 @@ public class LecturerService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy"));
         try {
             certificationMapper.updateEntityFromReq(req, certification);
-            certification.setStatus(PendingStatus.PENDING);
+            certification.setStatus(
+                    user.getRole() == Role.LECTURER ? PendingStatus.PENDING : certification.getStatus());
             certification.setAdminNote("");
             certificationRepository.save(certification);
             certificationRepository.flush();
@@ -1052,8 +1055,6 @@ public class LecturerService {
         }
     }
 
-
-
     @Transactional
     public LecturerDTO updateLecturerAvatar(String avatarUrl, User user) {
         if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
@@ -1072,6 +1073,7 @@ public class LecturerService {
             throw new RuntimeException("Lỗi cập nhật avatar: " + e.getMessage(), e);
         }
     }
+
     @Transactional
     public List<LecturerDTO> getTop7Lecturers() {
         List<Lecturer> lecturers = lecturerRepository.findTop7ByHiddenFalseOrderByExperienceYearsDesc();
@@ -1082,25 +1084,34 @@ public class LecturerService {
     public List<LecturerBasicPublicDTO> getTop6Lecturers() {
         // Get all lecturers who have training programs with ratings
         List<Lecturer> lecturers = lecturerRepository.findLecturersWithRating();
-        
+        if (lecturers.isEmpty()) {
+            List<Lecturer> allLecturers = lecturerRepository.findAll().stream()
+                    .filter(lecturer -> !lecturer.isHidden() && lecturer.getStatus() == PendingStatus.APPROVED)
+                    .collect(Collectors.toList());
+            return allLecturers.stream()
+                    .limit(6)
+                    .map(lecturerMapper::toBasicPublicDTO)
+                    .collect(Collectors.toList());
+        }
+
         // Calculate rating for each lecturer and group by job field
         Map<String, LecturerBasicPublicDTO> topLecturersByJobField = new HashMap<>();
-        
+
         for (Lecturer lecturer : lecturers) {
             Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
             if (avgRating != null && avgRating > 0) {
                 String jobField = lecturer.getJobField();
                 LecturerBasicPublicDTO dto = lecturerMapper.toBasicPublicDTO(lecturer);
                 dto.setRating(avgRating);
-                
+
                 // Keep only the lecturer with highest rating in each job field
                 if (!topLecturersByJobField.containsKey(jobField) ||
-                    topLecturersByJobField.get(jobField).getRating() < avgRating) {
+                        topLecturersByJobField.get(jobField).getRating() < avgRating) {
                     topLecturersByJobField.put(jobField, dto);
                 }
             }
         }
-        
+
         // Sort by rating descending and limit to 6
         return topLecturersByJobField.values().stream()
                 .sorted((a, b) -> Double.compare(b.getRating(), a.getRating()))
@@ -1114,7 +1125,7 @@ public class LecturerService {
         List<Lecturer> allLecturers = lecturerRepository.findAll().stream()
                 .filter(lecturer -> !lecturer.isHidden() && lecturer.getStatus() == PendingStatus.APPROVED)
                 .collect(Collectors.toList());
-        
+
         return allLecturers.stream()
                 .map(lecturer -> {
                     Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
@@ -1131,19 +1142,20 @@ public class LecturerService {
         if (idRequest == null || idRequest.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
         }
-        
+
         Lecturer lecturer = lecturerRepository.findById(idRequest.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + idRequest.getId()));
-        
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy giảng viên với ID: " + idRequest.getId()));
+
         if (lecturer.isHidden()) {
             throw new EntityNotFoundException("Giảng viên không khả dụng.");
         }
-        
+
         Double avgRating = lecturerRepository.calculateAverageRatingForLecturer(lecturer.getId());
         LecturerBasicPublicDTO dto = lecturerMapper.toBasicPublicDTO(lecturer);
         // Set rating to 0.0 if null or no rating available
         dto.setRating(avgRating != null ? avgRating : 0.0);
-        
+
         return dto;
     }
 

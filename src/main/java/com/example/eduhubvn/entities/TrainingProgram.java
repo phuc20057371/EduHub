@@ -87,6 +87,8 @@ public class TrainingProgram {
     @Column(columnDefinition = "TEXT")
     private String scheduleDetail;
 
+    private TrainingProgramLevel programLevel;
+
     private Integer maxStudents;
     private Integer minStudents;
     @Column(columnDefinition = "TEXT")
@@ -105,7 +107,7 @@ public class TrainingProgram {
     private BigDecimal listedPrice;
     private BigDecimal internalPrice;
     private BigDecimal publicPrice;
-    private boolean isPriceVisible;
+    private boolean priceVisible;
 
     private String bannerUrl;
     private String contentUrl;
@@ -130,6 +132,8 @@ public class TrainingProgram {
     private String subTitle;
     @Column(columnDefinition = "TEXT")
     private String shortDescription;
+    @Column(columnDefinition = "TEXT")
+    private String description;
     @Column(columnDefinition = "TEXT")
     private String learningObjectives;
 

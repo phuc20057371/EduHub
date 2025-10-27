@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.example.eduhubvn.entities.TrainingProgramLevel;
 import com.example.eduhubvn.entities.TrainingProgramMode;
 import com.example.eduhubvn.entities.TrainingProgramType;
 
@@ -30,6 +31,8 @@ public class TrainingProgramPublicDTO {
     private Integer durationSessions;
     private String scheduleDetail;
 
+    private TrainingProgramLevel programLevel;
+
     private String equipmentRequirement;
     private String classroomLink;
 
@@ -39,7 +42,7 @@ public class TrainingProgramPublicDTO {
     private String scale;
 
     private BigDecimal publicPrice;
-    private boolean isPriceVisible;
+    private boolean priceVisible;
 
     private String bannerUrl;
     private String contentUrl;
@@ -54,6 +57,7 @@ public class TrainingProgramPublicDTO {
     private String title;
     private String subTitle;
     private String shortDescription;
+    private String description;
     private String learningObjectives;
 
     private Double rating;

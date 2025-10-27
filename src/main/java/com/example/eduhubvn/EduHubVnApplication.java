@@ -61,6 +61,7 @@ import com.example.eduhubvn.entities.ResearchProjectUpdate;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.Scale;
 import com.example.eduhubvn.entities.TrainingProgram;
+import com.example.eduhubvn.entities.TrainingProgramLevel;
 import com.example.eduhubvn.entities.TrainingProgramMode;
 import com.example.eduhubvn.entities.TrainingProgramRequest;
 import com.example.eduhubvn.entities.TrainingProgramStatus;
@@ -109,6 +110,22 @@ public class EduHubVnApplication {
         @PostConstruct
         public void started() {
                 TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        }
+
+        // @Bean
+        public CommandLineRunner setup(UserRepository userRepository, AuthenticationService authenticationService) {
+                return args -> {
+                        if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
+                                return;
+                        }
+                        var admin = RegisterRequest.builder()
+                                        .email("admin@gmail.com")
+                                        .password("SGL@2025")
+                                        .role(Role.ADMIN)
+                                        .build();
+                        var adminResponse = authenticationService.register(admin);
+                        System.out.println("token admin: " + adminResponse.getAccessToken());
+                };
         }
 
         @Bean
@@ -619,7 +636,9 @@ public class EduHubVnApplication {
                                                                         .nextInt(organizationLogoUrls.size())))
                                                         .establishedYear(faker.number().numberBetween(1990, 2024))
                                                         .adminNote("Đây là dữ liệu mẫu cho tổ chức đối tác")
-                                                        .status(getPartnerOrganizationStatus(i - 110)) // 80% APPROVED cho các tổ chức đầu tiên
+                                                        .status(getPartnerOrganizationStatus(i - 110)) // 80% APPROVED
+                                                                                                       // cho các tổ
+                                                                                                       // chức đầu tiên
                                                         .build();
 
                                         organizations.add(partner);
@@ -894,98 +913,6 @@ public class EduHubVnApplication {
                                 }
 
                                 researchProjectRepository.saveAll(projects);
-
-                                // List<Course> courses = new ArrayList<>();
-
-                                // for (int i = 1; i <= 100; i++) {
-                                // String title = courseTitles.get(faker.random().nextInt(courseTitles.size()));
-                                // String topic = courseTopics.get(faker.random().nextInt(courseTopics.size()));
-                                // CourseType courseType = CourseType.values()[faker.random()
-                                // .nextInt(CourseType.values().length)];
-                                // String description = truncate(faker.lorem().paragraph(), 255);
-                                // String thumbnailUrl =
-                                // "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=700&h=1000&fit=crop";
-                                // String contentUrl = "https://www.google.com/";
-                                // String level = truncate(faker.options().option(
-                                // "Cơ bản", "Trung cấp", "Nâng cao", "Chuyên gia"), 255);
-                                // String requirements = truncate("Không yêu cầu", 255);
-                                // String language = truncate(faker.options().option("English", "Vietnamese",
-                                // "French", "Japanese"), 255);
-
-                                // Boolean isOnline = faker.bool().bool();
-                                // String address = isOnline ? "Zoom"
-                                // : addresses.get(faker.random().nextInt(researchTopics.size()));
-
-                                // LocalDate startDate = LocalDate.now()
-                                // .plusDays(faker.number().numberBetween(0, 30));
-                                // LocalDate endDate = startDate.plusDays(faker.number().numberBetween(5, 30));
-                                // Double price = faker.number().randomDouble(2, 500, 5000);
-                                // Boolean isPublished = faker.bool().bool();
-
-                                // Course course = Course.builder()
-                                // .title(title)
-                                // .topic(topic)
-                                // .courseType(courseType)
-                                // .description(description)
-                                // .thumbnailUrl(thumbnailUrl)
-                                // .contentUrl(contentUrl)
-                                // .level(level)
-                                // .requirements(requirements)
-                                // .language(language)
-                                // .isOnline(isOnline)
-                                // .address(address)
-                                // .startDate(startDate)
-                                // .endDate(endDate)
-                                // .price(price)
-                                // .isPublished(isPublished)
-                                // .build();
-
-                                // courses.add(course);
-                                // }
-
-                                // courseRepository.saveAll(courses);
-
-                                // List<CourseLecturer> courseLecturers = new ArrayList<>();
-
-                                // for (Course course : courses) {
-                                // int numberOfLecturers = faker.number().numberBetween(1, 4); // 1-3 lecturers
-                                // Set<Lecturer> selectedLecturers = new HashSet<>();
-
-                                // while (selectedLecturers.size() < numberOfLecturers) {
-                                // Lecturer randomLecturer = lecturers
-                                // .get(faker.number().numberBetween(0, lecturers.size()));
-                                // selectedLecturers.add(randomLecturer);
-                                // }
-
-                                // List<Lecturer> lecturerList = new ArrayList<>(selectedLecturers);
-
-                                // int authorIndex = faker.number().numberBetween(0, lecturerList.size());
-                                // Lecturer author = lecturerList.get(authorIndex);
-
-                                // for (Lecturer lecturer : lecturerList) {
-                                // CourseRole role;
-
-                                // if (lecturer.equals(author)) {
-                                // role = CourseRole.AUTHOR;
-                                // } else {
-                                // role = faker.options().option(CourseRole.ASSIGNED,
-                                // CourseRole.ASSISTANT);
-                                // }
-
-                                // CourseLecturer courseLecturer = CourseLecturer.builder()
-                                // .course(course)
-                                // .lecturer(lecturer)
-                                // .role(role)
-                                // .build();
-
-                                // courseLecturers.add(courseLecturer);
-                                // }
-                                // }
-
-                                // courseLecturerRepository.saveAll(courseLecturers);
-
-                                // Thêm vào cuối hàm init, sau khi đã tạo
-                                // courseLecturerRepository.saveAll(courseLecturers);
 
                                 // Tạo LecturerUpdate
                                 List<LecturerUpdate> lecturerUpdates = new ArrayList<>();
@@ -1362,26 +1289,26 @@ public class EduHubVnApplication {
                                 subAdminService.assignPermissionsToUser(subAdmin2User, subAdmin2Permissions, adminUser);
 
                                 // ===== TẠO DỮ LIỆU MẪU CHO PROJECT VÀ CÁC ENTITY LIÊN QUAN =====
-                                // createSampleProjectData(projectRepository, applicationRepository,
-                                //                 applicationModuleRepository, interviewRepository,
-                                //                 contractRepository, courseInfoRepository, courseModuleRepository,
-                                //                 educationInstitutionRepository, partnerOrganizationRepository,
-                                //                 lecturerRepository, faker);
+                                createSampleProjectData(projectRepository, applicationRepository,
+                                                applicationModuleRepository, interviewRepository,
+                                                contractRepository, courseInfoRepository, courseModuleRepository,
+                                                educationInstitutionRepository, partnerOrganizationRepository,
+                                                lecturerRepository, faker);
 
-                                // for (User user : userRepository.findAll()) {
-                                //         if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com")) {
-                                //                 user.setSubEmails(Set.of("foxfessor@gmail.com"));
-                                //         } else {
-                                //                 user.setSubEmails(Set.of("user" + user.getEmail() + ".backup@gmail.com",
-                                //                                 "user" + user.getEmail() + ".personal@gmail.com"));
-                                //         }
-                                //         userRepository.save(user);
-                                // }
+                                for (User user : userRepository.findAll()) {
+                                        if (user.getEmail().equalsIgnoreCase("lecturer1@gmail.com")) {
+                                                user.setSubEmails(Set.of("foxfessor@gmail.com"));
+                                        } else {
+                                                user.setSubEmails(Set.of("user" + user.getEmail() + ".backup@gmail.com",
+                                                                "user" + user.getEmail() + ".personal@gmail.com"));
+                                        }
+                                        userRepository.save(user);
+                                }
 
                                 // ===== TẠO DỮ LIỆU MẪU CHO TRAINING PROGRAM =====
-                                createSampleTrainingProgramData(trainingProgramRequestRepository, 
+                                createSampleTrainingProgramData(trainingProgramRequestRepository,
                                                 trainingProgramRepository, trainingUnitRepository,
-                                                partnerOrganizationRepository, lecturerRepository, 
+                                                partnerOrganizationRepository, lecturerRepository,
                                                 userRepository, faker);
 
                                 System.out.println("token admin: " + adminResponse.getAccessToken());
@@ -1395,7 +1322,9 @@ public class EduHubVnApplication {
         }
 
         /**
-         * Trả về trạng thái cho PartnerOrganization sao cho 80% đầu tiên có trạng thái APPROVED
+         * Trả về trạng thái cho PartnerOrganization sao cho 80% đầu tiên có trạng thái
+         * APPROVED
+         * 
          * @param index chỉ số từ 1-10 (tổng cộng 10 PartnerOrganization)
          * @return PendingStatus
          */
@@ -2007,14 +1936,15 @@ public class EduHubVnApplication {
                         List<User> users = userRepository.findAll();
 
                         if (partners.isEmpty() || lecturers.isEmpty() || users.isEmpty()) {
-                                System.err.println("Không đủ dữ liệu để tạo Training Programs (cần partners, lecturers, users)");
+                                System.err.println(
+                                                "Không đủ dữ liệu để tạo Training Programs (cần partners, lecturers, users)");
                                 return;
                         }
 
                         // Dữ liệu mẫu cho Training Program Request (yêu cầu tạo chương trình đào tạo)
                         List<String> requestTitles = Arrays.asList(
                                         "Yêu cầu tạo khóa đào tạo Java Spring Boot cho nhân viên",
-                                        "Đề xuất chương trình Data Science cho sinh viên IT", 
+                                        "Đề xuất chương trình Data Science cho sinh viên IT",
                                         "Yêu cầu phê duyệt khóa React Native Mobile Development",
                                         "Đề xuất khóa đào tạo AI & Machine Learning nâng cao",
                                         "Yêu cầu tạo chương trình DevOps cho doanh nghiệp",
@@ -2037,8 +1967,7 @@ public class EduHubVnApplication {
                                         "Đề xuất chương trình API Design & Development",
                                         "Yêu cầu phê duyệt khóa Data Engineering với Spark",
                                         "Đề xuất chương trình Vue.js cho Frontend Developer",
-                                        "Yêu cầu tạo khóa GraphQL & Apollo cho Backend"
-                        );
+                                        "Yêu cầu tạo khóa GraphQL & Apollo cho Backend");
 
                         List<String> requestDescriptions = Arrays.asList(
                                         "Công ty chúng tôi cần đào tạo đội ngũ Java Developer về Spring Boot framework để nâng cao năng lực phát triển ứng dụng enterprise. Mong muốn có chương trình đào tạo từ 40-60 tiếng với thực hành dự án thực tế.",
@@ -2065,8 +1994,7 @@ public class EduHubVnApplication {
                                         "Backend team cần được đào tạo về API design và development best practices. Mong muốn có nội dung về RESTful API, GraphQL và API documentation.",
                                         "Data team yêu cầu đào tạo về data engineering với Apache Spark và Kafka. Cần chương trình hands-on về data pipeline, streaming và data lake architecture.",
                                         "Frontend developer muốn học Vue.js framework để diversify skill set. Đề xuất chương trình progressive từ Vue basics đến Vuex và Nuxt.js.",
-                                        "Backend team cần đào tạo về GraphQL và Apollo để modernize API layer. Yêu cầu chương trình bao gồm schema design, resolver optimization và real-time subscriptions."
-                        );
+                                        "Backend team cần đào tạo về GraphQL và Apollo để modernize API layer. Yêu cầu chương trình bao gồm schema design, resolver optimization và real-time subscriptions.");
 
                         List<String> unitTitles = Arrays.asList(
                                         "Giới thiệu và cài đặt môi trường",
@@ -2078,8 +2006,7 @@ public class EduHubVnApplication {
                                         "Workshop và thảo luận",
                                         "Capstone Project",
                                         "Review và tổng kết",
-                                        "Hướng dẫn triển khai thực tế"
-                        );
+                                        "Hướng dẫn triển khai thực tế");
 
                         List<TrainingProgramRequest> requests = new ArrayList<>();
                         List<TrainingProgram> programs = new ArrayList<>();
@@ -2090,13 +2017,14 @@ public class EduHubVnApplication {
                         for (PartnerOrganization partner : partners) {
                                 // Mỗi PartnerOrganization sẽ có 2-4 TrainingProgramRequest
                                 int requestCount = faker.random().nextInt(2, 4); // 2 đến 4 requests
-                                
+
                                 for (int j = 0; j < requestCount; j++) {
                                         // Chọn title theo thứ tự, nếu hết thì lặp lại
                                         String title = requestTitles.get(titleIndex % requestTitles.size());
-                                        String description = requestDescriptions.get(titleIndex % requestDescriptions.size());
+                                        String description = requestDescriptions
+                                                        .get(titleIndex % requestDescriptions.size());
                                         titleIndex++;
-                                        
+
                                         // Random status: 70% APPROVED, 20% PENDING, 10% REJECTED
                                         PendingStatus status;
                                         int randomStatus = faker.random().nextInt(100);
@@ -2107,7 +2035,7 @@ public class EduHubVnApplication {
                                         } else {
                                                 status = PendingStatus.REJECTED;
                                         }
-                                        
+
                                         TrainingProgramRequest request = TrainingProgramRequest.builder()
                                                         .partnerOrganization(partner)
                                                         .title(title)
@@ -2126,7 +2054,7 @@ public class EduHubVnApplication {
                         // Dữ liệu cho Training Program (chương trình đào tạo thực tế)
                         List<String> programTitles = Arrays.asList(
                                         "Java Spring Boot Advanced Development",
-                                        "Python Data Science Comprehensive Course", 
+                                        "Python Data Science Comprehensive Course",
                                         "React Native Mobile App Development",
                                         "AI & Machine Learning Professional Certificate",
                                         "DevOps & Cloud Computing Bootcamp",
@@ -2149,8 +2077,7 @@ public class EduHubVnApplication {
                                         "RESTful API Design & GraphQL Implementation",
                                         "Big Data Engineering with Apache Spark",
                                         "Vue.js Progressive Web Applications",
-                                        "GraphQL & Apollo Full-Stack Development"
-                        );
+                                        "GraphQL & Apollo Full-Stack Development");
 
                         List<String> programDescriptions = Arrays.asList(
                                         "Chương trình đào tạo chuyên sâu về Java Spring Boot framework, bao gồm Spring Security, Spring Data JPA, và microservices architecture với các dự án thực tế.",
@@ -2177,21 +2104,54 @@ public class EduHubVnApplication {
                                         "Khóa học thiết kế và phát triển RESTful API và GraphQL với authentication và rate limiting.",
                                         "Chương trình đào tạo data engineering với Apache Spark, Kafka streaming và data lake architecture.",
                                         "Khóa học Vue.js framework với Vuex state management, Vue Router và progressive web apps.",
-                                        "Chương trình đào tạo GraphQL và Apollo Client/Server với real-time subscriptions và caching."
-                        );
+                                        "Chương trình đào tạo GraphQL và Apollo Client/Server với real-time subscriptions và caching.");
+
+                        // Dữ liệu chi tiết cho description field (gấp đôi shortDescription)
+                        List<String> programDetailedDescriptions = Arrays.asList(
+                                        "Chương trình đào tạo chuyên sâu về Java Spring Boot framework, bao gồm Spring Security, Spring Data JPA, và microservices architecture với các dự án thực tế. Khóa học được thiết kế cho các developer muốn nâng cao kỹ năng phát triển ứng dụng enterprise với Java. Bạn sẽ học cách xây dựng RESTful APIs, tích hợp với cơ sở dữ liệu, implement security layers, và deploy applications lên cloud platforms. Chương trình bao gồm hands-on projects với Spring Boot, Spring Security, Spring Data JPA, và các best practices trong việc xây dựng microservices scalable và maintainable.",
+                                        "Khóa học toàn diện về Data Science với Python, từ data analysis, visualization đến machine learning và deep learning với TensorFlow. Chương trình cung cấp kiến thức từ cơ bản đến nâng cao về xử lý và phân tích dữ liệu. Bạn sẽ học cách sử dụng pandas, numpy, matplotlib, seaborn cho data manipulation và visualization. Khóa học cũng bao gồm machine learning algorithms, statistical analysis, và deep learning với TensorFlow/Keras. Các dự án thực tế sẽ giúp bạn áp dụng kiến thức vào các bài toán business intelligence và predictive analytics trong các ngành công nghiệp khác nhau.",
+                                        "Chương trình đào tạo phát triển ứng dụng mobile đa nền tảng với React Native, bao gồm navigation, state management và deployment. Khóa học được thiết kế cho developers muốn xây dựng mobile apps chạy trên cả iOS và Android từ một codebase duy nhất. Bạn sẽ học cách setup development environment, tạo UI components, handle user interactions, integrate với APIs, và manage application state. Chương trình cũng bao gồm advanced topics như performance optimization, native modules integration, push notifications, và app store deployment process cho cả Apple App Store và Google Play Store.",
+                                        "Khóa học chuyên nghiệp về AI và Machine Learning với ứng dụng thực tế trong computer vision, NLP và recommendation systems. Chương trình cung cấp kiến thức sâu rộng về artificial intelligence và machine learning algorithms. Bạn sẽ học các thuật toán supervised và unsupervised learning, neural networks, deep learning architectures. Khóa học bao gồm hands-on projects trong computer vision (image classification, object detection), natural language processing (sentiment analysis, chatbots), và recommendation systems. Các công cụ và frameworks được sử dụng bao gồm Python, TensorFlow, PyTorch, OpenCV, và NLTK cho các ứng dụng AI thực tế.",
+                                        "Chương trình đào tạo DevOps và Cloud Computing với Docker, Kubernetes, CI/CD pipelines và AWS services. Khóa học được thiết kế cho IT professionals muốn nâng cao kỹ năng trong việc automation và cloud deployment. Bạn sẽ học cách containerize applications với Docker, orchestrate containers với Kubernetes, setup CI/CD pipelines với Jenkins/GitLab CI. Chương trình cũng bao gồm AWS services như EC2, S3, RDS, Lambda, và CloudFormation. Các chủ đề advanced như monitoring với Prometheus/Grafana, infrastructure as code, security best practices, và cost optimization cũng được đề cập trong khóa học này.",
+                                        "Khóa học chuyên gia an ninh mạng với network security, ethical hacking, incident response và security compliance. Chương trình cung cấp kiến thức toàn diện về cybersecurity cho các IT professionals. Bạn sẽ học các techniques để protect networks và systems khỏi các cyber threats. Khóa học bao gồm penetration testing, vulnerability assessment, forensics, malware analysis, và incident response procedures. Các tools và frameworks như Metasploit, Wireshark, Nmap, Burp Suite sẽ được sử dụng trong hands-on labs. Chương trình cũng đề cập đến compliance frameworks như ISO 27001, NIST, và GDPR cho enterprise security management.",
+                                        "Chương trình đào tạo Full-stack từ Frontend (React/Vue) đến Backend (Node.js/Express) và database management. Khóa học được thiết kế cho developers muốn trở thành full-stack engineers có thể handle cả client-side và server-side development. Bạn sẽ học cách xây dựng responsive web interfaces với React hoặc Vue.js, develop RESTful APIs với Node.js và Express. Chương trình bao gồm database design và management với SQL và NoSQL databases, authentication và authorization, testing strategies, và deployment techniques. Các modern development practices như Git workflow, code review, và agile methodologies cũng được tích hợp trong curriculum.",
+                                        "Khóa học Digital Marketing chuyên nghiệp với Google Ads, Facebook Marketing, SEO/SEM và analytics. Chương trình cung cấp kiến thức comprehensive về digital marketing strategies và tactics trong thời đại số. Bạn sẽ học cách create và manage advertising campaigns trên các platforms như Google Ads, Facebook Ads Manager, LinkedIn Ads. Khóa học bao gồm search engine optimization (SEO), search engine marketing (SEM), content marketing, email marketing, và social media marketing. Các tools như Google Analytics, Google Search Console, SEMrush, và Hootsuite sẽ được sử dụng để track performance và optimize campaigns cho better ROI.",
+                                        "Chương trình đào tạo Business Analyst với requirement gathering, process modeling và stakeholder management. Khóa học được thiết kế cho professionals muốn trở thành business analysts hiệu quả trong việc bridge gap giữa business và technical teams. Bạn sẽ học các techniques để gather và analyze business requirements, create process models và workflows, conduct stakeholder interviews và workshops. Chương trình bao gồm tools như Microsoft Visio, Lucidchart cho process mapping, và các methodologies như Agile, Waterfall cho project management. Advanced topics như data analysis, reporting, và change management cũng được đề cập để chuẩn bị cho real-world business analysis challenges.",
+                                        "Khóa học quản lý dự án với Agile và Scrum methodology, sprint planning và team collaboration. Chương trình cung cấp kiến thức về project management best practices và agile frameworks. Bạn sẽ học cách plan, execute, và monitor projects sử dụng Agile và Scrum methodologies. Khóa học bao gồm sprint planning, daily standups, sprint reviews, retrospectives, và backlog management. Các tools như Jira, Trello, Asana sẽ được sử dụng cho project tracking và team collaboration. Chương trình cũng đề cập đến leadership skills, conflict resolution, risk management, và stakeholder communication để trở thành effective project managers trong agile environments.",
+                                        "Chương trình đào tạo backend development với Node.js, Express.js, MongoDB và RESTful API design. Khóa học được thiết kế cho developers muốn specialize trong server-side development với JavaScript ecosystem. Bạn sẽ học cách build scalable backend applications với Node.js và Express framework, design và implement RESTful APIs, work với databases như MongoDB và PostgreSQL. Chương trình bao gồm authentication và authorization, error handling, logging, caching strategies, và API documentation với Swagger. Advanced topics như microservices architecture, message queues, real-time communications với WebSocket, và performance optimization cũng được covered trong khóa học này.",
+                                        "Khóa học frontend framework Angular từ cơ bản đến nâng cao với TypeScript, RxJS và state management. Chương trình cung cấp kiến thức comprehensive về Angular framework cho modern web development. Bạn sẽ học cách build single-page applications (SPAs) với Angular, sử dụng TypeScript cho type-safe development, implement reactive programming với RxJS. Khóa học bao gồm component architecture, services và dependency injection, routing và navigation, forms handling, HTTP client, và state management với NgRx. Advanced concepts như lazy loading, performance optimization, testing với Jasmine/Karma, và deployment strategies cũng được đề cập để build production-ready Angular applications.",
+                                        "Chương trình đào tạo containerization với Docker và orchestration với Kubernetes cho production deployment. Khóa học được thiết kế cho DevOps engineers và developers muốn master container technologies. Bạn sẽ học cách containerize applications với Docker, create efficient Docker images, manage container lifecycle. Chương trình bao gồm Kubernetes architecture, pods, services, deployments, ingress controllers, và persistent volumes. Advanced topics như Helm charts, service mesh với Istio, monitoring với Prometheus, logging với ELK stack, và security best practices cho containerized environments cũng được covered để ensure production-ready deployments.",
+                                        "Khóa học thiết kế và tối ưu hóa cơ sở dữ liệu với indexing, query optimization và performance tuning. Chương trình cung cấp kiến thức sâu về database design và optimization techniques. Bạn sẽ học cách design efficient database schemas, create optimal indexes, write performant SQL queries, và analyze query execution plans. Khóa học bao gồm cả SQL và NoSQL databases, covering PostgreSQL, MySQL, MongoDB, và Redis. Advanced topics như database replication, sharding, backup và recovery strategies, transaction management, và concurrency control cũng được đề cập. Hands-on labs với real-world scenarios sẽ giúp bạn apply optimization techniques cho high-traffic applications.",
+                                        "Chương trình đào tạo kiến trúc microservices với service mesh, event-driven architecture và distributed systems. Khóa học được thiết kế cho software architects và senior developers muốn build scalable distributed systems. Bạn sẽ học các principles của microservices architecture, service decomposition strategies, inter-service communication patterns. Chương trình bao gồm API gateway design, service discovery, circuit breakers, distributed tracing với Jaeger. Advanced concepts như event sourcing, CQRS, saga patterns, service mesh với Istio, và observability trong distributed systems cũng được covered. Practical workshops sẽ giúp bạn design và implement microservices architectures cho enterprise applications.",
+                                        "Khóa học thiết kế giao diện người dùng và trải nghiệm người dùng với design thinking và user research. Chương trình cung cấp kiến thức comprehensive về UI/UX design process và methodologies. Bạn sẽ học cách conduct user research, create user personas, design user journeys và wireframes, prototype với tools như Figma, Adobe XD. Khóa học bao gồm design principles, color theory, typography, accessibility guidelines, và responsive design. Advanced topics như design systems, usability testing, A/B testing, và conversion optimization cũng được đề cập. Hands-on projects với real clients sẽ giúp bạn build portfolio và apply design thinking process trong practical scenarios.",
+                                        "Chương trình đào tạo phát triển ứng dụng blockchain với Solidity, Web3.js và smart contract development. Khóa học được thiết kế cho developers muốn enter blockchain ecosystem và build decentralized applications (dApps). Bạn sẽ học blockchain fundamentals, cryptocurrency concepts, Ethereum ecosystem, và smart contract development với Solidity. Chương trình bao gồm Web3.js cho frontend integration, testing smart contracts với Truffle/Hardhat, deploy contracts lên testnets và mainnets. Advanced topics như DeFi protocols, NFTs, governance tokens, security best practices, và gas optimization cũng được covered. Practical projects sẽ include building DEXs, lending protocols, và NFT marketplaces.",
+                                        "Khóa học AWS cloud services và best practices với EC2, S3, Lambda và CloudFormation automation. Chương trình cung cấp kiến thức comprehensive về Amazon Web Services cho cloud computing. Bạn sẽ học cách setup và manage EC2 instances, configure load balancers, use S3 cho storage solutions, develop serverless functions với Lambda. Khóa học bao gồm VPC networking, RDS database services, CloudFormation cho infrastructure as code, IAM cho security management. Advanced services như API Gateway, CloudWatch monitoring, CodePipeline cho CI/CD, và cost optimization strategies cũng được đề cập. Hands-on labs và real-world scenarios sẽ chuẩn bị bạn cho AWS certification exams.",
+                                        "Chương trình đào tạo phát triển game mobile với Unity engine, C# programming và game monetization. Khóa học được thiết kế cho developers muốn enter game development industry và create mobile games. Bạn sẽ học Unity interface, C# programming for games, 2D và 3D game development workflows, physics systems, animation controllers. Chương trình bao gồm UI design cho games, audio integration, particle systems, performance optimization cho mobile platforms. Advanced topics như multiplayer networking, in-app purchases, ads integration, analytics tracking, và game monetization strategies cũng được covered. Final projects sẽ include publishing games lên Apple App Store và Google Play Store.",
+                                        "Khóa học automation testing với Selenium WebDriver, TestNG framework và CI/CD integration. Chương trình cung cấp kiến thức về test automation best practices và tools. Bạn sẽ học cách write automated test scripts với Selenium WebDriver, create test suites với TestNG, implement Page Object Model design pattern. Khóa học bao gồm API testing với REST Assured, performance testing với JMeter, mobile testing với Appium. Advanced concepts như parallel test execution, test data management, reporting với Allure, và integration với CI/CD pipelines using Jenkins cũng được đề cập. Hands-on projects với real applications sẽ giúp bạn build comprehensive test automation frameworks.",
+                                        "Chương trình đào tạo xây dựng platform thương mại điện tử với payment gateway và inventory management. Khóa học được thiết kế cho developers muốn build full-featured e-commerce solutions. Bạn sẽ học cách develop product catalogs, shopping carts, user authentication systems, order management workflows. Chương trình bao gồm payment gateway integrations với Stripe, PayPal, inventory tracking systems, recommendation engines, search functionality với Elasticsearch. Advanced features như multi-vendor marketplaces, subscription models, promotional campaigns, analytics dashboards, và mobile-responsive designs cũng được covered. Real-world projects sẽ include building scalable e-commerce platforms với modern technologies.",
+                                        "Khóa học thiết kế và phát triển RESTful API và GraphQL với authentication và rate limiting. Chương trình cung cấp kiến thức về API design principles và implementation strategies. Bạn sẽ học cách design RESTful APIs following OpenAPI specifications, implement GraphQL schemas và resolvers, handle authentication với JWT tokens, OAuth2 flows. Khóa học bao gồm API versioning strategies, rate limiting implementations, caching mechanisms, error handling patterns. Advanced topics như API gateways, microservices communication, webhook implementations, monitoring với API analytics, và security best practices cũng được đề cập. Practical workshops sẽ include building APIs cho real-world applications với comprehensive documentation.",
+                                        "Chương trình đào tạo data engineering với Apache Spark, Kafka streaming và data lake architecture. Khóa học được thiết kế cho data engineers muốn build scalable data processing systems. Bạn sẽ học cách process large datasets với Apache Spark, implement real-time data streaming với Kafka, design data lake architectures với AWS S3, Azure Data Lake. Chương trình bao gồm ETL/ELT pipelines, data quality monitoring, schema evolution, partitioning strategies. Advanced concepts như Delta Lake for ACID transactions, Apache Airflow cho workflow orchestration, data lineage tracking, và data governance frameworks cũng được covered. Hands-on projects sẽ include building end-to-end data platforms cho analytics và machine learning use cases.",
+                                        "Khóa học Vue.js framework với Vuex state management, Vue Router và progressive web apps. Chương trình cung cấp kiến thức comprehensive về Vue.js ecosystem cho modern web development. Bạn sẽ học Vue.js fundamentals, component development, directives và filters, Vue CLI tooling. Khóa học bao gồm Vuex cho centralized state management, Vue Router cho single-page application routing, Nuxt.js cho server-side rendering. Advanced topics như composition API, TypeScript integration, testing với Vue Test Utils, PWA features như service workers, offline functionality, và performance optimization cũng được đề cập. Real-world projects sẽ include building responsive web applications với modern Vue.js stack.",
+                                        "Chương trình đào tạo GraphQL và Apollo Client/Server với real-time subscriptions và caching. Khóa học được thiết kế cho developers muốn master GraphQL ecosystem cho efficient data fetching. Bạn sẽ học GraphQL schema design, resolvers implementation, Apollo Server setup, Apollo Client integration. Chương trình bao gồm real-time subscriptions với WebSocket connections, intelligent caching strategies, error handling patterns, authentication và authorization. Advanced concepts như schema federation, dataloader patterns, performance monitoring với Apollo Studio, security best practices, và integration với existing REST APIs cũng được covered. Practical workshops sẽ include building full-stack applications với GraphQL APIs và modern frontend frameworks.");
 
                         // Danh sách banner URLs thực tế từ Unsplash
                         List<String> bannerUrls = Arrays.asList(
                                         "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=1200&h=600&fit=crop", // Java/Programming
-                                        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop", // Data Science
-                                        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop", // Mobile Development
+                                        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop", // Data
+                                                                                                                           // Science
+                                        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop", // Mobile
+                                                                                                                              // Development
                                         "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=600&fit=crop", // AI/ML
                                         "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop", // DevOps/Cloud
                                         "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop", // Cybersecurity
-                                        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop", // Web Development
-                                        "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=1200&h=600&fit=crop", // Digital Marketing
-                                        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop", // Business Analysis
-                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop"  // Project Management
+                                        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop", // Web
+                                                                                                                              // Development
+                                        "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=1200&h=600&fit=crop", // Digital
+                                                                                                                              // Marketing
+                                        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop", // Business
+                                                                                                                              // Analysis
+                                        "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" // Project
+                                                                                                                          // Management
                         );
 
                         // Danh sách PDF URLs thực tế
@@ -2205,8 +2165,7 @@ public class EduHubVnApplication {
                                         "https://developer.mozilla.org/en-US/docs/Web",
                                         "https://support.google.com/google-ads/",
                                         "https://www.iiba.org/business-analysis-body-of-knowledge/",
-                                        "https://scrumguides.org/scrum-guide.html"
-                        );
+                                        "https://scrumguides.org/scrum-guide.html");
 
                         // Danh sách địa chỉ thực tế cho OFFLINE
                         List<String> offlineAddresses = Arrays.asList(
@@ -2219,8 +2178,7 @@ public class EduHubVnApplication {
                                         "Tầng 20, Lotte Center Hanoi, 54 Liễu Giai, Ba Đình, Hà Nối",
                                         "Lầu 9, Saigon Trade Center, 37 Tôn Đức Thắng, Quận 1, TP.HCM",
                                         "Tầng 14, Keangnam Landmark, Phạm Hùng, Nam Từ Liêm, Hà Nội",
-                                        "Lầu 7, Diamond Plaza, 34 Lê Duẩn, Quận 1, TP.HCM"
-                        );
+                                        "Lầu 7, Diamond Plaza, 34 Lê Duẩn, Quận 1, TP.HCM");
 
                         // Danh sách Zoom links
                         List<String> zoomLinks = Arrays.asList(
@@ -2233,8 +2191,7 @@ public class EduHubVnApplication {
                                         "https://us02web.zoom.us/j/67890123456?pwd=stu901",
                                         "https://us04web.zoom.us/j/89012345678?pwd=vwx234",
                                         "https://us06web.zoom.us/j/23456789012?pwd=yz1567",
-                                        "https://us02web.zoom.us/j/45678901234?pwd=abc890"
-                        );
+                                        "https://us02web.zoom.us/j/45678901234?pwd=abc890");
 
                         // Danh sách các tags cho training programs (ưu tiên từ ngắn và viết tắt)
                         List<String> availableTags = Arrays.asList(
@@ -2246,15 +2203,15 @@ public class EduHubVnApplication {
                                         "UI/UX", "Frontend", "Backend", "Fullstack", "Database", "SQL",
                                         "Security", "CEH", "CISSP", "Pentest", "Ethical", "Cyber",
                                         "Agile", "Scrum", "PMP", "BA", "PM", "Marketing", "SEO", "SEM",
-                                        "Enterprise", "Certification", "Hands-on", "Advanced", "Beginner"
-                        );
+                                        "Enterprise", "Certification", "Hands-on", "Advanced", "Beginner");
 
                         // Helper method để tạo random tags
                         java.util.function.Supplier<Set<String>> generateRandomTags = () -> {
                                 Set<String> tags = new HashSet<>();
                                 int numTags = faker.random().nextInt(2, 5); // 2-4 tags
                                 while (tags.size() < numTags) {
-                                        String randomTag = availableTags.get(faker.random().nextInt(availableTags.size()));
+                                        String randomTag = availableTags
+                                                        .get(faker.random().nextInt(availableTags.size()));
                                         tags.add(randomTag);
                                 }
                                 return tags;
@@ -2272,7 +2229,7 @@ public class EduHubVnApplication {
                                         // Chọn mode ngẫu nhiên
                                         TrainingProgramMode mode = TrainingProgramMode.values()[faker.random()
                                                         .nextInt(TrainingProgramMode.values().length)];
-                                        
+
                                         // Xác định classroomLink dựa trên mode
                                         String classroomLink;
                                         switch (mode) {
@@ -2280,7 +2237,8 @@ public class EduHubVnApplication {
                                                         classroomLink = zoomLinks.get(i % zoomLinks.size());
                                                         break;
                                                 case OFFLINE:
-                                                        classroomLink = offlineAddresses.get(i % offlineAddresses.size());
+                                                        classroomLink = offlineAddresses
+                                                                        .get(i % offlineAddresses.size());
                                                         break;
                                                 case HYBRID:
                                                         classroomLink = "Sẽ có thông báo sau";
@@ -2296,9 +2254,9 @@ public class EduHubVnApplication {
                                         } else {
                                                 // 20% còn lại sử dụng các status khác
                                                 TrainingProgramStatus[] otherStatuses = {
-                                                        TrainingProgramStatus.REVIEW, 
-                                                        TrainingProgramStatus.UNLISTED, 
-                                                        TrainingProgramStatus.ARCHIVED
+                                                                TrainingProgramStatus.REVIEW,
+                                                                TrainingProgramStatus.UNLISTED,
+                                                                TrainingProgramStatus.ARCHIVED
                                                 };
                                                 status = otherStatuses[faker.random().nextInt(otherStatuses.length)];
                                         }
@@ -2306,7 +2264,7 @@ public class EduHubVnApplication {
                                         TrainingProgram program = TrainingProgram.builder()
                                                         .trainingProgramId(String.format("KH-%03d", programCounter + 1))
                                                         .trainingProgramRequest(request)
-                                                        
+
                                                         .user(user)
                                                         .partnerOrganization(request.getPartnerOrganization())
                                                         .programStatus(status)
@@ -2318,6 +2276,8 @@ public class EduHubVnApplication {
                                                         .durationHours(faker.random().nextInt(40, 200))
                                                         .durationSessions(faker.random().nextInt(10, 40))
                                                         .scheduleDetail("Thứ 2, 4, 6 từ 19h00-21h30")
+                                                        .programLevel(TrainingProgramLevel.values()[faker.random()
+                                                                        .nextInt(TrainingProgramLevel.values().length)])
                                                         .maxStudents(faker.random().nextInt(20, 50))
                                                         .minStudents(faker.random().nextInt(10, 20))
                                                         .openingCondition("Đủ số lượng học viên tối thiểu")
@@ -2326,23 +2286,32 @@ public class EduHubVnApplication {
                                                         .targetAudience("Developers, Students, IT Professionals")
                                                         .requirements("Kiến thức cơ bản về lập trình")
                                                         .scale("Enterprise")
-                                                        .listedPrice(new BigDecimal(faker.random().nextInt(2000000, 8000000)))
-                                                        .internalPrice(new BigDecimal(faker.random().nextInt(1500000, 6000000)))
-                                                        .publicPrice(new BigDecimal(faker.random().nextInt(2500000, 10000000)))
-                                                        .isPriceVisible(faker.bool().bool())
+                                                        .listedPrice(new BigDecimal(
+                                                                        faker.random().nextInt(2000000, 8000000)))
+                                                        .internalPrice(new BigDecimal(
+                                                                        faker.random().nextInt(1500000, 6000000)))
+                                                        .publicPrice(new BigDecimal(
+                                                                        faker.random().nextInt(2500000, 10000000)))
+                                                        .priceVisible(faker.bool().bool())
                                                         .bannerUrl(bannerUrls.get(i % bannerUrls.size()))
                                                         .contentUrl(pdfUrls.get(i % pdfUrls.size()))
-                                                        .syllabusFileUrl("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
+                                                        .syllabusFileUrl(
+                                                                        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
                                                         .tags(generateRandomTags.get())
-                                
-                                                        .learningOutcomes("Thành thạo framework, Xây dựng được ứng dụng thực tế")
+
+                                                        .learningOutcomes(
+                                                                        "Thành thạo framework, Xây dựng được ứng dụng thực tế")
                                                         .completionCertificateType("Certificate of Completion")
-                                                        .certificateIssuer(request.getPartnerOrganization().getOrganizationName())
+                                                        .certificateIssuer(request.getPartnerOrganization()
+                                                                        .getOrganizationName())
                                                         .title(programTitles.get(programCounter % programTitles.size()))
                                                         .subTitle("Professional Training Program")
-                                                        .shortDescription(programDescriptions.get(programCounter % programDescriptions.size()))
+                                                        .shortDescription(programDescriptions.get(
+                                                                        programCounter % programDescriptions.size()))
+                                                        .description(programDetailedDescriptions.get(programCounter
+                                                                        % programDetailedDescriptions.size()))
                                                         .learningObjectives("Nắm vững kiến thức và kỹ năng chuyên môn")
-                                               
+
                                                         .rating(4.0 + faker.random().nextDouble() * 1.0) // 4.0 - 5.0
                                                         .build();
                                         programs.add(program);
@@ -2350,34 +2319,40 @@ public class EduHubVnApplication {
                                 }
                         }
 
-                        // Tạo thêm một số Training Programs không có TrainingProgramRequest (tạo trực tiếp)
+                        // Tạo thêm một số Training Programs không có TrainingProgramRequest (tạo trực
+                        // tiếp)
                         List<String> directProgramTitles = Arrays.asList(
                                         "Khóa học Blockchain Development cơ bản",
-                                        "Chương trình đào tạo UI/UX Design chuyên nghiệp", 
+                                        "Chương trình đào tạo UI/UX Design chuyên nghiệp",
                                         "Khóa học Cloud Architecture với Azure",
                                         "Chương trình đào tạo Mobile Game Development",
-                                        "Khóa học Data Engineering với Apache Spark"
-                        );
+                                        "Khóa học Data Engineering với Apache Spark");
 
                         List<String> directProgramDescriptions = Arrays.asList(
                                         "Khóa học Blockchain cơ bản từ lý thuyết đến thực hành với Solidity",
                                         "Chương trình đào tạo UI/UX Design từ cơ bản đến nâng cao",
                                         "Khóa học thiết kế kiến trúc đám mây với Microsoft Azure",
                                         "Chương trình đào tạo phát triển game mobile với Unity",
-                                        "Khóa học xây dựng pipeline dữ liệu với Apache Spark"
-                        );
+                                        "Khóa học xây dựng pipeline dữ liệu với Apache Spark");
+
+                        List<String> directProgramDetailedDescriptions = Arrays.asList(
+                                        "Khóa học Blockchain cơ bản từ lý thuyết đến thực hành với Solidity, smart contracts và DeFi applications. Chương trình được thiết kế cho developers muốn enter blockchain ecosystem và understand decentralized technologies. Bạn sẽ học blockchain fundamentals, cryptocurrency mechanics, Ethereum platform, và Solidity programming language. Khóa học bao gồm smart contract development, testing với Truffle framework, deployment strategies, và security best practices. Advanced topics như DeFi protocols, yield farming, liquidity pools, NFT development, và cross-chain technologies cũng được đề cập để chuẩn bị cho career trong blockchain industry.",
+                                        "Chương trình đào tạo UI/UX Design từ cơ bản đến nâng cao với design thinking methodology và user-centered design approaches. Khóa học cung cấp kiến thức comprehensive về design process từ user research đến final product delivery. Bạn sẽ học cách conduct user interviews, create personas và user journeys, design wireframes và prototypes, perform usability testing. Chương trình bao gồm design tools như Figma, Adobe Creative Suite, Sketch, InVision cho collaborative design workflows. Advanced concepts như design systems, accessibility guidelines, conversion optimization, micro-interactions, và design leadership cũng được covered để build successful design career.",
+                                        "Khóa học thiết kế kiến trúc đám mây với Microsoft Azure, covering cloud-native architectures và enterprise solutions. Chương trình được thiết kế cho solution architects và cloud engineers muốn master Azure ecosystem. Bạn sẽ học Azure services architecture, compute options như Virtual Machines, App Services, Container Instances, và Azure Kubernetes Service. Khóa học bao gồm storage solutions, networking configurations, security implementations, monitoring và governance frameworks. Advanced topics như multi-region deployments, disaster recovery planning, cost optimization strategies, Azure DevOps integration, và hybrid cloud architectures cũng được đề cập cho enterprise-grade solutions.",
+                                        "Chương trình đào tạo phát triển game mobile với Unity engine, C# programming và game design principles. Khóa học được thiết kế cho aspiring game developers muốn create engaging mobile games cho iOS và Android platforms. Bạn sẽ học Unity interface, C# scripting, 2D/3D game development pipelines, physics systems, animation workflows. Chương trình bao gồm game design fundamentals, player psychology, monetization strategies, analytics integration, performance optimization techniques. Advanced features như multiplayer networking, in-app purchases, social features integration, AR/VR capabilities, và live operations cũng được covered để build successful mobile games với high user engagement.",
+                                        "Khóa học xây dựng pipeline dữ liệu với Apache Spark, Kafka streaming và modern data engineering practices. Chương trình cung cấp kiến thức về big data processing và real-time analytics systems. Bạn sẽ học Spark architecture, RDD/DataFrame operations, Spark SQL, streaming applications với Structured Streaming. Khóa học bao gồm Kafka ecosystem cho event-driven architectures, Delta Lake cho ACID transactions, data quality frameworks, schema evolution strategies. Advanced topics như machine learning pipelines với MLflow, data governance implementations, performance tuning, cloud-native data platforms với AWS/Azure/GCP, và DataOps practices cũng được đề cập cho enterprise data engineering roles.");
 
                         // Tạo 5 Training Programs trực tiếp (không có request)
                         for (int i = 0; i < 5; i++) {
                                 User user = users.get(faker.random().nextInt(users.size()));
-                                PartnerOrganization partner = partners.get(faker.random().nextInt(partners.size()));
+                                // Không có PartnerOrganization cho các programs tạo trực tiếp
                                 LocalDate startDate = LocalDate.now().plusDays(faker.random().nextInt(30, 90));
                                 LocalDate endDate = startDate.plusDays(faker.random().nextInt(30, 120));
 
                                 // Chọn mode ngẫu nhiên
                                 TrainingProgramMode mode = TrainingProgramMode.values()[faker.random()
                                                 .nextInt(TrainingProgramMode.values().length)];
-                                
+
                                 // Xác định classroomLink dựa trên mode
                                 String classroomLink;
                                 switch (mode) {
@@ -2402,9 +2377,9 @@ public class EduHubVnApplication {
                                 } else {
                                         // 2 programs còn lại sử dụng các status khác
                                         TrainingProgramStatus[] otherStatuses = {
-                                                TrainingProgramStatus.REVIEW, 
-                                                TrainingProgramStatus.UNLISTED, 
-                                                TrainingProgramStatus.ARCHIVED
+                                                        TrainingProgramStatus.REVIEW,
+                                                        TrainingProgramStatus.UNLISTED,
+                                                        TrainingProgramStatus.ARCHIVED
                                         };
                                         status = otherStatuses[faker.random().nextInt(otherStatuses.length)];
                                 }
@@ -2413,7 +2388,8 @@ public class EduHubVnApplication {
                                                 .trainingProgramId(String.format("KH-%03d", programCounter + 1))
                                                 .trainingProgramRequest(null) // Không có request
                                                 .user(user)
-                                                .partnerOrganization(partner)
+                                                .partnerOrganization(null) // Không có PartnerOrganization cho programs
+                                                                           // tạo trực tiếp
                                                 .programStatus(status)
                                                 .programMode(mode)
                                                 .programType(TrainingProgramType.values()[faker.random()
@@ -2423,6 +2399,8 @@ public class EduHubVnApplication {
                                                 .durationHours(faker.random().nextInt(40, 200))
                                                 .durationSessions(faker.random().nextInt(10, 40))
                                                 .scheduleDetail("Thứ 2, 4, 6 từ 19h00-21h30")
+                                                .programLevel(TrainingProgramLevel.values()[faker.random()
+                                                                .nextInt(TrainingProgramLevel.values().length)])
                                                 .maxStudents(faker.random().nextInt(20, 50))
                                                 .minStudents(faker.random().nextInt(10, 20))
                                                 .openingCondition("Đủ số lượng học viên tối thiểu")
@@ -2434,18 +2412,22 @@ public class EduHubVnApplication {
                                                 .listedPrice(new BigDecimal(faker.random().nextInt(2000000, 8000000)))
                                                 .internalPrice(new BigDecimal(faker.random().nextInt(1500000, 6000000)))
                                                 .publicPrice(new BigDecimal(faker.random().nextInt(2500000, 10000000)))
-                                                .isPriceVisible(faker.bool().bool())
-                                                .bannerUrl(bannerUrls.get((i + 5) % bannerUrls.size())) // Sử dụng banner khác
+                                                .priceVisible(faker.bool().bool())
+                                                .bannerUrl(bannerUrls.get((i + 5) % bannerUrls.size())) // Sử dụng
+                                                                                                        // banner khác
                                                 .contentUrl(pdfUrls.get((i + 5) % pdfUrls.size())) // Sử dụng PDF khác
-                                                .syllabusFileUrl("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
+                                                .syllabusFileUrl(
+                                                                "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
                                                 .tags(generateRandomTags.get())
-                               
+
                                                 .learningOutcomes("Thành thạo công nghệ mới, Áp dụng vào dự án thực tế")
                                                 .completionCertificateType("Professional Certificate")
-                                                .certificateIssuer(partner.getOrganizationName())
+                                                .certificateIssuer("EduHubVN") // Certificate issuer cho programs tạo
+                                                                               // trực tiếp
                                                 .title(directProgramTitles.get(i))
                                                 .subTitle("Advanced Professional Training")
                                                 .shortDescription(directProgramDescriptions.get(i))
+                                                .description(directProgramDetailedDescriptions.get(i))
                                                 .learningObjectives("Nắm vững công nghệ tiên tiến và kỹ năng thực tế")
                                                 .rating(4.0 + faker.random().nextDouble() * 1.0) // 4.0 - 5.0
                                                 .build();
@@ -2462,12 +2444,14 @@ public class EduHubVnApplication {
                                 int numUnits = faker.random().nextInt(3, 8); // Mỗi program có 3-7 units
                                 for (int j = 0; j < numUnits; j++) {
                                         Lecturer lecturer = lecturers.get(faker.random().nextInt(lecturers.size()));
-                                        
+
                                         TrainingUnit unit = TrainingUnit.builder()
                                                         .trainingProgram(program)
                                                         .lecturer(lecturer)
-                                                        .title(unitTitles.get(faker.random().nextInt(unitTitles.size())) )
-                                                        .description("Chi tiết nội dung cho " + unitTitles.get(faker.random().nextInt(unitTitles.size())))
+                                                        .title(unitTitles
+                                                                        .get(faker.random().nextInt(unitTitles.size())))
+                                                        .description("Chi tiết nội dung cho " + unitTitles
+                                                                        .get(faker.random().nextInt(unitTitles.size())))
                                                         .durationSection(faker.random().nextInt(2, 6)) // 2-5 tiếng
                                                         .orderSection(j + 1)
                                                         .lead(j == 0) // Unit đầu tiên là lead
@@ -2481,17 +2465,23 @@ public class EduHubVnApplication {
                         trainingUnitRepository.flush();
 
                         System.out.println("✅ Đã tạo thành công dữ liệu mẫu cho Training Programs:");
-                        long approvedRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.APPROVED).count();
-                        long pendingRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.PENDING).count();
-                        long rejectedRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.REJECTED).count();
-                        System.out.println("- " + requests.size() + " Training Program Requests (" + 
-                                        approvedRequests + " APPROVED, " + 
-                                        pendingRequests + " PENDING, " + 
+                        long approvedRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.APPROVED)
+                                        .count();
+                        long pendingRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.PENDING)
+                                        .count();
+                        long rejectedRequests = requests.stream().filter(r -> r.getStatus() == PendingStatus.REJECTED)
+                                        .count();
+                        System.out.println("- " + requests.size() + " Training Program Requests (" +
+                                        approvedRequests + " APPROVED, " +
+                                        pendingRequests + " PENDING, " +
                                         rejectedRequests + " REJECTED)");
                         System.out.println("- Mỗi PartnerOrganization (approved) có 2-4 TrainingProgramRequest");
-                        long programsFromRequests = programs.stream().filter(p -> p.getTrainingProgramRequest() != null).count();
-                        long programsWithoutRequests = programs.stream().filter(p -> p.getTrainingProgramRequest() == null).count();
-                        System.out.println("- " + programs.size() + " Training Programs (" + programsFromRequests + " từ requests, " + programsWithoutRequests + " tạo trực tiếp)");
+                        long programsFromRequests = programs.stream().filter(p -> p.getTrainingProgramRequest() != null)
+                                        .count();
+                        long programsWithoutRequests = programs.stream()
+                                        .filter(p -> p.getTrainingProgramRequest() == null).count();
+                        System.out.println("- " + programs.size() + " Training Programs (" + programsFromRequests
+                                        + " từ requests, " + programsWithoutRequests + " tạo trực tiếp)");
                         System.out.println("- " + units.size() + " Training Units (3-7 units per program)");
 
                 } catch (Exception e) {

@@ -71,53 +71,54 @@ public class UserController {
     private final AdminService adminService;
     private final AuthenticationService authenticationService;
 
-@PostMapping("/uploads")
-public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
-                                    HttpServletRequest request) {
+    @PostMapping("/uploads")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-    }
-
-    User user = (User) authentication.getPrincipal();
-    String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-
-    if (file.isEmpty() || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".jpeg") &&
-            !originalFileName.endsWith(".png") && !originalFileName.endsWith(".pdf"))) {
-        return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
-    }
-
-    try {
-        // Lấy phần tên và phần đuôi file
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-        String baseName = originalFileName.substring(0, originalFileName.lastIndexOf("."))
-                .replaceAll("[^a-zA-Z0-9_-]", "_"); // tránh ký tự đặc biệt
-
-        // Tạo tên file mới có timestamp
-        String newFileName = baseName + "_" + System.currentTimeMillis() + fileExtension;
-
-        // Đường dẫn upload
-        Path uploadPath = Paths.get("uploads", String.valueOf(user.getRole()), String.valueOf(user.getId()));
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
-        Path filePath = uploadPath.resolve(newFileName);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        User user = (User) authentication.getPrincipal();
+        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
-        // Tạo URL truy cập
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + newFileName;
+        if (file.isEmpty() || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".jpeg") &&
+                !originalFileName.endsWith(".png") && !originalFileName.endsWith(".pdf")
+                && !originalFileName.endsWith(".doc") && !originalFileName.endsWith(".docx")
+                )) {
+            return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
+        }
 
-        return ResponseEntity.ok().body(fileUrl);
+        try {
+            // Lấy phần tên và phần đuôi file
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String baseName = originalFileName.substring(0, originalFileName.lastIndexOf("."))
+                    .replaceAll("[^a-zA-Z0-9_-]", "_"); // tránh ký tự đặc biệt
 
-    } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to upload file: " + e.getMessage());
+            // Tạo tên file mới có timestamp
+            String newFileName = baseName + "_" + System.currentTimeMillis() + fileExtension;
+
+            // Đường dẫn upload
+            Path uploadPath = Paths.get("uploads", String.valueOf(user.getRole()), String.valueOf(user.getId()));
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(newFileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Tạo URL truy cập
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + newFileName;
+
+            return ResponseEntity.ok().body(fileUrl);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload file: " + e.getMessage());
+        }
     }
-}
-
 
     @GetMapping("/user-profile")
     public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfile(@AuthenticationPrincipal User user) {

@@ -3,6 +3,7 @@ package com.example.eduhubvn.mapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
@@ -33,6 +34,19 @@ public interface TrainingProgramMapper {
     TrainingUnit toUnitEntity(TrainingUnitDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "units", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "partnerOrganization", ignore = true)
+    @Mapping(target = "trainingProgramRequest", ignore = true)
+    @Mapping(target = "id", ignore = true)
     TrainingProgram fromReq(TrainingProgramReq req);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "units", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "partnerOrganization", ignore = true)
+    @Mapping(target = "trainingProgramRequest", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateFromReq(TrainingProgramReq req, @MappingTarget TrainingProgram entity);
 
 }
