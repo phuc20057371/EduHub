@@ -112,7 +112,7 @@ public class EduHubVnApplication {
                 TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         }
 
-        // @Bean
+        @Bean
         public CommandLineRunner setup(UserRepository userRepository, AuthenticationService authenticationService) {
                 return args -> {
                         if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
@@ -128,7 +128,7 @@ public class EduHubVnApplication {
                 };
         }
 
-        @Bean
+        // @Bean
         public CommandLineRunner init(UserRepository userRepository,
                         LecturerRepository lecturerRepository,
                         EducationInstitutionRepository educationInstitutionRepository,
