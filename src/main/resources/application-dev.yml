@@ -8,14 +8,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
           auto: update
-          schema_generation:
-            create-source: metadata
-            script:
-              append: true
-              target: file:src/main/resources/db/migration/V3__remove_name_from_tests.sql
-        format_sql: true
-        delimiter: ;
-      jakarta.persistence.schema-generation.scripts.action: create
-      jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/V3__remove_name_from_tests.sql
+  #         schema_generation:
+  #           create-source: metadata
+  #           script:
+  #             append: true
+  #             target: file:src/main/resources/db/migration/V2__update_database.sql
+  #       format_sql: true
+  #       delimiter: ;
+  #     jakarta.persistence.schema-generation.scripts.action: create
+  #     jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/V2__update_database.sql
   flyway:
     enabled: false

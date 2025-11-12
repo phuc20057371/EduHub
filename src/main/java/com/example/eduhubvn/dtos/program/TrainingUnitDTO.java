@@ -18,5 +18,6 @@ public class TrainingUnitDTO {
     private Integer durationSection;
     private Integer orderSection;
     private boolean lead;
+    private String trialVideoUrl;
 
 }

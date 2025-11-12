@@ -89,6 +89,8 @@ public class TrainingProgramDTO {
     private String description;
     private String learningObjectives;
 
+    private String trialVideoUrl;
+
     private Double rating;
 
 }

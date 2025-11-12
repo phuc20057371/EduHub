@@ -46,6 +46,7 @@ import com.example.eduhubvn.entities.InterviewResult;
 import com.example.eduhubvn.entities.InterviewStatus;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.LecturerUpdate;
+import com.example.eduhubvn.entities.Notification;
 import com.example.eduhubvn.entities.OwnedTrainingCourse;
 import com.example.eduhubvn.entities.OwnedTrainingCourseUpdate;
 import com.example.eduhubvn.entities.PartnerOrganization;
@@ -84,6 +85,7 @@ import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
 import com.example.eduhubvn.repositories.InterviewRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
 import com.example.eduhubvn.repositories.LecturerUpdateRepository;
+import com.example.eduhubvn.repositories.NotificationRepository;
 import com.example.eduhubvn.repositories.OwnedTrainingCourseRepository;
 import com.example.eduhubvn.repositories.OwnedTrainingCourseUpdateRepository;
 import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
@@ -112,7 +114,7 @@ public class EduHubVnApplication {
                 TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         }
 
-        @Bean
+        // @Bean
         public CommandLineRunner setup(UserRepository userRepository, AuthenticationService authenticationService) {
                 return args -> {
                         if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
@@ -128,7 +130,7 @@ public class EduHubVnApplication {
                 };
         }
 
-        // @Bean
+        @Bean
         public CommandLineRunner init(UserRepository userRepository,
                         LecturerRepository lecturerRepository,
                         EducationInstitutionRepository educationInstitutionRepository,
@@ -160,16 +162,20 @@ public class EduHubVnApplication {
                         TrainingProgramRepository trainingProgramRepository,
                         TrainingUnitRepository trainingUnitRepository,
 
+                        com.example.eduhubvn.repositories.NotificationRepository notificationRepository,
+
                         com.example.eduhubvn.services.IdGeneratorService idGeneratorService,
 
                         AuthenticationService authenticationService,
                         com.example.eduhubvn.services.SubAdminService subAdminService) {
                 return args -> {
+                        if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
+                                System.out.println("Data already initialized, skipping seeding.");
+                                return;
+                        }
                         Faker faker = new Faker();
                         try {
-                                if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
-                                        return;
-                                }
+
                                 // String domain = "eduhub.vn";
                                 // 1. 10 Họ phổ biến ở Việt Nam
                                 List<String> lastNames = new ArrayList<>(Arrays.asList(
@@ -1311,6 +1317,9 @@ public class EduHubVnApplication {
                                                 partnerOrganizationRepository, lecturerRepository,
                                                 userRepository, faker);
 
+                                // ===== TẠO DỮ LIỆU MẪU CHO NOTIFICATION =====
+                                createSampleNotificationData(notificationRepository, userRepository, faker);
+
                                 System.out.println("token admin: " + adminResponse.getAccessToken());
                                 System.out.println("token sub_admin1: " + subAdmin1Response.getAccessToken());
                                 System.out.println("token sub_admin2: " + subAdmin2Response.getAccessToken());
@@ -1942,6 +1951,9 @@ public class EduHubVnApplication {
                         }
 
                         // Dữ liệu mẫu cho Training Program Request (yêu cầu tạo chương trình đào tạo)
+
+                        String trialVideoUrl = "https://youtu.be/ED5rM9xITNI?si=nAmzLItbb76y-TaP";
+
                         List<String> requestTitles = Arrays.asList(
                                         "Yêu cầu tạo khóa đào tạo Java Spring Boot cho nhân viên",
                                         "Đề xuất chương trình Data Science cho sinh viên IT",
@@ -2311,7 +2323,7 @@ public class EduHubVnApplication {
                                                         .description(programDetailedDescriptions.get(programCounter
                                                                         % programDetailedDescriptions.size()))
                                                         .learningObjectives("Nắm vững kiến thức và kỹ năng chuyên môn")
-
+                                                        .trialVideoUrl(trialVideoUrl)
                                                         .rating(4.0 + faker.random().nextDouble() * 1.0) // 4.0 - 5.0
                                                         .build();
                                         programs.add(program);
@@ -2430,6 +2442,7 @@ public class EduHubVnApplication {
                                                 .description(directProgramDetailedDescriptions.get(i))
                                                 .learningObjectives("Nắm vững công nghệ tiên tiến và kỹ năng thực tế")
                                                 .rating(4.0 + faker.random().nextDouble() * 1.0) // 4.0 - 5.0
+                                                .trialVideoUrl(trialVideoUrl)
                                                 .build();
                                 programs.add(program);
                                 programCounter++;
@@ -2455,6 +2468,7 @@ public class EduHubVnApplication {
                                                         .durationSection(faker.random().nextInt(2, 6)) // 2-5 tiếng
                                                         .orderSection(j + 1)
                                                         .lead(j == 0) // Unit đầu tiên là lead
+                                                        .trialVideoUrl(trialVideoUrl)
                                                         .build();
                                         units.add(unit);
                                 }
@@ -2486,6 +2500,148 @@ public class EduHubVnApplication {
 
                 } catch (Exception e) {
                         System.err.println("Lỗi khi tạo dữ liệu mẫu cho Training Programs: " + e.getMessage());
+                        e.printStackTrace();
+                }
+        }
+
+        /**
+         * Tạo dữ liệu mẫu cho Notification
+         * Mỗi user sẽ có 2-3 notifications
+         */
+        private void createSampleNotificationData(
+                        NotificationRepository notificationRepository,
+                        UserRepository userRepository,
+                        Faker faker) {
+
+                try {
+                        System.out.println("\n===== TẠO DỮ LIỆU MẪU CHO NOTIFICATION =====");
+
+                        List<User> users = userRepository.findAll();
+                        if (users.isEmpty()) {
+                                System.out.println("Không có user nào để tạo notification!");
+                                return;
+                        }
+
+                        List<String> notificationTitles = Arrays.asList(
+                                        "Chào mừng bạn đến với EduHub",
+                                        "Thông báo cập nhật hệ thống",
+                                        "Đơn đăng ký của bạn đã được duyệt",
+                                        "Đơn đăng ký của bạn cần chỉnh sửa",
+                                        "Đơn đăng ký của bạn đã bị từ chối",
+                                        "Có dự án mới phù hợp với bạn",
+                                        "Có khóa đào tạo mới",
+                                        "Nhắc nhở: Cập nhật hồ sơ giảng viên",
+                                        "Nhắc nhở: Hoàn thiện thông tin",
+                                        "Bạn có một cuộc phỏng vấn sắp tới",
+                                        "Kết quả phỏng vấn đã có",
+                                        "Hợp đồng đang chờ xác nhận",
+                                        "Hợp đồng đã được ký kết",
+                                        "Thông báo về chương trình đào tạo",
+                                        "Cập nhật mới từ tổ chức đối tác",
+                                        "Thông báo từ trường đại học",
+                                        "Có yêu cầu đào tạo mới",
+                                        "Chương trình đào tạo sắp bắt đầu",
+                                        "Nhắc nhở: Nộp báo cáo nghiên cứu",
+                                        "Chứng chỉ của bạn đã được xác nhận",
+                                        "Bằng cấp cần được cập nhật",
+                                        "Thông báo về khóa học đã tham gia",
+                                        "Thông báo về khóa học đang giảng dạy",
+                                        "Dự án nghiên cứu đã được phê duyệt",
+                                        "Thông báo bảo trì hệ thống");
+
+                        List<String> notificationMessages = Arrays.asList(
+                                        "Chào mừng bạn đến với hệ thống quản lý giáo dục EduHub. Hãy hoàn thiện hồ sơ của bạn để trải nghiệm đầy đủ các tính năng.",
+                                        "Hệ thống sẽ được cập nhật vào lúc 02:00 sáng ngày mai. Trong thời gian này, một số tính năng có thể bị gián đoạn.",
+                                        "Chúc mừng! Đơn đăng ký của bạn đã được phê duyệt. Bạn có thể bắt đầu sử dụng các tính năng của hệ thống.",
+                                        "Đơn đăng ký của bạn cần một số chỉnh sửa. Vui lòng kiểm tra và cập nhật lại thông tin theo yêu cầu.",
+                                        "Rất tiếc, đơn đăng ký của bạn đã bị từ chối do không đáp ứng đủ các yêu cầu. Vui lòng xem lý do cụ thể và nộp đơn mới.",
+                                        "Có một dự án mới phù hợp với chuyên môn của bạn. Hãy xem chi tiết và nộp đơn ứng tuyển ngay!",
+                                        "Một khóa đào tạo mới vừa được thêm vào hệ thống. Hãy đăng ký tham gia để nâng cao kỹ năng của bạn.",
+                                        "Hồ sơ giảng viên của bạn chưa được cập nhật trong 6 tháng. Vui lòng cập nhật thông tin mới nhất.",
+                                        "Hồ sơ của bạn còn thiếu một số thông tin quan trọng. Hãy hoàn thiện để tăng cơ hội được chọn cho các dự án.",
+                                        "Bạn có một cuộc phỏng vấn vào lúc 10:00 ngày 15/11/2025. Vui lòng chuẩn bị và tham gia đúng giờ.",
+                                        "Kết quả phỏng vấn của bạn đã có. Hãy đăng nhập vào hệ thống để xem chi tiết.",
+                                        "Bạn có một hợp đồng đang chờ xác nhận. Vui lòng xem xét và ký kết trong vòng 3 ngày.",
+                                        "Hợp đồng của bạn đã được ký kết thành công. Bạn có thể xem chi tiết trong mục Hợp đồng.",
+                                        "Có cập nhật mới về chương trình đào tạo mà bạn đang tham gia. Hãy kiểm tra thông tin chi tiết.",
+                                        "Tổ chức đối tác của bạn vừa cập nhật thông tin. Hãy xem các thay đổi trong hồ sơ tổ chức.",
+                                        "Trường đại học đã gửi thông báo mới. Vui lòng kiểm tra email hoặc thông báo trong hệ thống.",
+                                        "Có một yêu cầu đào tạo mới từ tổ chức đối tác. Hãy xem xét và đề xuất chương trình phù hợp.",
+                                        "Chương trình đào tạo bạn đăng ký sẽ bắt đầu vào tuần tới. Hãy chuẩn bị tài liệu cần thiết.",
+                                        "Nhắc nhở: Báo cáo nghiên cứu của bạn sẽ đến hạn vào cuối tháng này. Vui lòng nộp đúng thời hạn.",
+                                        "Chứng chỉ bạn nộp đã được xác nhận và thêm vào hồ sơ. Cảm ơn bạn đã cập nhật thông tin.",
+                                        "Bằng cấp của bạn sắp hết hạn hoặc cần được cập nhật. Vui lòng nộp bản sao mới nhất.",
+                                        "Có cập nhật mới về khóa học bạn đã tham gia. Hãy xem thông tin chi tiết trong mục Khóa học.",
+                                        "Khóa học bạn đang giảng dạy có cập nhật về lịch học hoặc tài liệu. Vui lòng kiểm tra.",
+                                        "Dự án nghiên cứu của bạn đã được phê duyệt. Hãy bắt đầu thực hiện theo kế hoạch đã đề ra.",
+                                        "Hệ thống sẽ được bảo trì vào cuối tuần này. Vui lòng lưu công việc và đăng xuất trước thời gian bảo trì.");
+
+                        List<Notification> notifications = new ArrayList<>();
+                        LocalDateTime now = LocalDateTime.now();
+
+                        // Tạo 7 notifications cho mỗi user
+                        for (User user : users) {
+                                int notificationCount = 7; // Cố định 7 notifications
+
+                                for (int i = 0; i < notificationCount; i++) {
+                                        int randomIndex = faker.random().nextInt(notificationTitles.size());
+
+                                        // Tạo thời gian ngẫu nhiên trong khoảng 30 ngày gần đây
+                                        // Notification cũ hơn sẽ được tạo trước
+                                        int daysAgo = faker.random().nextInt(30); // 0-30 ngày trước
+                                        int hoursAgo = faker.random().nextInt(24); // 0-23 giờ
+                                        int minutesAgo = faker.random().nextInt(60); // 0-59 phút
+
+                                        LocalDateTime createdAt = now.minusDays(daysAgo)
+                                                        .minusHours(hoursAgo)
+                                                        .minusMinutes(minutesAgo);
+
+                                        // updatedAt sẽ sau createdAt một chút (0-2 giờ)
+                                        LocalDateTime updatedAt = createdAt.plusMinutes(faker.random().nextInt(120));
+
+                                        // Nếu updatedAt vượt quá thời gian hiện tại, set lại bằng now
+                                        if (updatedAt.isAfter(now)) {
+                                                updatedAt = now;
+                                        }
+
+                                        // Notification cũ hơn có xu hướng đã được đọc nhiều hơn
+                                        boolean isRead = daysAgo > 7 ? faker.random().nextBoolean()
+                                                        : (daysAgo > 3 ? faker.random().nextInt(10) > 3
+                                                                        : faker.random().nextInt(10) > 6);
+
+                                        Notification notification = Notification.builder()
+                                                        .title(notificationTitles.get(randomIndex))
+                                                        .message(notificationMessages.get(randomIndex))
+                                                        .read(isRead)
+                                                        .createdAt(createdAt)
+                                                        .updatedAt(updatedAt)
+                                                        .user(user)
+                                                        .build();
+
+                                        notifications.add(notification);
+                                }
+                        }
+
+                        // Lưu tất cả notifications
+                        notificationRepository.saveAll(notifications);
+                        notificationRepository.flush();
+
+                        // In ra thống kê
+                        System.out.println("✓ Tạo thành công " + notifications.size() + " notifications cho "
+                                        + users.size() + " users");
+                        long readNotifications = notifications.stream().filter(Notification::isRead).count();
+                        long unreadNotifications = notifications.size() - readNotifications;
+                        System.out.println("  - " + readNotifications + " notifications đã đọc");
+                        System.out.println("  - " + unreadNotifications + " notifications chưa đọc");
+
+                        // Thống kê theo thời gian
+                        long recentNotifications = notifications.stream()
+                                        .filter(n -> n.getCreatedAt().isAfter(now.minusDays(7)))
+                                        .count();
+                        System.out.println("  - " + recentNotifications + " notifications trong 7 ngày gần đây");
+
+                } catch (Exception e) {
+                        System.err.println("Lỗi khi tạo dữ liệu mẫu cho Notification: " + e.getMessage());
                         e.printStackTrace();
                 }
         }

@@ -48,4 +48,7 @@ public class TrainingUnit {
     private Integer orderSection;
     private boolean lead;
 
+    @Column(name = "trial_video_url")
+    private String trialVideoUrl;
+
 }

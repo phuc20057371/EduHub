@@ -137,6 +137,9 @@ public class TrainingProgram {
     @Column(columnDefinition = "TEXT")
     private String learningObjectives;
 
+    @Column(name = "trial_video_url")
+    private String trialVideoUrl;
+
     private Double rating;
 
 }

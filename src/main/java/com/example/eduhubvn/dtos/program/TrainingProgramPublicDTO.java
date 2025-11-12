@@ -60,5 +60,7 @@ public class TrainingProgramPublicDTO {
     private String description;
     private String learningObjectives;
 
+    private String trialVideoUrl;
+
     private Double rating;
 }

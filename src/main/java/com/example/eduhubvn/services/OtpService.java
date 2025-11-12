@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class OtpService {
     // throw new MessagingException("Failed to send email", e);
     // }
     // }
-    public String sendEmail(String email) throws MessagingException {
+    public String sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
         email = email.trim();
         if (!isValidEmail(email)) { // Kiểm tra email không hợp lệ
             return "Invalid email";
@@ -76,6 +77,7 @@ public class OtpService {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
+            helper.setFrom("eduhubvn.otp@ccvi.com.vn", "EduhubVN OTP Service");
             helper.setTo(email);
             helper.setSubject("Your OTP Verification Code");
 
@@ -166,7 +168,7 @@ public class OtpService {
         }
     }
 
-    public String sendChangePasswordOtp(String email) throws MessagingException{
+    public String sendChangePasswordOtp(String email) throws MessagingException {
         email = email.trim();
         if (!isValidEmail(email)) {
             return "Invalid email";

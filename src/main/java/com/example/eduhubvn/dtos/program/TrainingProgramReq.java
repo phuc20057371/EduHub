@@ -63,5 +63,8 @@ public class TrainingProgramReq {
     private String shortDescription;
     private String description;
     private String learningObjectives;
+
+    private String trialVideoUrl;
+    
     private Double rating;
 }

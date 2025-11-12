@@ -2489,6 +2489,7 @@ public class AdminService {
                 .subTitle(program.getSubTitle())
                 .shortDescription(program.getShortDescription())
                 .learningObjectives(program.getLearningObjectives())
+                .trialVideoUrl(program.getTrialVideoUrl())
                 .rating(program.getRating())
                 .build();
     }
@@ -2502,6 +2503,7 @@ public class AdminService {
                 .durationSection(unit.getDurationSection())
                 .orderSection(unit.getOrderSection())
                 .lead(unit.isLead())
+                .trialVideoUrl(unit.getTrialVideoUrl())
                 .build();
     }
 

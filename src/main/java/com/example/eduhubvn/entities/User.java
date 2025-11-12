@@ -93,6 +93,9 @@ public class User implements UserDetails {
     @Builder.Default
     private Set<SubAdminPermission> subAdminPermissions = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
     @Override
     public String getUsername() {
         return email;

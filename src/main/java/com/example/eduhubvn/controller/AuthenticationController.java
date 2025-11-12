@@ -1,5 +1,7 @@
 package com.example.eduhubvn.controller;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,7 +75,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody Email email) throws MessagingException {
+    public ResponseEntity<String> sendOtp(@RequestBody Email email) throws MessagingException, UnsupportedEncodingException {
         return ResponseEntity.ok(otpService.sendEmail(email.getEmail()));
     }
 

@@ -12,8 +12,10 @@ import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.mapper.EducationInstitutionMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
+import com.example.eduhubvn.mapper.NotificationMapper;
 import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
 import com.example.eduhubvn.repositories.LecturerRepository;
+import com.example.eduhubvn.repositories.NotificationRepository;
 import com.example.eduhubvn.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -29,6 +31,9 @@ public class UserService {
     private final EducationInstitutionMapper educationInstitutionMapper;
     private final PartnerOrganizationMapper partnerOrganizationMapper;
     private final LecturerRepository lecturerRepository;
+
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     // public Optional<User> getCurrentUser() {
     // Object principal =
@@ -58,7 +63,9 @@ public class UserService {
                     .subEmails(fullUser.getSubEmails().stream().toList())
                     .lecturer(lecturerMapper.toDTO(fullUser.getLecturer()))
                     .educationInstitution(educationInstitutionMapper.toDTO(fullUser.getEducationInstitution()))
-                    .partnerOrganization(partnerOrganizationMapper.toDTO(fullUser.getPartnerOrganization()));
+                    .partnerOrganization(partnerOrganizationMapper.toDTO(fullUser.getPartnerOrganization()))
+                    .notifications(notificationMapper.toDTOList(notificationRepository.findTop5ByUserIdOrderByCreatedAtDesc(fullUser.getId())));
+
             
             // If user is SUB_ADMIN, add their permissions
             if (fullUser.getRole() != null && fullUser.getRole().name().equals("SUB_ADMIN")) {

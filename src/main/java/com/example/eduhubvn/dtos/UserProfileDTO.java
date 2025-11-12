@@ -2,6 +2,7 @@ package com.example.eduhubvn.dtos;
 
 import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
+import com.example.eduhubvn.dtos.noti.NotificationDTO;
 import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,7 @@ public class UserProfileDTO {
     
     // Permissions for SUB_ADMIN role
     private List<String> permissions;
+
+    private List<NotificationDTO> notifications;
 
 }
