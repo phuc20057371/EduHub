@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.IdReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
-import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
-import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.dtos.program.pub.TrainingProgramPublicDTO;
 import com.example.eduhubvn.dtos.project.response.CourseGuestDTO;
 import com.example.eduhubvn.services.AdminService;
@@ -29,29 +27,16 @@ public class PublicController {
     private final ProjectService projectService;
     private final LecturerService lecturerService;
 
-    @GetMapping("/get-all-lecturers")
-    public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
-        List<LecturerInfoDTO> lecturers = adminService.getAllLecturers();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
-    }
+    // @GetMapping("/get-all-lecturers")
+    // public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getAllLecturers() {
+    //     List<LecturerInfoDTO> lecturers = adminService.getAllLecturers();
+    //     return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
+    // }
 
     @GetMapping("/all-courses")
     public ResponseEntity<ApiResponse<List<CourseGuestDTO>>> getAllCoursesFormPrject() {
         List<CourseGuestDTO> courses = projectService.getAllCourseGuestDTO();
         return ResponseEntity.ok(ApiResponse.success("Danh sách khóa học", courses));
-    }
-    // @GetMapping("/get-lecturer-by-id")
-    // public ResponseEntity<ApiResponse<LecturerInfoDTO>> getLecturerById(Long
-    // lecturerId) {
-    // LecturerInfoDTO lecturer = adminService.getLecturerById(lecturerId);
-    // return ResponseEntity.ok(ApiResponse.success("Thông tin giảng viên",
-    // lecturer));
-    // }
-
-    @GetMapping("/top-7-lecturers")
-    public ResponseEntity<ApiResponse<List<LecturerDTO>>> getTop7Lecturers() {
-        List<LecturerDTO> lecturers = lecturerService.getTop7Lecturers();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách giảng viên", lecturers));
     }
 
     @GetMapping("/get-top-6-lecturers")
@@ -68,7 +53,8 @@ public class PublicController {
     }
 
     @GetMapping("/get-lecturer-by-id-with-rating")
-    public ResponseEntity<ApiResponse<LecturerBasicPublicDTO>> getLecturerByIdWithRating(@RequestParam("id") String lecturerId) {
+    public ResponseEntity<ApiResponse<LecturerBasicPublicDTO>> getLecturerByIdWithRating(
+            @RequestParam("id") String lecturerId) {
         IdReq idRequest = new IdReq();
         idRequest.setId(java.util.UUID.fromString(lecturerId));
         LecturerBasicPublicDTO lecturer = lecturerService.getLecturerByIdWithRating(idRequest);
@@ -80,8 +66,10 @@ public class PublicController {
         List<TrainingProgramPublicDTO> programs = adminService.getAllPublicTrainingPrograms();
         return ResponseEntity.ok(ApiResponse.success("Danh sách chương trình đào tạo", programs));
     }
+
     @GetMapping("/get-training-program-by-id")
-    public ResponseEntity<ApiResponse<TrainingProgramPublicDTO>> getTrainingProgramById(@RequestParam("id") String programId) {
+    public ResponseEntity<ApiResponse<TrainingProgramPublicDTO>> getTrainingProgramById(
+            @RequestParam("id") String programId) {
         IdReq idRequest = new IdReq();
         idRequest.setId(java.util.UUID.fromString(programId));
         TrainingProgramPublicDTO program = adminService.getPublicTrainingProgramById(idRequest);

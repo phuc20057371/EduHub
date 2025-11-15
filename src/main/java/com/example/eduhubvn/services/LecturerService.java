@@ -1075,12 +1075,6 @@ public class LecturerService {
     }
 
     @Transactional
-    public List<LecturerDTO> getTop7Lecturers() {
-        List<Lecturer> lecturers = lecturerRepository.findTop7ByHiddenFalseOrderByExperienceYearsDesc();
-        return lecturers.stream().map(lecturerMapper::toDTO).collect(Collectors.toList());
-    }
-
-    @Transactional
     public List<LecturerBasicPublicDTO> getTop6Lecturers() {
         // Get all lecturers who have training programs with ratings
         List<Lecturer> lecturers = lecturerRepository.findLecturersWithRating();
