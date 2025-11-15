@@ -27,33 +27,31 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.IdReq;
 import com.example.eduhubvn.dtos.UserProfileDTO;
-import com.example.eduhubvn.dtos.auth.AddSubEmailRequest;
-import com.example.eduhubvn.dtos.auth.ChangePasswordRequest;
-import com.example.eduhubvn.dtos.auth.RemoveSubEmailRequest;
-import com.example.eduhubvn.dtos.auth.SendChangePasswordOtpRequest;
-import com.example.eduhubvn.dtos.auth.SendSubEmailOtpRequest;
-import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
-import com.example.eduhubvn.dtos.edu.request.EducationInstitutionReq;
+import com.example.eduhubvn.dtos.auth.Email;
+import com.example.eduhubvn.dtos.auth.EmailOtp;
+import com.example.eduhubvn.dtos.auth.request.ChangePasswordReq;
+import com.example.eduhubvn.dtos.institution.InstitutionDTO;
+import com.example.eduhubvn.dtos.institution.request.InstitutionCreateReq;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerAllInfoDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
-import com.example.eduhubvn.dtos.partner.request.PartnerOrganizationReq;
+import com.example.eduhubvn.dtos.lecturer.request.LecturerCreateReq;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
+import com.example.eduhubvn.dtos.partner.request.PartnerCreateReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.AdminService;
 import com.example.eduhubvn.services.AuthenticationService;
-import com.example.eduhubvn.services.EducationInstitutionService;
+import com.example.eduhubvn.services.InstitutionService;
 import com.example.eduhubvn.services.LecturerService;
-import com.example.eduhubvn.services.PartnerOrganizationService;
+import com.example.eduhubvn.services.PartnerService;
 import com.example.eduhubvn.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,8 +64,8 @@ public class UserController {
 
     private final UserService userService;
     private final LecturerService lecturerService;
-    private final EducationInstitutionService educationInstitutionService;
-    private final PartnerOrganizationService partnerOrganizationService;
+    private final InstitutionService educationInstitutionService;
+    private final PartnerService partnerOrganizationService;
     private final AdminService adminService;
     private final AuthenticationService authenticationService;
 
@@ -85,8 +83,7 @@ public class UserController {
 
         if (file.isEmpty() || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".jpeg") &&
                 !originalFileName.endsWith(".png") && !originalFileName.endsWith(".pdf")
-                && !originalFileName.endsWith(".doc") && !originalFileName.endsWith(".docx")
-                )) {
+                && !originalFileName.endsWith(".doc") && !originalFileName.endsWith(".docx"))) {
             return ResponseEntity.badRequest().body("File must be .jpg, .jpeg, .png or .pdf");
         }
 
@@ -128,14 +125,14 @@ public class UserController {
 
     /// Lecturer
     @PostMapping("/register-lecturer")
-    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody LecturerReq req,
+    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody LecturerCreateReq req,
             @AuthenticationPrincipal User user) {
         LecturerDTO dto = lecturerService.createLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     @PostMapping("/update-lecturer")
-    public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerReq req,
+    public ResponseEntity<ApiResponse<LecturerDTO>> updateLecturer(@RequestBody LecturerCreateReq req,
             @AuthenticationPrincipal User user) {
         LecturerDTO request = lecturerService.updateLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
@@ -165,7 +162,7 @@ public class UserController {
 
     /// Degree
     @PostMapping("/create-degree")
-    public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeReq> req,
+    public ResponseEntity<ApiResponse<List<DegreeDTO>>> addDegree(@RequestBody List<DegreeCreateReq> req,
             @AuthenticationPrincipal User user) {
         List<DegreeDTO> dto = lecturerService.saveDegrees(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
@@ -186,14 +183,14 @@ public class UserController {
     }
 
     @PostMapping("/delete-degree")
-    public ResponseEntity<ApiResponse<DegreeDTO>> deleteDegree(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<DegreeDTO>> deleteDegree(@RequestBody IdReq req) {
         DegreeDTO dto = lecturerService.deleteDegree(req);
         return ResponseEntity.ok(ApiResponse.success("Xóa thành công.", dto));
     }
 
     /// Certification
     @PostMapping("/create-certification")
-    public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationReq> req,
+    public ResponseEntity<ApiResponse<List<CertificationDTO>>> addCertification(@RequestBody List<CertificationCreateReq> req,
             @AuthenticationPrincipal User user) {
         List<CertificationDTO> dto = lecturerService.saveCertification(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
@@ -214,57 +211,57 @@ public class UserController {
     }
 
     @PostMapping("/delete-certification")
-    public ResponseEntity<ApiResponse<CertificationDTO>> deleteCertification(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<CertificationDTO>> deleteCertification(@RequestBody IdReq req) {
         CertificationDTO dto = lecturerService.deleteCertification(req);
         return ResponseEntity.ok(ApiResponse.success("Xóa thành công.", dto));
     }
 
     /// Education Institution
     @PostMapping("/register-institution")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> createEduInsFromUser(
-            @RequestBody EducationInstitutionReq req, @AuthenticationPrincipal User user) {
-        EducationInstitutionDTO dto = educationInstitutionService.createEduInsFromUser(req, user);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> createEduInsFromUser(
+            @RequestBody InstitutionCreateReq req, @AuthenticationPrincipal User user) {
+        InstitutionDTO dto = educationInstitutionService.createEduInsFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     @PostMapping("/update-institution")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateEduins(@RequestBody EducationInstitutionReq req,
+    public ResponseEntity<ApiResponse<InstitutionDTO>> updateEduins(@RequestBody InstitutionCreateReq req,
             @AuthenticationPrincipal User user) {
-        EducationInstitutionDTO dto = educationInstitutionService.updateEduins(req, user);
+        InstitutionDTO dto = educationInstitutionService.updateEduins(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @GetMapping("/pending-institution-profile")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> getPendingEduinsProfile(
+    public ResponseEntity<ApiResponse<InstitutionDTO>> getPendingEduinsProfile(
             @AuthenticationPrincipal User user) {
-        EducationInstitutionDTO pending = educationInstitutionService.getPendingEduinsProfile(user);
+        InstitutionDTO pending = educationInstitutionService.getPendingEduinsProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
     }
 
     /// Partner Organization
     @PostMapping("/register-partner")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> createEduInsFromUser(
-            @RequestBody PartnerOrganizationReq req, @AuthenticationPrincipal User user) {
-        PartnerOrganizationDTO dto = partnerOrganizationService.createPartnerFromUser(req, user);
+    public ResponseEntity<ApiResponse<PartnerDTO>> createEduInsFromUser(
+            @RequestBody PartnerCreateReq req, @AuthenticationPrincipal User user) {
+        PartnerDTO dto = partnerOrganizationService.createPartnerFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     @PostMapping("/update-partner")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(@RequestBody PartnerOrganizationReq req,
+    public ResponseEntity<ApiResponse<PartnerDTO>> updatePartner(@RequestBody PartnerCreateReq req,
             @AuthenticationPrincipal User user) {
-        PartnerOrganizationDTO dto = partnerOrganizationService.updatePartner(req, user);
+        PartnerDTO dto = partnerOrganizationService.updatePartner(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @GetMapping("/pending-partner-profile")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> getPendingPartnerProfile(
+    public ResponseEntity<ApiResponse<PartnerDTO>> getPendingPartnerProfile(
             @AuthenticationPrincipal User user) {
-        PartnerOrganizationDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
+        PartnerDTO pending = partnerOrganizationService.getPendingPartnerProfile(user);
         return ResponseEntity.ok(ApiResponse.success("lấy hồ sơ thành công", pending));
     }
 
     @PostMapping("/send-otp-change-password")
-    public ResponseEntity<ApiResponse<String>> sendOtpChangePassword(@RequestBody SendChangePasswordOtpRequest request,
+    public ResponseEntity<ApiResponse<String>> sendOtpChangePassword(@RequestBody Email request,
             @AuthenticationPrincipal User user) {
         try {
             if (request == null) {
@@ -285,7 +282,7 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody ChangePasswordRequest request,
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody ChangePasswordReq request,
             @AuthenticationPrincipal User user) {
         try {
             if (request == null) {
@@ -304,9 +301,10 @@ public class UserController {
                     .body(ApiResponse.error("Có lỗi xảy ra khi thay đổi mật khẩu", null));
         }
     }
+    
 
     @PostMapping("/send-otp-add-subemail")
-    public ResponseEntity<ApiResponse<String>> sendOtpAddSubEmail(@RequestBody SendSubEmailOtpRequest request,
+    public ResponseEntity<ApiResponse<String>> sendOtpAddSubEmail(@RequestBody Email request,
             @AuthenticationPrincipal User user) {
         try {
             if (request == null) {
@@ -327,7 +325,7 @@ public class UserController {
     }
 
     @PostMapping("/add-subemail")
-    public ResponseEntity<ApiResponse<String>> addSubEmail(@RequestBody AddSubEmailRequest request,
+    public ResponseEntity<ApiResponse<String>> addSubEmail(@RequestBody EmailOtp request,
             @AuthenticationPrincipal User user) {
         try {
             if (request == null) {
@@ -348,7 +346,7 @@ public class UserController {
     }
 
     @PostMapping("/remove-subemail")
-    public ResponseEntity<ApiResponse<String>> removeSubEmail(@RequestBody RemoveSubEmailRequest request,
+    public ResponseEntity<ApiResponse<String>> removeSubEmail(@RequestBody Email request,
             @AuthenticationPrincipal User user) {
         try {
             if (request == null) {

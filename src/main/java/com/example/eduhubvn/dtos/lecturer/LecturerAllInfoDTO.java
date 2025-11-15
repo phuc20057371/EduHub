@@ -16,6 +16,6 @@ public class LecturerAllInfoDTO {
     private List<DegreeDTO> degrees;
     private List<CertificationDTO> certifications;
     private List<OwnedTrainingCourseDTO> ownedTrainingCourses;
-    private List<AttendedTrainingCourseDTO> attendedTrainingCourses;
+    private List<AttendedCourseDTO> attendedTrainingCourses;
     private List<ResearchProjectDTO> researchProjects;
 }

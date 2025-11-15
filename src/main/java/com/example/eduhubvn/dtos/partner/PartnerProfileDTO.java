@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PartnerProfileDTO {
     private PartnerInfoDTO partner;
-    private PartnerOrganizationUpdateDTO partnerUpdate;
+    private PartnerUpdateDTO partnerUpdate;
 
     
 }

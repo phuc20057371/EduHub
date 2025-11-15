@@ -14,21 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.eduhubvn.dtos.AllPendingEntityDTO;
-import com.example.eduhubvn.dtos.AllPendingUpdateDTO;
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.IdReq;
 import com.example.eduhubvn.dtos.PaginatedResponse;
 import com.example.eduhubvn.dtos.RejectReq;
 import com.example.eduhubvn.dtos.RequestFromLecturer;
-import com.example.eduhubvn.dtos.admin.request.RegisterInstitutionFromAdminRequest;
-import com.example.eduhubvn.dtos.admin.request.RegisterLecturerFromAdminRequest;
-import com.example.eduhubvn.dtos.admin.request.RegisterPartnerFromAdminRequest;
-import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
-import com.example.eduhubvn.dtos.edu.EducationInstitutionPendingDTO;
-import com.example.eduhubvn.dtos.edu.EducationInstitutionUpdateDTO;
-import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
-import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.admin.request.CreateInstitutionReq;
+import com.example.eduhubvn.dtos.admin.request.CreateLecturerReq;
+import com.example.eduhubvn.dtos.admin.request.CreatePartnerReq;
+import com.example.eduhubvn.dtos.institution.InstitutionDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionPendingDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionUpdateDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionInfoDTO;
+import com.example.eduhubvn.dtos.lecturer.AttendedCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerAllProfileDTO;
@@ -37,26 +35,27 @@ import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerPendingDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerUpdateDTO;
+
 import com.example.eduhubvn.dtos.lecturer.OwnedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
-import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
-import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectCreateReq;
 import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationPendingDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationUpdateDTO;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
+import com.example.eduhubvn.dtos.partner.PartnerPendingDTO;
+import com.example.eduhubvn.dtos.partner.PartnerUpdateDTO;
 import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
-import com.example.eduhubvn.dtos.program.TrainingProgramReq;
 import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
 import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
+import com.example.eduhubvn.dtos.program.request.TrainingProgramReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.AdminService;
-import com.example.eduhubvn.services.EducationInstitutionService;
+import com.example.eduhubvn.services.InstitutionService;
 import com.example.eduhubvn.services.LecturerService;
-import com.example.eduhubvn.services.PartnerOrganizationService;
+import com.example.eduhubvn.services.PartnerService;
 import com.example.eduhubvn.services.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -70,22 +69,11 @@ public class AdminController {
     private final AdminService adminService;
     private final UserService userService;
     private final LecturerService lecturerService;
-    private final EducationInstitutionService educationInstitutionService;
-    private final PartnerOrganizationService partnerOrganizationService;
+    private final InstitutionService educationInstitutionService;
+    private final PartnerService partnerOrganizationService;
 
     /// General
 
-    @GetMapping("/pending-updates")
-    public ResponseEntity<ApiResponse<AllPendingUpdateDTO>> getAllPendingUpdates() {
-        AllPendingUpdateDTO allPending = adminService.getAllPendingUpdates();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách tất cả yêu cầu cập nhật chờ duyệt", allPending));
-    }
-
-    @GetMapping("/pending-application")
-    public ResponseEntity<ApiResponse<AllPendingEntityDTO>> getAllPendingEntities() {
-        AllPendingEntityDTO result = adminService.getAllPendingEntities();
-        return ResponseEntity.ok(ApiResponse.success("Danh sách tất cả yêu cầu tạo mới chờ duyệt", result));
-    }
 
     /// Lecturer
 
@@ -147,14 +135,14 @@ public class AdminController {
 
     @PostMapping("/approve-lecturer")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturer(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturer(@RequestBody IdReq req) {
         LecturerDTO dto = adminService.approveLecturer(req);
         return ResponseEntity.ok(ApiResponse.success("Duyệt thành công", dto));
     }
 
     @PostMapping("/approve-lecturer-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturerUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<LecturerDTO>> approveLecturerUpdate(@RequestBody IdReq req) {
         LecturerDTO dto = adminService.approveLecturerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
@@ -188,7 +176,7 @@ public class AdminController {
 
     @PostMapping("/delete-lecturer")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteLecturer(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteLecturer(@RequestBody IdReq req) {
         try {
             adminService.deleteLecturer(req);
         } catch (Exception e) {
@@ -203,7 +191,7 @@ public class AdminController {
 
     @PostMapping("/create-lecturer")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
-    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody RegisterLecturerFromAdminRequest req,
+    public ResponseEntity<ApiResponse<LecturerDTO>> createLecturer(@RequestBody CreateLecturerReq req,
             @AuthenticationPrincipal User user) {
         LecturerDTO dto = adminService.createLecturer(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
@@ -212,14 +200,14 @@ public class AdminController {
     /// Education Institution
 
     @GetMapping("/get-all-institutions")
-    public ResponseEntity<ApiResponse<List<EducationInstitutionDTO>>> getAllInstitutions() {
-        List<EducationInstitutionDTO> institutions = adminService.getAllInstitutions();
+    public ResponseEntity<ApiResponse<List<InstitutionDTO>>> getAllInstitutions() {
+        List<InstitutionDTO> institutions = adminService.getAllInstitutions();
         return ResponseEntity.ok(ApiResponse.success("Danh sách cơ sở giáo dục", institutions));
     }
 
     @GetMapping("/institution-pending-updates")
-    public ResponseEntity<ApiResponse<List<EducationInstitutionPendingDTO>>> getPendingEduInstitutionUpdates() {
-        List<EducationInstitutionPendingDTO> pendingList = educationInstitutionService
+    public ResponseEntity<ApiResponse<List<InstitutionPendingDTO>>> getPendingEduInstitutionUpdates() {
+        List<InstitutionPendingDTO> pendingList = educationInstitutionService
                 .getPendingEducationInstitutionUpdates();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
@@ -232,43 +220,43 @@ public class AdminController {
 
     @PostMapping("/approve-institution")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:approve'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> approveEduIns(@RequestBody IdRequest req) {
-        EducationInstitutionDTO dto = adminService.approveEduIns(req);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> approveEduIns(@RequestBody IdReq req) {
+        InstitutionDTO dto = adminService.approveEduIns(req);
         return ResponseEntity.ok(ApiResponse.success("Duyệt thành công", dto));
     }
 
     @PostMapping("/approve-institution-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:approve'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> approveEduInsUpdate(@RequestBody IdRequest req) {
-        EducationInstitutionDTO dto = adminService.approveEduInsUpdate(req);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> approveEduInsUpdate(@RequestBody IdReq req) {
+        InstitutionDTO dto = adminService.approveEduInsUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
     @PostMapping("/reject-institution")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:approve'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> rejectInstitution(@RequestBody RejectReq req) {
-        EducationInstitutionDTO dto = adminService.rejectInstitution(req);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> rejectInstitution(@RequestBody RejectReq req) {
+        InstitutionDTO dto = adminService.rejectInstitution(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới", dto));
     }
 
     @PostMapping("/reject-institution-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:approve'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionUpdateDTO>> rejectEduInsUpdate(@RequestBody RejectReq req) {
-        EducationInstitutionUpdateDTO dto = adminService.rejectEduInsUpdate(req);
+    public ResponseEntity<ApiResponse<InstitutionUpdateDTO>> rejectEduInsUpdate(@RequestBody RejectReq req) {
+        InstitutionUpdateDTO dto = adminService.rejectEduInsUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
     @PostMapping("/update-institution")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:update'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateInstitution(
-            @RequestBody EducationInstitutionUpdateDTO req) {
-        EducationInstitutionDTO dto = adminService.updateInstitution(req);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> updateInstitution(
+            @RequestBody InstitutionUpdateDTO req) {
+        InstitutionDTO dto = adminService.updateInstitution(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:delete'))")
     @PostMapping("/delete-institution")
-    public ResponseEntity<ApiResponse<Void>> deleteInstitution(@RequestBody IdRequest id) {
+    public ResponseEntity<ApiResponse<Void>> deleteInstitution(@RequestBody IdReq id) {
         try {
             adminService.deleteInstitution(id);
         } catch (Exception e) {
@@ -283,24 +271,24 @@ public class AdminController {
 
     @PostMapping("/create-institution")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('school:create'))")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> createInstitution(
-            @RequestBody RegisterInstitutionFromAdminRequest req,
+    public ResponseEntity<ApiResponse<InstitutionDTO>> createInstitution(
+            @RequestBody CreateInstitutionReq req,
             @AuthenticationPrincipal User user) {
-        EducationInstitutionDTO dto = adminService.createInstitution(req, user);
+        InstitutionDTO dto = adminService.createInstitution(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     /// Partner Organization
 
     @GetMapping("/get-all-partners")
-    public ResponseEntity<ApiResponse<List<PartnerOrganizationDTO>>> getAllPartners() {
-        List<PartnerOrganizationDTO> partners = adminService.getAllPartners();
+    public ResponseEntity<ApiResponse<List<PartnerDTO>>> getAllPartners() {
+        List<PartnerDTO> partners = adminService.getAllPartners();
         return ResponseEntity.ok(ApiResponse.success("Danh sách tổ chức đối tác", partners));
     }
 
     @GetMapping("/partner-pending-updates")
-    public ResponseEntity<ApiResponse<List<PartnerOrganizationPendingDTO>>> getPendingPartnerUpdates() {
-        List<PartnerOrganizationPendingDTO> pendingList = partnerOrganizationService
+    public ResponseEntity<ApiResponse<List<PartnerPendingDTO>>> getPendingPartnerUpdates() {
+        List<PartnerPendingDTO> pendingList = partnerOrganizationService
                 .getPendingPartnerOrganizationUpdates();
         return ResponseEntity.ok(ApiResponse.success("Danh sách đang chờ duyệt", pendingList));
     }
@@ -313,43 +301,43 @@ public class AdminController {
 
     @PostMapping("/approve-partner")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:approve'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartner(@RequestBody IdRequest req) {
-        PartnerOrganizationDTO dto = adminService.approvePartner(req);
+    public ResponseEntity<ApiResponse<PartnerDTO>> approvePartner(@RequestBody IdReq req) {
+        PartnerDTO dto = adminService.approvePartner(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
 
     @PostMapping("/approve-partner-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:approve'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> approvePartnerUpdate(@RequestBody IdRequest req) {
-        PartnerOrganizationDTO dto = adminService.approvePartnerUpdate(req);
+    public ResponseEntity<ApiResponse<PartnerDTO>> approvePartnerUpdate(@RequestBody IdReq req) {
+        PartnerDTO dto = adminService.approvePartnerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
     @PostMapping("/reject-partner")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:approve'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> rejectPartner(@RequestBody RejectReq req) {
-        PartnerOrganizationDTO dto = adminService.rejectPartner(req);
+    public ResponseEntity<ApiResponse<PartnerDTO>> rejectPartner(@RequestBody RejectReq req) {
+        PartnerDTO dto = adminService.rejectPartner(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới", dto));
     }
 
     @PostMapping("/reject-partner-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:approve'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationUpdateDTO>> rejectPartnerUpdate(@RequestBody RejectReq req) {
-        PartnerOrganizationUpdateDTO dto = adminService.rejectPartnerUpdate(req);
+    public ResponseEntity<ApiResponse<PartnerUpdateDTO>> rejectPartnerUpdate(@RequestBody RejectReq req) {
+        PartnerUpdateDTO dto = adminService.rejectPartnerUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
     @PostMapping("/update-partner")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:update'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartner(
-            @RequestBody PartnerOrganizationUpdateDTO req) {
-        PartnerOrganizationDTO dto = adminService.updatePartner(req);
+    public ResponseEntity<ApiResponse<PartnerDTO>> updatePartner(
+            @RequestBody PartnerUpdateDTO req) {
+        PartnerDTO dto = adminService.updatePartner(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
     @PostMapping("/delete-partner")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deletePartner(@RequestBody IdRequest id) {
+    public ResponseEntity<ApiResponse<Void>> deletePartner(@RequestBody IdReq id) {
         try {
             adminService.deletePartner(id);
         } catch (Exception e) {
@@ -364,24 +352,24 @@ public class AdminController {
 
     @PostMapping("/create-partner")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('organization:create'))")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> createPartner(
-            @RequestBody RegisterPartnerFromAdminRequest req,
+    public ResponseEntity<ApiResponse<PartnerDTO>> createPartner(
+            @RequestBody CreatePartnerReq req,
             @AuthenticationPrincipal User user) {
-        PartnerOrganizationDTO dto = adminService.createPartner(req, user);
+        PartnerDTO dto = adminService.createPartner(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     /// Certification
     @PostMapping("/approve-certification")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<CertificationDTO>> approveCertification(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<CertificationDTO>> approveCertification(@RequestBody IdReq req) {
         CertificationDTO dto = adminService.approveCertification(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
 
     @PostMapping("/approve-certification-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<CertificationDTO>> approveCertificationUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<CertificationDTO>> approveCertificationUpdate(@RequestBody IdReq req) {
         CertificationDTO dto = adminService.approveCertificationUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
@@ -402,7 +390,7 @@ public class AdminController {
 
     @PostMapping("/create-certification/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
-    public ResponseEntity<ApiResponse<CertificationDTO>> createCertification(@RequestBody CertificationReq req,
+    public ResponseEntity<ApiResponse<CertificationDTO>> createCertification(@RequestBody CertificationCreateReq req,
             @PathVariable UUID lecturerId) {
         CertificationDTO dto = adminService.createCertification(req, lecturerId);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
@@ -410,7 +398,7 @@ public class AdminController {
 
     @PostMapping("/delete-certification")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteCertification(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteCertification(@RequestBody IdReq req) {
         try {
             adminService.deleteCertification(req);
         } catch (Exception e) {
@@ -426,14 +414,14 @@ public class AdminController {
     /// Degree
     @PostMapping("/approve-degree")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<DegreeDTO>> approveDegree(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<DegreeDTO>> approveDegree(@RequestBody IdReq req) {
         DegreeDTO dto = adminService.approveDegree(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công", dto));
     }
 
     @PostMapping("/approve-degree-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<DegreeDTO>> approveDegreeUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<DegreeDTO>> approveDegreeUpdate(@RequestBody IdReq req) {
         DegreeDTO dto = adminService.approveDegreeUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
@@ -455,7 +443,7 @@ public class AdminController {
     @PostMapping("/create-degree/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
     public ResponseEntity<ApiResponse<DegreeDTO>> createDegree(
-            @RequestBody DegreeReq req,
+            @RequestBody DegreeCreateReq req,
             @PathVariable UUID lecturerId) {
 
         DegreeDTO dto = adminService.createDegree(req, lecturerId);
@@ -464,7 +452,7 @@ public class AdminController {
 
     @PostMapping("/delete-degree")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteDegree(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteDegree(@RequestBody IdReq req) {
         try {
             adminService.deleteDegree(req);
         } catch (Exception e) {
@@ -480,47 +468,47 @@ public class AdminController {
     /// Attended Training Course
     @PostMapping("/approve-attended-course")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourse(@RequestBody IdRequest req) {
-        AttendedTrainingCourseDTO dto = adminService.approveAttendedCourse(req);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> approveAttendedCourse(@RequestBody IdReq req) {
+        AttendedCourseDTO dto = adminService.approveAttendedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
 
     @PostMapping("/approve-attended-course-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> approveAttendedCourseUpdate(
-            @RequestBody IdRequest req) {
-        AttendedTrainingCourseDTO dto = adminService.approveAttendedCourseUpdate(req);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> approveAttendedCourseUpdate(
+            @RequestBody IdReq req) {
+        AttendedCourseDTO dto = adminService.approveAttendedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
 
     @PostMapping("/reject-attended-course")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> rejectAttendedCourse(@RequestBody RejectReq req) {
-        AttendedTrainingCourseDTO dto = adminService.rejectAttendedCourse(req);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> rejectAttendedCourse(@RequestBody RejectReq req) {
+        AttendedCourseDTO dto = adminService.rejectAttendedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối tạo mới.", dto));
     }
 
     @PostMapping("/reject-attended-course-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> rejectAttendedCourseUpdate(
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> rejectAttendedCourseUpdate(
             @RequestBody RejectReq req) {
-        AttendedTrainingCourseDTO dto = adminService.rejectAttendedCourseUpdate(req);
+        AttendedCourseDTO dto = adminService.rejectAttendedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Từ chối cập nhật.", dto));
     }
 
     @PostMapping("/create-attended-course/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> createAttendedCourse(
-            @RequestBody AttendedTrainingCourseReq req,
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> createAttendedCourse(
+            @RequestBody AttendedCourseCreateReq req,
             @PathVariable UUID lecturerId) {
 
-        AttendedTrainingCourseDTO dto = adminService.createAttendedCourse(req, lecturerId);
+        AttendedCourseDTO dto = adminService.createAttendedCourse(req, lecturerId);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     @PostMapping("/delete-attended-course")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteAttendedCourse(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteAttendedCourse(@RequestBody IdReq req) {
         try {
             adminService.deleteAttendedCourse(req);
         } catch (Exception e) {
@@ -536,14 +524,14 @@ public class AdminController {
     /// Owned Training Course
     @PostMapping("/approve-owned-course")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourse(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourse(@RequestBody IdReq req) {
         OwnedTrainingCourseDTO dto = adminService.approveOwnedCourse(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
 
     @PostMapping("/approve-owned-course-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourseUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> approveOwnedCourseUpdate(@RequestBody IdReq req) {
         OwnedTrainingCourseDTO dto = adminService.approveOwnedCourseUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật hành công.", dto));
     }
@@ -565,7 +553,7 @@ public class AdminController {
     @PostMapping("/create-owned-course/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> createOwnedCourse(
-            @RequestBody OwnedTrainingCourseReq req,
+            @RequestBody OwnedCourseCreateReq req,
             @PathVariable UUID lecturerId) {
 
         OwnedTrainingCourseDTO dto = adminService.createOwnedCourse(req, lecturerId);
@@ -574,7 +562,7 @@ public class AdminController {
 
     @PostMapping("/delete-owned-course")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteOwnedCourse(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteOwnedCourse(@RequestBody IdReq req) {
         try {
             adminService.deleteOwnedCourse(req);
         } catch (Exception e) {
@@ -590,14 +578,14 @@ public class AdminController {
     /// Research Project
     @PostMapping("/approve-research-project")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProject(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProject(@RequestBody IdReq req) {
         ResearchProjectDTO dto = adminService.approveResearchProject(req);
         return ResponseEntity.ok(ApiResponse.success("Thành công.", dto));
     }
 
     @PostMapping("/approve-research-project-update")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:approve'))")
-    public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProjectUpdate(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<ResearchProjectDTO>> approveResearchProjectUpdate(@RequestBody IdReq req) {
         ResearchProjectDTO dto = adminService.approveResearchProjectUpdate(req);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công.", dto));
     }
@@ -619,7 +607,7 @@ public class AdminController {
     @PostMapping("/create-research-project/{lecturerId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:create'))")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> createResearchProject(
-            @RequestBody ResearchProjectReq req,
+            @RequestBody ResearchProjectCreateReq req,
             @PathVariable UUID lecturerId) {
 
         ResearchProjectDTO dto = adminService.createResearchProject(req, lecturerId);
@@ -628,7 +616,7 @@ public class AdminController {
 
     @PostMapping("/delete-research-project")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:delete'))")
-    public ResponseEntity<ApiResponse<Void>> deleteResearchProject(@RequestBody IdRequest req) {
+    public ResponseEntity<ApiResponse<Void>> deleteResearchProject(@RequestBody IdReq req) {
         try {
             adminService.deleteResearchProject(req);
         } catch (Exception e) {
@@ -715,14 +703,14 @@ public class AdminController {
 
     @PostMapping("/reject-training-program-request")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
-    public ResponseEntity<ApiResponse<Void>> rejectTrainingProgramRequest(@RequestBody IdRequest request) {
+    public ResponseEntity<ApiResponse<Void>> rejectTrainingProgramRequest(@RequestBody IdReq request) {
         adminService.rejectTrainingProgramRequest(request);
         return ResponseEntity.ok(ApiResponse.success("Từ chối yêu cầu đào tạo thành công", null));
     }
 
     @PostMapping("/unreject-training-program-request")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('program:update'))")
-    public ResponseEntity<ApiResponse<Void>> unrejectTrainingProgramRequest(@RequestBody IdRequest request) {
+    public ResponseEntity<ApiResponse<Void>> unrejectTrainingProgramRequest(@RequestBody IdReq request) {
         adminService.unrejectTrainingProgramRequest(request);
         return ResponseEntity.ok(ApiResponse.success("Khôi phục yêu cầu đào tạo thành công", null));
     }

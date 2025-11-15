@@ -20,7 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.example.eduhubvn.dtos.auth.RegisterRequest;
+import com.example.eduhubvn.dtos.auth.request.RegisterReq;
 import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.Application;
 import com.example.eduhubvn.entities.ApplicationModule;
@@ -71,8 +71,8 @@ import com.example.eduhubvn.entities.TrainingUnit;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.ApplicationModuleRepository;
 import com.example.eduhubvn.repositories.ApplicationRepository;
-import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
-import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.AttendedCourseRepository;
+import com.example.eduhubvn.repositories.AttendedCourseUpdateRepository;
 import com.example.eduhubvn.repositories.CertificationRepository;
 import com.example.eduhubvn.repositories.CertificationUpdateRepository;
 import com.example.eduhubvn.repositories.ContractRepository;
@@ -80,16 +80,16 @@ import com.example.eduhubvn.repositories.CourseInfoRepository;
 import com.example.eduhubvn.repositories.CourseModuleRepository;
 import com.example.eduhubvn.repositories.DegreeRepository;
 import com.example.eduhubvn.repositories.DegreeUpdateRepository;
-import com.example.eduhubvn.repositories.EducationInstitutionRepository;
+import com.example.eduhubvn.repositories.InstitutionRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;
 import com.example.eduhubvn.repositories.InterviewRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
 import com.example.eduhubvn.repositories.LecturerUpdateRepository;
 import com.example.eduhubvn.repositories.NotificationRepository;
-import com.example.eduhubvn.repositories.OwnedTrainingCourseRepository;
-import com.example.eduhubvn.repositories.OwnedTrainingCourseUpdateRepository;
-import com.example.eduhubvn.repositories.PartnerOrganizationRepository;
-import com.example.eduhubvn.repositories.PartnerOrganizationUpdateRepository;
+import com.example.eduhubvn.repositories.OwnedCourseRepository;
+import com.example.eduhubvn.repositories.OwnedCourseUpdateRepository;
+import com.example.eduhubvn.repositories.PartnerRepository;
+import com.example.eduhubvn.repositories.PartnerUpdateRepository;
 import com.example.eduhubvn.repositories.ProjectRespository;
 import com.example.eduhubvn.repositories.ResearchProjectRepository;
 import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
@@ -120,7 +120,7 @@ public class EduHubVnApplication {
                         if (userRepository.findByEmail("admin@gmail.com").isPresent()) {
                                 return;
                         }
-                        var admin = RegisterRequest.builder()
+                        var admin = RegisterReq.builder()
                                         .email("admin@gmail.com")
                                         .password("SGL@2025")
                                         .role(Role.ADMIN)
@@ -133,12 +133,12 @@ public class EduHubVnApplication {
         @Bean
         public CommandLineRunner init(UserRepository userRepository,
                         LecturerRepository lecturerRepository,
-                        EducationInstitutionRepository educationInstitutionRepository,
-                        PartnerOrganizationRepository partnerOrganizationRepository,
+                        InstitutionRepository educationInstitutionRepository,
+                        PartnerRepository partnerOrganizationRepository,
                         DegreeRepository degreeRepository,
                         CertificationRepository certificationRepository,
-                        AttendedTrainingCourseRepository attendedTrainingCourseRepository,
-                        OwnedTrainingCourseRepository ownedTrainingCourseRepository,
+                        AttendedCourseRepository attendedTrainingCourseRepository,
+                        OwnedCourseRepository ownedTrainingCourseRepository,
                         ResearchProjectRepository researchProjectRepository,
 
                         ProjectRespository projectRepository,
@@ -151,11 +151,11 @@ public class EduHubVnApplication {
 
                         LecturerUpdateRepository lecturerUpdateRepository,
                         EducationInstitutionUpdateRepository educationInstitutionUpdateRepository,
-                        PartnerOrganizationUpdateRepository partnerOrganizationUpdateRepository,
+                        PartnerUpdateRepository partnerOrganizationUpdateRepository,
                         DegreeUpdateRepository degreeUpdateRepository,
                         CertificationUpdateRepository certificationUpdateRepository,
-                        AttendedTrainingCourseUpdateRepository attendedTrainingCourseUpdateRepository,
-                        OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository,
+                        AttendedCourseUpdateRepository attendedTrainingCourseUpdateRepository,
+                        OwnedCourseUpdateRepository ownedTrainingCourseUpdateRepository,
                         ResearchProjectUpdateRepository researchProjectUpdateRepository,
 
                         TrainingProgramRequestRepository trainingProgramRequestRepository,
@@ -447,7 +447,7 @@ public class EduHubVnApplication {
                                                 email = "user" + (i - 120) + "@gmail.com";
                                                 role = Role.USER;
                                         }
-                                        RegisterRequest request = RegisterRequest.builder()
+                                        RegisterReq request = RegisterReq.builder()
                                                         .email(email)
                                                         .password("SGL@2025")
                                                         .role(role)
@@ -1248,18 +1248,18 @@ public class EduHubVnApplication {
                                 }
                                 partnerOrganizationUpdateRepository.saveAll(orgUpdates);
 
-                                var admin = RegisterRequest.builder()
+                                var admin = RegisterReq.builder()
                                                 .email("admin@gmail.com")
                                                 .password("SGL@2025")
                                                 .role(Role.ADMIN)
                                                 .build();
-                                var sub_admin1 = RegisterRequest.builder()
+                                var sub_admin1 = RegisterReq.builder()
                                                 .email("sub_admin1@gmail.com")
                                                 .password("SGL@2025")
                                                 .role(Role.SUB_ADMIN)
                                                 .build();
 
-                                var sub_admin2 = RegisterRequest.builder()
+                                var sub_admin2 = RegisterReq.builder()
                                                 .email("sub_admin2@gmail.com")
                                                 .password("SGL@2025")
                                                 .role(Role.SUB_ADMIN)
@@ -1355,8 +1355,8 @@ public class EduHubVnApplication {
                         ContractRepository contractRepository,
                         CourseInfoRepository courseInfoRepository,
                         CourseModuleRepository courseModuleRepository,
-                        EducationInstitutionRepository educationInstitutionRepository,
-                        PartnerOrganizationRepository partnerOrganizationRepository,
+                        InstitutionRepository educationInstitutionRepository,
+                        PartnerRepository partnerOrganizationRepository,
                         LecturerRepository lecturerRepository,
                         Faker faker) {
 
@@ -1929,7 +1929,7 @@ public class EduHubVnApplication {
                         TrainingProgramRequestRepository trainingProgramRequestRepository,
                         TrainingProgramRepository trainingProgramRepository,
                         TrainingUnitRepository trainingUnitRepository,
-                        PartnerOrganizationRepository partnerOrganizationRepository,
+                        PartnerRepository partnerOrganizationRepository,
                         LecturerRepository lecturerRepository,
                         UserRepository userRepository,
                         Faker faker) {

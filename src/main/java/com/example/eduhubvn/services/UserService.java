@@ -10,10 +10,10 @@ import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.User;
-import com.example.eduhubvn.mapper.EducationInstitutionMapper;
+import com.example.eduhubvn.mapper.InstitutionMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.mapper.NotificationMapper;
-import com.example.eduhubvn.mapper.PartnerOrganizationMapper;
+import com.example.eduhubvn.mapper.PartneMapper;
 import com.example.eduhubvn.repositories.LecturerRepository;
 import com.example.eduhubvn.repositories.NotificationRepository;
 import com.example.eduhubvn.repositories.UserRepository;
@@ -28,8 +28,8 @@ public class UserService {
     private final SubAdminService subAdminService;
 
     private final LecturerMapper lecturerMapper;
-    private final EducationInstitutionMapper educationInstitutionMapper;
-    private final PartnerOrganizationMapper partnerOrganizationMapper;
+    private final InstitutionMapper educationInstitutionMapper;
+    private final PartneMapper partnerOrganizationMapper;
     private final LecturerRepository lecturerRepository;
 
     private final NotificationRepository notificationRepository;
@@ -54,7 +54,7 @@ public class UserService {
             // Load full user from database to get all lazy-loaded fields like subEmails
             User fullUser = userRepository.findById(user.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            
+
             UserProfileDTO.UserProfileDTOBuilder builder = UserProfileDTO.builder()
                     .id(fullUser.getId())
                     .email(fullUser.getEmail())
@@ -64,15 +64,15 @@ public class UserService {
                     .lecturer(lecturerMapper.toDTO(fullUser.getLecturer()))
                     .educationInstitution(educationInstitutionMapper.toDTO(fullUser.getEducationInstitution()))
                     .partnerOrganization(partnerOrganizationMapper.toDTO(fullUser.getPartnerOrganization()))
-                    .notifications(notificationMapper.toDTOList(notificationRepository.findTop5ByUserIdOrderByCreatedAtDesc(fullUser.getId())));
+                    .notifications(notificationMapper
+                            .toDTOList(notificationRepository.findTop5ByUserIdOrderByCreatedAtDesc(fullUser.getId())));
 
-            
             // If user is SUB_ADMIN, add their permissions
             if (fullUser.getRole() != null && fullUser.getRole().name().equals("SUB_ADMIN")) {
                 List<String> permissions = subAdminService.getUserPermissions(fullUser.getId());
                 builder.permissions(permissions);
             }
-            
+
             return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);

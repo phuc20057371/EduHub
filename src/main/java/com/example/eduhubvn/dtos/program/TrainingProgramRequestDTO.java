@@ -2,7 +2,7 @@ package com.example.eduhubvn.dtos.program;
 
 import java.util.UUID;
 
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
 import com.example.eduhubvn.entities.PendingStatus;
 
 
@@ -17,7 +17,7 @@ public class TrainingProgramRequestDTO {
 
     private UUID id;
 
-    private PartnerOrganizationDTO partnerOrganization;
+    private PartnerDTO partnerOrganization;
     @Enumerated(EnumType.STRING)
     private PendingStatus status;
 

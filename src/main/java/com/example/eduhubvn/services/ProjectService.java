@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
-import com.example.eduhubvn.dtos.project.Response.CourseGuestDTO;
-import com.example.eduhubvn.dtos.project.Response.CourseModuleGuestDTO;
+import com.example.eduhubvn.dtos.project.response.CourseGuestDTO;
+import com.example.eduhubvn.dtos.project.response.CourseModuleGuestDTO;
 import com.example.eduhubvn.entities.CourseModule;
 import com.example.eduhubvn.entities.Project;
 import com.example.eduhubvn.entities.ProjectCategory;

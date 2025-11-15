@@ -3,7 +3,7 @@ package com.example.eduhubvn.ulti;
 
 import org.springframework.stereotype.Component;
 
-import com.example.eduhubvn.dtos.edu.InstitutionInfoDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionInfoDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.dtos.partner.PartnerInfoDTO;
 import com.example.eduhubvn.entities.EducationInstitution;

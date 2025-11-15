@@ -1,7 +1,7 @@
 package com.example.eduhubvn.mapper;
 
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationUpdateReq;
 import com.example.eduhubvn.entities.Certification;
 import com.example.eduhubvn.entities.CertificationUpdate;
@@ -9,46 +9,32 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface CertificationMapper {
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     CertificationDTO toDTO(Certification entity);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     CertificationDTO toDTO(CertificationUpdate entity);
 
-    @Mapping(target = "lecturer", ignore = true)
-    @Mapping(target = "certificationUpdate", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Certification toEntity(CertificationDTO dto);
 
-    @Mapping(target = "lecturer", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "certificationUpdate", ignore = true)
-    Certification toEntity(CertificationReq req);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Certification toEntity(CertificationCreateReq req);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "certification", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     CertificationUpdate toUpdate(CertificationUpdateReq req);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     List<CertificationDTO> toDTOs(List<Certification> entities);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    List<Certification> toEntities(List<CertificationReq> reqs);
+    List<Certification> toEntities(List<CertificationCreateReq> reqs);
 
-    @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "lecturer", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "certificationUpdate", ignore = true)
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromReq(CertificationUpdateReq req, @MappingTarget Certification certification);
 
@@ -57,8 +43,6 @@ public interface CertificationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "adminNote", ignore = true)
-    @Mapping(target = "lecturer", ignore = true)
-    @Mapping(target = "certificationUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromUpdate(CertificationUpdate source, @MappingTarget Certification target);
 

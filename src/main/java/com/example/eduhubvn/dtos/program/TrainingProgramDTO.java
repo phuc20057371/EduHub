@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.example.eduhubvn.dtos.UserProfileDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
 import com.example.eduhubvn.entities.TrainingProgramLevel;
 import com.example.eduhubvn.entities.TrainingProgramMode;
 import com.example.eduhubvn.entities.TrainingProgramStatus;
@@ -32,7 +32,7 @@ public class TrainingProgramDTO {
 
     private UserProfileDTO user;
 
-    private PartnerOrganizationDTO partnerOrganization;
+    private PartnerDTO partnerOrganization;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

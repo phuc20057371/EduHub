@@ -1,12 +1,13 @@
+
 package com.example.eduhubvn.controller;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
-import com.example.eduhubvn.dtos.edu.InstitutionProfileDTO;
-import com.example.eduhubvn.dtos.edu.request.EduInsUpdateReq;
+import com.example.eduhubvn.dtos.institution.InstitutionDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionProfileDTO;
+import com.example.eduhubvn.dtos.institution.request.InstitutionUpdateReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.entities.User;
-import com.example.eduhubvn.services.EducationInstitutionService;
+import com.example.eduhubvn.services.InstitutionService;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -29,47 +30,48 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 @RequestMapping("/api/v1/institution")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('SCHOOL') or hasRole('ADMIN')")
 public class InstitutionController {
 
-    private final EducationInstitutionService educationInstitutionService;
+    private final InstitutionService educationInstitutionService;
 
     @GetMapping("/get-institution-profile")
-    public ResponseEntity<ApiResponse<InstitutionProfileDTO>> getInstitutionProfile(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<InstitutionProfileDTO>> getInstitutionProfile(
+            @AuthenticationPrincipal User user) {
         InstitutionProfileDTO profile = educationInstitutionService.getInstitutionProfile(user);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin trường thành công", profile));
     }
-    
 
     @PostMapping("/update-profile")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateEduInsFromUser(@RequestBody EduInsUpdateReq req, @AuthenticationPrincipal User user) {
-        EducationInstitutionDTO updatedInstitution = educationInstitutionService.updateEduInsFromUser(req, user);
+    public ResponseEntity<ApiResponse<InstitutionDTO>> updateEduInsFromUser(@RequestBody InstitutionUpdateReq req,
+            @AuthenticationPrincipal User user) {
+        InstitutionDTO updatedInstitution = educationInstitutionService.updateEduInsFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", updatedInstitution));
     }
 
     @GetMapping("/get-lecturers")
-    public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getLecturer( @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<LecturerInfoDTO>>> getLecturer(@AuthenticationPrincipal User user) {
         List<LecturerInfoDTO> lecturers = educationInstitutionService.getLecturers(user);
         return ResponseEntity.ok(ApiResponse.success("Lấy danh sách giảng viên thành công", lecturers));
     }
 
     /// Logo
     @PostMapping("/update-logo")
-    public ResponseEntity<ApiResponse<EducationInstitutionDTO>> updateInstitutionLogo(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<ApiResponse<InstitutionDTO>> updateInstitutionLogo(@RequestParam("file") MultipartFile file,
             HttpServletRequest request, @AuthenticationPrincipal User user) {
-        
+
         // Validate file
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(ApiResponse.error("File không được trống", null));
         }
-        
+
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
-            return ResponseEntity.badRequest().body(ApiResponse.error("File phải có định dạng .jpg, .jpeg hoặc .png", null));
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("File phải có định dạng .jpg, .jpeg hoặc .png", null));
         }
 
         try {
@@ -88,9 +90,9 @@ public class InstitutionController {
             String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + fileName;
 
             // Update institution logo
-            EducationInstitutionDTO dto = educationInstitutionService.updateInstitutionLogo(fileUrl, user);
+            InstitutionDTO dto = educationInstitutionService.updateInstitutionLogo(fileUrl, user);
             return ResponseEntity.ok(ApiResponse.success("Cập nhật logo thành công", dto));
-            
+
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Lỗi upload file: " + e.getMessage(), null));

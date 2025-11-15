@@ -1,4 +1,4 @@
-package com.example.eduhubvn.dtos.project.Response;
+package com.example.eduhubvn.dtos.project.response;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AttendedCourseUpdateDTO {
     private LecturerDTO lecturer;
-    private AttendedTrainingCourseDTO original;
-    private AttendedTrainingCourseDTO update;
+    private AttendedCourseDTO original;
+    private AttendedCourseDTO update;
 
 }

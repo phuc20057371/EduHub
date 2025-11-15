@@ -1,7 +1,7 @@
 package com.example.eduhubvn.mapper;
 
 import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
-import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectUpdateReq;
 import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;
@@ -20,7 +20,7 @@ public interface ResearchProjectMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "researchProjectUpdate", ignore = true)
-    ResearchProject toEntity(ResearchProjectReq req);
+    ResearchProject toEntity(ResearchProjectCreateReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)

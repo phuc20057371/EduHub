@@ -8,7 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
 import com.example.eduhubvn.entities.TrainingUnit;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface TrainingUnitMapper {
 
     @Mapping(target = "trainingProgram", ignore = true)

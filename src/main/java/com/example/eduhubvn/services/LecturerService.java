@@ -11,11 +11,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.eduhubvn.dtos.BooleanRequest;
-import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.IdReq;
 import com.example.eduhubvn.dtos.MessageSocket;
 import com.example.eduhubvn.dtos.MessageSocketType;
 import com.example.eduhubvn.dtos.lecturer.AttendedCourseUpdateDTO;
-import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.lecturer.AttendedCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.CertificationDTO;
 import com.example.eduhubvn.dtos.lecturer.CertificationUpdateDTO;
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
@@ -31,17 +31,17 @@ import com.example.eduhubvn.dtos.lecturer.OwnedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.PendingLecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
 import com.example.eduhubvn.dtos.lecturer.ResearchProjectUpdateDTO;
-import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.CertificationReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.CertificationCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.CertificationUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
+import com.example.eduhubvn.dtos.lecturer.request.LecturerCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.LecturerUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectUpdateReq;
 import com.example.eduhubvn.entities.AttendedTrainingCourse;
 import com.example.eduhubvn.entities.AttendedTrainingCourseUpdate;
@@ -58,22 +58,22 @@ import com.example.eduhubvn.entities.ResearchProject;
 import com.example.eduhubvn.entities.ResearchProjectUpdate;
 import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
-import com.example.eduhubvn.mapper.AttendedTrainingCourseMapper;
+import com.example.eduhubvn.mapper.AttendedCourseMapper;
 import com.example.eduhubvn.mapper.CertificationMapper;
 import com.example.eduhubvn.mapper.DegreeMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
-import com.example.eduhubvn.mapper.OwnedTrainingCourseMapper;
+import com.example.eduhubvn.mapper.OwnedCourseMapper;
 import com.example.eduhubvn.mapper.ResearchProjectMapper;
-import com.example.eduhubvn.repositories.AttendedTrainingCourseRepository;
-import com.example.eduhubvn.repositories.AttendedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.AttendedCourseRepository;
+import com.example.eduhubvn.repositories.AttendedCourseUpdateRepository;
 import com.example.eduhubvn.repositories.CertificationRepository;
 import com.example.eduhubvn.repositories.CertificationUpdateRepository;
 import com.example.eduhubvn.repositories.DegreeRepository;
 import com.example.eduhubvn.repositories.DegreeUpdateRepository;
 import com.example.eduhubvn.repositories.LecturerRepository;
 import com.example.eduhubvn.repositories.LecturerUpdateRepository;
-import com.example.eduhubvn.repositories.OwnedTrainingCourseRepository;
-import com.example.eduhubvn.repositories.OwnedTrainingCourseUpdateRepository;
+import com.example.eduhubvn.repositories.OwnedCourseRepository;
+import com.example.eduhubvn.repositories.OwnedCourseUpdateRepository;
 import com.example.eduhubvn.repositories.ResearchProjectRepository;
 import com.example.eduhubvn.repositories.ResearchProjectUpdateRepository;
 import com.example.eduhubvn.ulti.Mapper;
@@ -88,21 +88,21 @@ public class LecturerService {
     private final LecturerRepository lecturerRepository;
     private final DegreeRepository degreeRepository;
     private final CertificationRepository certificationRepository;
-    private final AttendedTrainingCourseRepository attendedTrainingCourseRepository;
+    private final AttendedCourseRepository attendedTrainingCourseRepository;
     private final DegreeUpdateRepository degreeUpdateRepository;
     private final CertificationUpdateRepository certificationUpdateRepository;
-    private final AttendedTrainingCourseUpdateRepository attendedTrainingCourseUpdateRepository;
-    private final OwnedTrainingCourseUpdateRepository ownedTrainingCourseUpdateRepository;
+    private final AttendedCourseUpdateRepository attendedTrainingCourseUpdateRepository;
+    private final OwnedCourseUpdateRepository ownedTrainingCourseUpdateRepository;
     private final LecturerUpdateRepository lecturerUpdateRequestRepository;
-    private final OwnedTrainingCourseRepository ownedTrainingCourseRepository;
+    private final OwnedCourseRepository ownedTrainingCourseRepository;
     private final ResearchProjectRepository researchProjectRepository;
     private final ResearchProjectUpdateRepository researchProjectUpdateRepository;
 
     private final LecturerMapper lecturerMapper;
     private final DegreeMapper degreeMapper;
     private final CertificationMapper certificationMapper;
-    private final AttendedTrainingCourseMapper attendedTrainingCourseMapper;
-    private final OwnedTrainingCourseMapper ownedTrainingCourseMapper;
+    private final AttendedCourseMapper attendedTrainingCourseMapper;
+    private final OwnedCourseMapper ownedTrainingCourseMapper;
     private final ResearchProjectMapper researchProjectMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -129,7 +129,7 @@ public class LecturerService {
 
     /// Lecturer
     @Transactional
-    public LecturerDTO createLecturer(LecturerReq req, User user) {
+    public LecturerDTO createLecturer(LecturerCreateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -155,7 +155,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public LecturerDTO updateLecturer(LecturerReq req, User user) {
+    public LecturerDTO updateLecturer(LecturerCreateReq req, User user) {
         if (req == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -218,7 +218,7 @@ public class LecturerService {
 
     /// Degree
     @Transactional
-    public List<DegreeDTO> saveDegrees(List<DegreeReq> reqs, User user) {
+    public List<DegreeDTO> saveDegrees(List<DegreeCreateReq> reqs, User user) {
         if (reqs == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -236,7 +236,7 @@ public class LecturerService {
             List<Degree> degreeList = degreeRepository.saveAll(degrees);
 
             degreeRepository.flush();
-            IdRequest id = new IdRequest(lecturer.getId());
+            IdReq id = new IdReq(lecturer.getId());
             List<DegreeDTO> dtos = degreeMapper.toDTOs(degreeList);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.CREATE_DEGREE, id));
@@ -293,7 +293,7 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             DegreeUpdate savedUpdate = degreeUpdateRepository.saveAndFlush(update);
-            IdRequest id = new IdRequest(lecturer.getId());
+            IdReq id = new IdReq(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.EDIT_DEGREE, id));
             return degreeMapper.toDTO(savedUpdate);
@@ -303,7 +303,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public DegreeDTO deleteDegree(IdRequest req) {
+    public DegreeDTO deleteDegree(IdReq req) {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -312,7 +312,7 @@ public class LecturerService {
         try {
             degreeRepository.delete(degree);
             degreeRepository.flush();
-            IdRequest id = new IdRequest(degree.getLecturer().getId());
+            IdReq id = new IdReq(degree.getLecturer().getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_DEGREE, id));
             return degreeMapper.toDTO(degree);
@@ -324,7 +324,7 @@ public class LecturerService {
 
     /// Certification
     @Transactional
-    public List<CertificationDTO> saveCertification(List<CertificationReq> reqs, User user) {
+    public List<CertificationDTO> saveCertification(List<CertificationCreateReq> reqs, User user) {
         if (reqs == null) {
             throw new IllegalStateException("Request không được trống");
         }
@@ -342,7 +342,7 @@ public class LecturerService {
             List<Certification> certificationList = certificationRepository.saveAll(certifications);
             certificationRepository.flush();
             List<CertificationDTO> dtos = certificationMapper.toDTOs(certificationList);
-            IdRequest id = new IdRequest(lecturer.getId());
+            IdReq id = new IdReq(lecturer.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.CREATE_CERTIFICATION, id));
             return dtos;
@@ -401,7 +401,7 @@ public class LecturerService {
             update.setAdminNote("");
             certificationUpdateRepository.saveAndFlush(update);
             CertificationDTO dto = certificationMapper.toDTO(certification);
-            IdRequest id = new IdRequest(certification.getId());
+            IdReq id = new IdReq(certification.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.EDIT_CERTIFICATION, id));
             return dto;
@@ -411,7 +411,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public CertificationDTO deleteCertification(IdRequest req) {
+    public CertificationDTO deleteCertification(IdReq req) {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -421,7 +421,7 @@ public class LecturerService {
             certificationRepository.delete(certification);
             certificationRepository.flush();
             CertificationDTO dto = certificationMapper.toDTO(certification);
-            IdRequest id = new IdRequest(certification.getId());
+            IdReq id = new IdReq(certification.getId());
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_CERTIFICATION, id));
             return dto;
@@ -432,7 +432,7 @@ public class LecturerService {
 
     /// Attended Course
     @Transactional
-    public AttendedTrainingCourseDTO createAttendedCourse(AttendedTrainingCourseReq req, User user) {
+    public AttendedCourseDTO createAttendedCourse(AttendedCourseCreateReq req, User user) {
         if (req == null) {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
@@ -448,8 +448,8 @@ public class LecturerService {
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
             attendedTrainingCourseRepository.flush();
-            IdRequest id = new IdRequest(course.getLecturer().getId());
-            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            IdReq id = new IdReq(course.getLecturer().getId());
+            AttendedCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.CREATE_ATTENDED_COURSE, id));
             return dto;
@@ -459,7 +459,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public AttendedTrainingCourseDTO updateAttendedCourse(AttendedTrainingCourseUpdateReq req, User user) {
+    public AttendedCourseDTO updateAttendedCourse(AttendedCourseUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
@@ -475,8 +475,8 @@ public class LecturerService {
             course.setAdminNote("");
             attendedTrainingCourseRepository.save(course);
 
-            IdRequest id = new IdRequest(course.getLecturer().getId());
-            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            IdReq id = new IdReq(course.getLecturer().getId());
+            AttendedCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             if (lecturer != null) {
                 messagingTemplate.convertAndSend("/topic/ADMIN",
                         new MessageSocket(MessageSocketType.UPDATE_ATTENDED_COURSE, id));
@@ -489,7 +489,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public AttendedTrainingCourseDTO editAttendedCourse(AttendedTrainingCourseUpdateReq req, User user) {
+    public AttendedCourseDTO editAttendedCourse(AttendedCourseUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
@@ -513,8 +513,8 @@ public class LecturerService {
             update.setStatus(PendingStatus.PENDING);
             update.setAdminNote("");
             attendedTrainingCourseUpdateRepository.saveAndFlush(update);
-            IdRequest id = new IdRequest(course.getLecturer().getId());
-            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            IdReq id = new IdReq(course.getLecturer().getId());
+            AttendedCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.EDIT_ATTENDED_COURSE, id));
             return dto;
@@ -525,7 +525,7 @@ public class LecturerService {
 
     /// Owned Course
     @Transactional
-    public OwnedTrainingCourseDTO createOwnedCourse(OwnedTrainingCourseReq req, User user) {
+    public OwnedTrainingCourseDTO createOwnedCourse(OwnedCourseCreateReq req, User user) {
         if (req == null) {
             throw new IllegalArgumentException("Dữ liệu không được trống.");
         }
@@ -540,7 +540,7 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            IdRequest id = new IdRequest(course.getLecturer().getId());
+            IdReq id = new IdReq(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.CREATE_OWNED_COURSE, id));
@@ -551,7 +551,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public OwnedTrainingCourseDTO updateOwnedCourse(OwnedTrainingCourseUpdateReq req, User user) {
+    public OwnedTrainingCourseDTO updateOwnedCourse(OwnedCourseUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -568,7 +568,7 @@ public class LecturerService {
             course.setAdminNote("");
             ownedTrainingCourseRepository.save(course);
             ownedTrainingCourseRepository.flush();
-            IdRequest id = new IdRequest(course.getLecturer().getId());
+            IdReq id = new IdReq(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             if (lecturer != null) {
                 messagingTemplate.convertAndSend("/topic/ADMIN",
@@ -581,7 +581,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public OwnedTrainingCourseDTO editOwnedCourse(OwnedTrainingCourseUpdateReq req, User user) {
+    public OwnedTrainingCourseDTO editOwnedCourse(OwnedCourseUpdateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -606,7 +606,7 @@ public class LecturerService {
             update.setAdminNote("");
             ownedTrainingCourseUpdateRepository.save(update);
             ownedTrainingCourseUpdateRepository.flush();
-            IdRequest id = new IdRequest(update.getOwnedTrainingCourse().getLecturer().getId());
+            IdReq id = new IdReq(update.getOwnedTrainingCourse().getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(update);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.EDIT_OWNED_COURSE, id));
@@ -618,7 +618,7 @@ public class LecturerService {
 
     /// Research Project
     @Transactional
-    public ResearchProjectDTO createResearchProject(ResearchProjectReq req, User user) {
+    public ResearchProjectDTO createResearchProject(ResearchProjectCreateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -633,7 +633,7 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            IdRequest id = new IdRequest(project.getLecturer().getId());
+            IdReq id = new IdReq(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.CREATE_RESEARCH_PROJECT, id));
@@ -660,7 +660,7 @@ public class LecturerService {
             project.setAdminNote("");
             researchProjectRepository.save(project);
             researchProjectRepository.flush();
-            IdRequest id = new IdRequest(project.getLecturer().getId());
+            IdReq id = new IdReq(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             if (lecturer != null) {
                 messagingTemplate.convertAndSend("/topic/ADMIN",
@@ -705,7 +705,7 @@ public class LecturerService {
         }
     }
 
-    public ResearchProjectDTO deleteResearchProject(IdRequest req, User user) {
+    public ResearchProjectDTO deleteResearchProject(IdReq req, User user) {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -719,7 +719,7 @@ public class LecturerService {
         try {
             researchProjectRepository.delete(project);
             researchProjectRepository.flush();
-            IdRequest id = new IdRequest(project.getLecturer().getId());
+            IdReq id = new IdReq(project.getLecturer().getId());
             ResearchProjectDTO dto = researchProjectMapper.toDTO(project);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_RESEARCH_PROJECT, id));
@@ -747,7 +747,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public DegreeDTO createDegreeFromUser(DegreeReq req, User user) {
+    public DegreeDTO createDegreeFromUser(DegreeCreateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -790,7 +790,7 @@ public class LecturerService {
             degreeRepository.save(degree);
             degreeRepository.flush();
             if (lecturer != null) {
-                IdRequest id = new IdRequest(lecturer.getId());
+                IdReq id = new IdReq(lecturer.getId());
                 messagingTemplate.convertAndSend("/topic/ADMIN",
                         new MessageSocket(MessageSocketType.UPDATE_DEGREE, id));
             }
@@ -802,7 +802,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public CertificationDTO createCertificationFromUser(CertificationReq req, User user) {
+    public CertificationDTO createCertificationFromUser(CertificationCreateReq req, User user) {
         if (req == null) {
             throw new IllegalStateException("Dữ liệu yêu cầu không được trống.");
         }
@@ -982,7 +982,7 @@ public class LecturerService {
             certificationRepository.flush();
             CertificationDTO dto = certificationMapper.toDTO(certification);
             if (lecturer != null) {
-                IdRequest id = new IdRequest(lecturer.getId());
+                IdReq id = new IdReq(lecturer.getId());
                 messagingTemplate.convertAndSend("/topic/ADMIN",
                         new MessageSocket(MessageSocketType.UPDATE_CERTIFICATION, id));
             }
@@ -1009,7 +1009,7 @@ public class LecturerService {
 
     }
 
-    public OwnedTrainingCourseDTO deleteOwnedCourse(IdRequest req, User user) {
+    public OwnedTrainingCourseDTO deleteOwnedCourse(IdReq req, User user) {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -1022,7 +1022,7 @@ public class LecturerService {
         try {
             ownedTrainingCourseRepository.delete(course);
             ownedTrainingCourseRepository.flush();
-            IdRequest id = new IdRequest(course.getLecturer().getId());
+            IdReq id = new IdReq(course.getLecturer().getId());
             OwnedTrainingCourseDTO dto = ownedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_OWNED_COURSE, id));
@@ -1032,7 +1032,7 @@ public class LecturerService {
         }
     }
 
-    public AttendedTrainingCourseDTO deleteAttendedCourse(IdRequest req, User user) {
+    public AttendedCourseDTO deleteAttendedCourse(IdReq req, User user) {
         if (req == null || req.getId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu không hợp lệ.");
         }
@@ -1045,8 +1045,8 @@ public class LecturerService {
         try {
             attendedTrainingCourseRepository.delete(course);
             attendedTrainingCourseRepository.flush();
-            IdRequest id = new IdRequest(course.getLecturer().getId());
-            AttendedTrainingCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
+            IdReq id = new IdReq(course.getLecturer().getId());
+            AttendedCourseDTO dto = attendedTrainingCourseMapper.toDTO(course);
             messagingTemplate.convertAndSend("/topic/ADMIN",
                     new MessageSocket(MessageSocketType.DELETE_ATTENDED_COURSE, id));
             return dto;
@@ -1138,7 +1138,7 @@ public class LecturerService {
     }
 
     @Transactional
-    public LecturerBasicPublicDTO getLecturerByIdWithRating(IdRequest idRequest) {
+    public LecturerBasicPublicDTO getLecturerByIdWithRating(IdReq idRequest) {
         if (idRequest == null || idRequest.getId() == null) {
             throw new IllegalArgumentException("ID không được trống.");
         }

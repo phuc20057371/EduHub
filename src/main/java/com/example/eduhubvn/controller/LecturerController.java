@@ -24,18 +24,18 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.example.eduhubvn.dtos.ApiResponse;
 import com.example.eduhubvn.dtos.BooleanRequest;
-import com.example.eduhubvn.dtos.IdRequest;
-import com.example.eduhubvn.dtos.lecturer.AttendedTrainingCourseDTO;
+import com.example.eduhubvn.dtos.IdReq;
+import com.example.eduhubvn.dtos.lecturer.AttendedCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerProfileDTO;
 import com.example.eduhubvn.dtos.lecturer.OwnedTrainingCourseDTO;
 import com.example.eduhubvn.dtos.lecturer.ResearchProjectDTO;
-import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.AttendedTrainingCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.AttendedCourseUpdateReq;
 import com.example.eduhubvn.dtos.lecturer.request.LecturerUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseReq;
-import com.example.eduhubvn.dtos.lecturer.request.OwnedTrainingCourseUpdateReq;
-import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedCourseCreateReq;
+import com.example.eduhubvn.dtos.lecturer.request.OwnedCourseUpdateReq;
+import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.ResearchProjectUpdateReq;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.services.LecturerService;
@@ -77,38 +77,38 @@ public class LecturerController {
 
     /// Attended Training Course
     @PostMapping("/create-attended-course")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> createAttendedCourse(
-            @RequestBody AttendedTrainingCourseReq req, @AuthenticationPrincipal User user) {
-        AttendedTrainingCourseDTO dto = lecturerService.createAttendedCourse(req, user);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> createAttendedCourse(
+            @RequestBody AttendedCourseCreateReq req, @AuthenticationPrincipal User user) {
+        AttendedCourseDTO dto = lecturerService.createAttendedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:update'))")
     @PostMapping("/update-attended-course")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> updateAttendedCourse(
-            @RequestBody AttendedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
-        AttendedTrainingCourseDTO dto = lecturerService.updateAttendedCourse(req, user);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> updateAttendedCourse(
+            @RequestBody AttendedCourseUpdateReq req, @AuthenticationPrincipal User user) {
+        AttendedCourseDTO dto = lecturerService.updateAttendedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @PostMapping("/edit-attended-course")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> editAttendedCourse(
-            @RequestBody AttendedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
-        AttendedTrainingCourseDTO dto = lecturerService.editAttendedCourse(req, user);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> editAttendedCourse(
+            @RequestBody AttendedCourseUpdateReq req, @AuthenticationPrincipal User user) {
+        AttendedCourseDTO dto = lecturerService.editAttendedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @PostMapping("/delete-attended-course")
-    public ResponseEntity<ApiResponse<AttendedTrainingCourseDTO>> deleteAttendedCourse(
-            @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
-        AttendedTrainingCourseDTO dto = lecturerService.deleteAttendedCourse(req, user);
+    public ResponseEntity<ApiResponse<AttendedCourseDTO>> deleteAttendedCourse(
+            @RequestBody IdReq req, @AuthenticationPrincipal User user) {
+        AttendedCourseDTO dto = lecturerService.deleteAttendedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa", dto));
     }
 
     /// Owned Training Course
     @PostMapping("/create-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> createOwnedCourse(
-            @RequestBody OwnedTrainingCourseReq req, @AuthenticationPrincipal User user) {
+            @RequestBody OwnedCourseCreateReq req, @AuthenticationPrincipal User user) {
         OwnedTrainingCourseDTO dto = lecturerService.createOwnedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
     }
@@ -116,28 +116,28 @@ public class LecturerController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('SUB_ADMIN') and hasAuthority('lecturer:update'))")
     @PostMapping("/update-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> updateOwnedCourse(
-            @RequestBody OwnedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
+            @RequestBody OwnedCourseUpdateReq req, @AuthenticationPrincipal User user) {
         OwnedTrainingCourseDTO dto = lecturerService.updateOwnedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @PostMapping("/edit-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> editOwnedCourse(
-            @RequestBody OwnedTrainingCourseUpdateReq req, @AuthenticationPrincipal User user) {
+            @RequestBody OwnedCourseUpdateReq req, @AuthenticationPrincipal User user) {
         OwnedTrainingCourseDTO dto = lecturerService.editOwnedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", dto));
     }
 
     @PostMapping("/delete-owned-course")
     public ResponseEntity<ApiResponse<OwnedTrainingCourseDTO>> deleteOwnedCourse(
-            @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
+            @RequestBody IdReq req, @AuthenticationPrincipal User user) {
         OwnedTrainingCourseDTO dto = lecturerService.deleteOwnedCourse(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa", dto));
     }
 
     /// Research Project
     @PostMapping("/create-research-project")
-    public ResponseEntity<ApiResponse<ResearchProjectDTO>> createResearchProject(@RequestBody ResearchProjectReq req,
+    public ResponseEntity<ApiResponse<ResearchProjectDTO>> createResearchProject(@RequestBody ResearchProjectCreateReq req,
             @AuthenticationPrincipal User user) {
         ResearchProjectDTO dto = lecturerService.createResearchProject(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu tạo mới", dto));
@@ -160,7 +160,7 @@ public class LecturerController {
 
     @PostMapping("/delete-research-project")
     public ResponseEntity<ApiResponse<ResearchProjectDTO>> deleteResearchProject(
-            @RequestBody IdRequest req, @AuthenticationPrincipal User user) {
+            @RequestBody IdReq req, @AuthenticationPrincipal User user) {
         ResearchProjectDTO dto = lecturerService.deleteResearchProject(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa", dto));
     }

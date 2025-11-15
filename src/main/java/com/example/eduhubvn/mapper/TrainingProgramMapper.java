@@ -7,17 +7,17 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.example.eduhubvn.dtos.program.TrainingProgramDTO;
-import com.example.eduhubvn.dtos.program.TrainingProgramReq;
 import com.example.eduhubvn.dtos.program.TrainingUnitDTO;
+import com.example.eduhubvn.dtos.program.request.TrainingProgramReq;
 import com.example.eduhubvn.entities.TrainingProgram;
 import com.example.eduhubvn.entities.TrainingUnit;
 
 @Mapper(componentModel = "spring", uses = {
         UserMapper.class,
-        PartnerOrganizationMapper.class,
+        PartneMapper.class,
         TrainingProgramRequestMapper.class,
         LecturerMapper.class
-})
+}, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface TrainingProgramMapper {
 
     @Mapping(target = "user", source = "user")

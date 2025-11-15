@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.auth.AuthenResponse;
 import com.example.eduhubvn.dtos.auth.Email;
 import com.example.eduhubvn.dtos.auth.EmailSent;
-import com.example.eduhubvn.dtos.auth.ForgotPasswordRequest;
-import com.example.eduhubvn.dtos.auth.LoginRequest;
-import com.example.eduhubvn.dtos.auth.RegisterRequest;
-import com.example.eduhubvn.dtos.auth.ResetPasswordRequest;
+import com.example.eduhubvn.dtos.auth.request.LoginReq;
+import com.example.eduhubvn.dtos.auth.request.RegisterReq;
+import com.example.eduhubvn.dtos.auth.request.ResetPasswordReq;
+import com.example.eduhubvn.dtos.auth.response.AuthenResponse;
 import com.example.eduhubvn.services.AuthenticationService;
 import com.example.eduhubvn.services.EmailService;
 import com.example.eduhubvn.services.OtpService;
@@ -34,7 +33,7 @@ public class AuthenticationController {
     private final EmailService emailService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthenResponse>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthenResponse>> register(@RequestBody RegisterReq request) {
         if (!otpService.validate(request.getEmail(), request.getOtp())) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("OTP không hợp lệ", null));
@@ -49,7 +48,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthenResponse>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthenResponse>> login(@RequestBody LoginReq request) {
         AuthenResponse response = authenticationService.login(request);
         if (response == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -75,7 +74,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody Email email) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<String> sendOtp(@RequestBody Email email)
+            throws MessagingException, UnsupportedEncodingException {
         return ResponseEntity.ok(otpService.sendEmail(email.getEmail()));
     }
 
@@ -90,7 +90,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody Email request) {
         try {
             String message = authenticationService.forgotPassword(request);
             return ResponseEntity.ok(ApiResponse.success(message, null));
@@ -104,7 +104,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody ResetPasswordReq request) {
         try {
             String message = authenticationService.resetPassword(request);
             return ResponseEntity.ok(ApiResponse.success(message, null));
@@ -118,5 +118,5 @@ public class AuthenticationController {
     }
 
     ///
-    
+
 }

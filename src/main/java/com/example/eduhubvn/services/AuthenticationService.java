@@ -1,21 +1,9 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.auth.AddSubEmailRequest;
-import com.example.eduhubvn.dtos.auth.AuthenResponse;
-import com.example.eduhubvn.dtos.auth.ChangePasswordRequest;
-import com.example.eduhubvn.dtos.auth.ForgotPasswordRequest;
-import com.example.eduhubvn.dtos.auth.LoginRequest;
-import com.example.eduhubvn.dtos.auth.RegisterRequest;
-import com.example.eduhubvn.dtos.auth.RemoveSubEmailRequest;
-import com.example.eduhubvn.dtos.auth.ResetPasswordRequest;
-import com.example.eduhubvn.dtos.auth.SendChangePasswordOtpRequest;
-import com.example.eduhubvn.dtos.auth.SendSubEmailOtpRequest;
-import com.example.eduhubvn.entities.Role;
-import com.example.eduhubvn.entities.User;
-import com.example.eduhubvn.repositories.UserRepository;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +11,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Set;
+import com.example.eduhubvn.dtos.auth.Email;
+import com.example.eduhubvn.dtos.auth.EmailOtp;
+import com.example.eduhubvn.dtos.auth.request.ChangePasswordReq;
+import com.example.eduhubvn.dtos.auth.request.LoginReq;
+import com.example.eduhubvn.dtos.auth.request.RegisterReq;
+import com.example.eduhubvn.dtos.auth.request.ResetPasswordReq;
+import com.example.eduhubvn.dtos.auth.response.AuthenResponse;
+import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.repositories.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final OtpService otpService;
 
-    public AuthenResponse register(RegisterRequest request) {
+    public AuthenResponse register(RegisterReq request) {
         if (request.getRole() == null) {
             request.setRole(Role.USER);
         }
@@ -64,7 +62,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenResponse login(LoginRequest request) {
+    public AuthenResponse login(LoginReq request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
@@ -112,7 +110,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public String forgotPassword(ForgotPasswordRequest request) throws Exception {
+    public String forgotPassword(Email request) throws Exception {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -129,7 +127,7 @@ public class AuthenticationService {
         return otpService.sendForgotPasswordOtp(email);
     }
 
-    public String resetPassword(ResetPasswordRequest request) {
+    public String resetPassword(ResetPasswordReq request) {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -167,9 +165,9 @@ public class AuthenticationService {
         return "Mật khẩu đã được đặt lại thành công";
     }
 
-    public String sendOTPChangePassword(SendChangePasswordOtpRequest request, User user) throws Exception{
+    public String sendOTPChangePassword(Email request, User user) throws Exception {
         System.out.println("DEBUG: Starting sendOTPChangePassword method");
-        
+
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -178,7 +176,7 @@ public class AuthenticationService {
         System.out.println("DEBUG: Processing OTP request for email: " + email);
         System.out.println("DEBUG: User ID: " + (user != null ? user.getId() : "null"));
         System.out.println("DEBUG: User main email: " + (user != null ? user.getEmail() : "null"));
-        
+
         // Kiểm tra null safety cho subEmails
         if (user != null && user.getSubEmails() != null) {
             System.out.println("DEBUG: User sub emails: " + user.getSubEmails());
@@ -194,9 +192,9 @@ public class AuthenticationService {
 
         // Kiểm tra email có thuộc về user không
         boolean isMainEmail = user.getEmail().equalsIgnoreCase(email);
-        boolean isSubEmail = user.getSubEmails() != null && 
+        boolean isSubEmail = user.getSubEmails() != null &&
                 user.getSubEmails().stream()
-                .anyMatch(subEmail -> subEmail.equalsIgnoreCase(email));
+                        .anyMatch(subEmail -> subEmail.equalsIgnoreCase(email));
 
         System.out.println("DEBUG: Is main email: " + isMainEmail);
         System.out.println("DEBUG: Is sub email: " + isSubEmail);
@@ -211,7 +209,7 @@ public class AuthenticationService {
             System.out.println("DEBUG: Attempting to send OTP to: " + email);
             String result = otpService.sendChangePasswordOtp(email);
             System.out.println("DEBUG: OTP service result: " + result);
-            
+
             // Thông báo loại email để user biết
             String emailType = isMainEmail ? "email chính" : "email phụ";
             return String.format("OTP đã được gửi đến %s (%s) của bạn", emailType, email);
@@ -222,7 +220,7 @@ public class AuthenticationService {
         }
     }
 
-    public String changePassword(ChangePasswordRequest request, User user) {
+    public String changePassword(ChangePasswordReq request, User user) {
         // Validation cơ bản
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
@@ -276,9 +274,9 @@ public class AuthenticationService {
 
         // Kiểm tra email có thuộc về user không
         boolean isMainEmail = user.getEmail().equalsIgnoreCase(email);
-        boolean isSubEmail = user.getSubEmails() != null && 
+        boolean isSubEmail = user.getSubEmails() != null &&
                 user.getSubEmails().stream()
-                .anyMatch(subEmail -> subEmail.equalsIgnoreCase(email));
+                        .anyMatch(subEmail -> subEmail.equalsIgnoreCase(email));
 
         if (!isMainEmail && !isSubEmail) {
             throw new IllegalArgumentException("Email này không thuộc về tài khoản của bạn");
@@ -308,7 +306,7 @@ public class AuthenticationService {
         }
     }
 
-    public String sendOTPAddSubEmail(SendSubEmailOtpRequest request, User user) throws Exception {
+    public String sendOTPAddSubEmail(Email request, User user) throws Exception {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -328,8 +326,8 @@ public class AuthenticationService {
         }
 
         // Kiểm tra email chưa tồn tại trong sub-emails
-        if (user.getSubEmails() != null && 
-            user.getSubEmails().stream().anyMatch(subEmail -> subEmail.equalsIgnoreCase(email))) {
+        if (user.getSubEmails() != null &&
+                user.getSubEmails().stream().anyMatch(subEmail -> subEmail.equalsIgnoreCase(email))) {
             throw new IllegalArgumentException("Email này đã được thêm vào tài khoản");
         }
 
@@ -354,7 +352,7 @@ public class AuthenticationService {
         }
     }
 
-    public String addSubEmail(AddSubEmailRequest request, User user) {
+    public String addSubEmail(EmailOtp request, User user) {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -379,8 +377,8 @@ public class AuthenticationService {
         }
 
         // Kiểm tra email chưa tồn tại trong sub-emails
-        if (user.getSubEmails() != null && 
-            user.getSubEmails().stream().anyMatch(subEmail -> subEmail.equalsIgnoreCase(email))) {
+        if (user.getSubEmails() != null &&
+                user.getSubEmails().stream().anyMatch(subEmail -> subEmail.equalsIgnoreCase(email))) {
             throw new IllegalArgumentException("Email này đã được thêm vào tài khoản");
         }
 
@@ -413,7 +411,7 @@ public class AuthenticationService {
         }
     }
 
-    public String removeSubEmail(RemoveSubEmailRequest request, User user) {
+    public String removeSubEmail(Email request, User user) {
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
@@ -459,8 +457,8 @@ public class AuthenticationService {
     }
 
     private boolean isValidEmailFormat(String email) {
-        return email != null && 
-               email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        return email != null &&
+                email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
 }

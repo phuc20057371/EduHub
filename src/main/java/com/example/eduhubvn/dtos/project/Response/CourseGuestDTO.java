@@ -1,4 +1,4 @@
-package com.example.eduhubvn.dtos.project.Response;
+package com.example.eduhubvn.dtos.project.response;
 
 import java.math.BigDecimal;
 import java.util.List;

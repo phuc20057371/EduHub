@@ -7,9 +7,10 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
 import com.example.eduhubvn.entities.TrainingProgramRequest;
 
-@Mapper(componentModel = "spring", uses = {PartnerOrganizationMapper.class})
+@Mapper(componentModel = "spring", uses = {
+        PartneMapper.class }, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface TrainingProgramRequestMapper {
-    
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     TrainingProgramRequestDTO toDto(TrainingProgramRequest entity);
 

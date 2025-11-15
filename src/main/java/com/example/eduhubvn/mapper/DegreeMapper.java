@@ -1,7 +1,7 @@
 package com.example.eduhubvn.mapper;
 
 import com.example.eduhubvn.dtos.lecturer.DegreeDTO;
-import com.example.eduhubvn.dtos.lecturer.request.DegreeReq;
+import com.example.eduhubvn.dtos.lecturer.request.DegreeCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.DegreeUpdateReq;
 import com.example.eduhubvn.entities.Degree;
 import com.example.eduhubvn.entities.DegreeUpdate;
@@ -27,10 +27,10 @@ public interface DegreeMapper {
     @Mapping(target = "lecturer", ignore = true)
     @Mapping(target = "degreeUpdate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Degree toEntity(DegreeReq req);
+    Degree toEntity(DegreeCreateReq req);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    List<Degree> toEntities(List<DegreeReq> reqs);
+    List<Degree> toEntities(List<DegreeCreateReq> reqs);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     List<Degree> toEntitiesFromDtos(List<DegreeDTO> dtos);

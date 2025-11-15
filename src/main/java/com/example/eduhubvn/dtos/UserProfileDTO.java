@@ -1,9 +1,9 @@
 package com.example.eduhubvn.dtos;
 
-import com.example.eduhubvn.dtos.edu.EducationInstitutionDTO;
+import com.example.eduhubvn.dtos.institution.InstitutionDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.noti.NotificationDTO;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +25,8 @@ public class UserProfileDTO {
     private List<String> subEmails;
 
     private LecturerDTO lecturer;
-    private EducationInstitutionDTO educationInstitution;
-    private PartnerOrganizationDTO partnerOrganization;
+    private InstitutionDTO educationInstitution;
+    private PartnerDTO partnerOrganization;
     
     // Permissions for SUB_ADMIN role
     private List<String> permissions;

@@ -3,7 +3,7 @@ package com.example.eduhubvn.mapper;
 import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerUpdateDTO;
-import com.example.eduhubvn.dtos.lecturer.request.LecturerReq;
+import com.example.eduhubvn.dtos.lecturer.request.LecturerCreateReq;
 import com.example.eduhubvn.dtos.lecturer.request.LecturerUpdateReq;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.LecturerUpdate;
@@ -52,7 +52,7 @@ public interface LecturerMapper {
     @Mapping(target = "applications", ignore = true)
     @Mapping(target = "lecturerId", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Lecturer toEntity(LecturerReq req);
+    Lecturer toEntity(LecturerCreateReq req);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -125,7 +125,7 @@ public interface LecturerMapper {
     @Mapping(target = "applications", ignore = true)
     @Mapping(target = "lecturerId", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(LecturerReq req, @MappingTarget Lecturer lecturer);
+    void updateEntityFromRequest(LecturerCreateReq req, @MappingTarget Lecturer lecturer);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     List<LecturerDTO> toDTOs(List<Lecturer> pending);

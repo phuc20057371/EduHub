@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.partner.PartnerOrganizationDTO;
+import com.example.eduhubvn.dtos.partner.PartnerDTO;
 import com.example.eduhubvn.dtos.partner.PartnerProfileDTO;
 import com.example.eduhubvn.dtos.partner.request.PartnerUpdateReq;
 import com.example.eduhubvn.dtos.program.TrainingProgramRequestDTO;
-import com.example.eduhubvn.dtos.program.TrainingProgramRequestReq;
+import com.example.eduhubvn.dtos.program.request.TrainingProgramRequestReq;
 import com.example.eduhubvn.entities.User;
-import com.example.eduhubvn.services.PartnerOrganizationService;
+import com.example.eduhubvn.services.PartnerService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +40,10 @@ import lombok.RequiredArgsConstructor;
 @PreAuthorize("hasRole('ORGANIZATION') or hasRole('ADMIN')")
 public class OrganizationController {
 
-    private final PartnerOrganizationService partnerOrganizationService;
+    private final PartnerService partnerOrganizationService;
     @PostMapping("/update-profile")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartnerFromUser(@RequestBody PartnerUpdateReq req, @AuthenticationPrincipal User user) {
-        PartnerOrganizationDTO request = partnerOrganizationService.updatePartnerFromUser(req, user);
+    public ResponseEntity<ApiResponse<PartnerDTO>> updatePartnerFromUser(@RequestBody PartnerUpdateReq req, @AuthenticationPrincipal User user) {
+        PartnerDTO request = partnerOrganizationService.updatePartnerFromUser(req, user);
         return ResponseEntity.ok(ApiResponse.success("Đã gửi yêu cầu cập nhật", request));
     }
 
@@ -55,7 +55,7 @@ public class OrganizationController {
 
     /// Logo
     @PostMapping("/update-logo")
-    public ResponseEntity<ApiResponse<PartnerOrganizationDTO>> updatePartnerLogo(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<ApiResponse<PartnerDTO>> updatePartnerLogo(@RequestParam("file") MultipartFile file,
             HttpServletRequest request, @AuthenticationPrincipal User user) {
         
         // Validate file
@@ -84,7 +84,7 @@ public class OrganizationController {
             String fileUrl = baseUrl + "/uploads/" + user.getRole() + "/" + user.getId() + "/" + fileName;
 
             // Update partner logo
-            PartnerOrganizationDTO dto = partnerOrganizationService.updatePartnerLogo(fileUrl, user);
+            PartnerDTO dto = partnerOrganizationService.updatePartnerLogo(fileUrl, user);
             return ResponseEntity.ok(ApiResponse.success("Cập nhật logo thành công", dto));
             
         } catch (IOException e) {

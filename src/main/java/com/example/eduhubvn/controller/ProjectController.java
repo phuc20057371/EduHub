@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.project.Response.CourseGuestDTO;
+import com.example.eduhubvn.dtos.project.response.CourseGuestDTO;
 import com.example.eduhubvn.services.ProjectService;
 
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.dtos.auth.AuthenResponse;
+import com.example.eduhubvn.dtos.auth.response.AuthenResponse;
 import com.example.eduhubvn.entities.User;
 import com.example.eduhubvn.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

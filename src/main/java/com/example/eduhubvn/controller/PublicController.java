@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.eduhubvn.dtos.ApiResponse;
-import com.example.eduhubvn.dtos.IdRequest;
+import com.example.eduhubvn.dtos.IdReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerBasicPublicDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
-import com.example.eduhubvn.dtos.program.TrainingProgramPublicDTO;
-import com.example.eduhubvn.dtos.project.Response.CourseGuestDTO;
+import com.example.eduhubvn.dtos.program.pub.TrainingProgramPublicDTO;
+import com.example.eduhubvn.dtos.project.response.CourseGuestDTO;
 import com.example.eduhubvn.services.AdminService;
 import com.example.eduhubvn.services.LecturerService;
 import com.example.eduhubvn.services.ProjectService;
@@ -69,7 +69,7 @@ public class PublicController {
 
     @GetMapping("/get-lecturer-by-id-with-rating")
     public ResponseEntity<ApiResponse<LecturerBasicPublicDTO>> getLecturerByIdWithRating(@RequestParam("id") String lecturerId) {
-        IdRequest idRequest = new IdRequest();
+        IdReq idRequest = new IdReq();
         idRequest.setId(java.util.UUID.fromString(lecturerId));
         LecturerBasicPublicDTO lecturer = lecturerService.getLecturerByIdWithRating(idRequest);
         return ResponseEntity.ok(ApiResponse.success("Thông tin giảng viên", lecturer));
@@ -82,7 +82,7 @@ public class PublicController {
     }
     @GetMapping("/get-training-program-by-id")
     public ResponseEntity<ApiResponse<TrainingProgramPublicDTO>> getTrainingProgramById(@RequestParam("id") String programId) {
-        IdRequest idRequest = new IdRequest();
+        IdReq idRequest = new IdReq();
         idRequest.setId(java.util.UUID.fromString(programId));
         TrainingProgramPublicDTO program = adminService.getPublicTrainingProgramById(idRequest);
         return ResponseEntity.ok(ApiResponse.success("Thông tin chương trình đào tạo", program));
