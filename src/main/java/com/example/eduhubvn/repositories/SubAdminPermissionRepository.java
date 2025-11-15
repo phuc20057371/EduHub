@@ -1,8 +1,9 @@
 package com.example.eduhubvn.repositories;
 
-import com.example.eduhubvn.entities.Permission;
 import com.example.eduhubvn.entities.SubAdminPermission;
 import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.enums.Permission;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

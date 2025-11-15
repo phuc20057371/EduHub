@@ -1,13 +1,14 @@
 package com.example.eduhubvn.dtos.lecturer.request;
 
-import com.example.eduhubvn.entities.*;
+import com.example.eduhubvn.enums.CourseType;
+import com.example.eduhubvn.enums.Scale;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
 
 @Data
 @Builder

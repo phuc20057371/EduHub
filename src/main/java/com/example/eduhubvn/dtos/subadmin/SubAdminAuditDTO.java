@@ -1,6 +1,5 @@
 package com.example.eduhubvn.dtos.subadmin;
 
-import com.example.eduhubvn.entities.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.example.eduhubvn.enums.Permission;
 
 @Data
 @Builder

@@ -5,6 +5,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.eduhubvn.enums.PendingStatus;
+import com.example.eduhubvn.enums.ProjectType;
+import com.example.eduhubvn.enums.Scale;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.example.eduhubvn.dtos.institution.request;
 
-import com.example.eduhubvn.entities.EducationInstitutionType;
+import com.example.eduhubvn.enums.EducationInstitutionType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

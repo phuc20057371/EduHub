@@ -1,11 +1,12 @@
 package com.example.eduhubvn.dtos.partner;
 
-import com.example.eduhubvn.entities.PendingStatus;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.example.eduhubvn.enums.PendingStatus;
 
 @Data
 @Builder

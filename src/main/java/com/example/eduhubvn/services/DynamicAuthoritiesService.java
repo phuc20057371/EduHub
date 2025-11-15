@@ -1,8 +1,8 @@
 package com.example.eduhubvn.services;
 
-import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.SubAdminPermission;
 import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.enums.Role;
 import com.example.eduhubvn.repositories.SubAdminPermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

@@ -3,8 +3,7 @@ package com.example.eduhubvn.dtos.program;
 import java.util.UUID;
 
 import com.example.eduhubvn.dtos.partner.PartnerDTO;
-import com.example.eduhubvn.entities.PendingStatus;
-
+import com.example.eduhubvn.enums.PendingStatus;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,8 +1,9 @@
 package com.example.eduhubvn.dtos.lecturer;
 
-import com.example.eduhubvn.entities.CourseType;
-import com.example.eduhubvn.entities.PendingStatus;
-import com.example.eduhubvn.entities.Scale;
+import com.example.eduhubvn.enums.CourseType;
+import com.example.eduhubvn.enums.PendingStatus;
+import com.example.eduhubvn.enums.Scale;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

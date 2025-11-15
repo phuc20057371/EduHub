@@ -10,7 +10,7 @@ import com.example.eduhubvn.dtos.project.response.CourseGuestDTO;
 import com.example.eduhubvn.dtos.project.response.CourseModuleGuestDTO;
 import com.example.eduhubvn.entities.CourseModule;
 import com.example.eduhubvn.entities.Project;
-import com.example.eduhubvn.entities.ProjectCategory;
+import com.example.eduhubvn.enums.ProjectCategory;
 import com.example.eduhubvn.repositories.ProjectRespository;
 import com.example.eduhubvn.ulti.Mapper;
 

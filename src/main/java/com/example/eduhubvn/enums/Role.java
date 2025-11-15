@@ -1,16 +1,16 @@
-package com.example.eduhubvn.entities;
+package com.example.eduhubvn.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import static com.example.eduhubvn.enums.Permission.*;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.example.eduhubvn.entities.Permission.*;
 
 @RequiredArgsConstructor
 @Getter

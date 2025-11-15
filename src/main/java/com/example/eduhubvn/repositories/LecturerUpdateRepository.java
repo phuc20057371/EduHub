@@ -2,7 +2,8 @@ package com.example.eduhubvn.repositories;
 
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.LecturerUpdate;
-import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.enums.PendingStatus;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -9,10 +9,10 @@ import java.util.UUID;
 
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.partner.PartnerDTO;
-import com.example.eduhubvn.entities.TrainingProgramLevel;
-import com.example.eduhubvn.entities.TrainingProgramMode;
-import com.example.eduhubvn.entities.TrainingProgramStatus;
-import com.example.eduhubvn.entities.TrainingProgramType;
+import com.example.eduhubvn.enums.TrainingProgramLevel;
+import com.example.eduhubvn.enums.TrainingProgramMode;
+import com.example.eduhubvn.enums.TrainingProgramStatus;
+import com.example.eduhubvn.enums.TrainingProgramType;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

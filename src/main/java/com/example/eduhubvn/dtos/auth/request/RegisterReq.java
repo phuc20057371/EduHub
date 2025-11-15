@@ -1,7 +1,8 @@
 package com.example.eduhubvn.dtos.auth.request;
 
 
-import com.example.eduhubvn.entities.Role;
+import com.example.eduhubvn.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

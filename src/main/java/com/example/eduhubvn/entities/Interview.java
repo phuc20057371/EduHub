@@ -6,6 +6,10 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.eduhubvn.enums.InterviewMode;
+import com.example.eduhubvn.enums.InterviewResult;
+import com.example.eduhubvn.enums.InterviewStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

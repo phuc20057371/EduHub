@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import static com.example.eduhubvn.enums.Role.USER;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import static com.example.eduhubvn.entities.Role.USER;
 
 @Service
 @RequiredArgsConstructor

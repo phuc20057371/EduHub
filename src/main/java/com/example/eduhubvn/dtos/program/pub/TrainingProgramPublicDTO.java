@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.example.eduhubvn.entities.TrainingProgramLevel;
-import com.example.eduhubvn.entities.TrainingProgramMode;
-import com.example.eduhubvn.entities.TrainingProgramType;
+import com.example.eduhubvn.enums.TrainingProgramLevel;
+import com.example.eduhubvn.enums.TrainingProgramMode;
+import com.example.eduhubvn.enums.TrainingProgramType;
 
 import lombok.Builder;
 import lombok.Data;

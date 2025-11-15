@@ -1,10 +1,10 @@
 package com.example.eduhubvn.repositories;
 
 
-import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.Lecturer;
-import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.enums.AcademicRank;
+import com.example.eduhubvn.enums.Role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

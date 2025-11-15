@@ -1,4 +1,4 @@
-package com.example.eduhubvn.entities;
+package com.example.eduhubvn.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

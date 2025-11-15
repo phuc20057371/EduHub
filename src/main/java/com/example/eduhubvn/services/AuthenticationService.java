@@ -18,8 +18,8 @@ import com.example.eduhubvn.dtos.auth.request.LoginReq;
 import com.example.eduhubvn.dtos.auth.request.RegisterReq;
 import com.example.eduhubvn.dtos.auth.request.ResetPasswordReq;
 import com.example.eduhubvn.dtos.auth.response.AuthenResponse;
-import com.example.eduhubvn.entities.Role;
 import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.enums.Role;
 import com.example.eduhubvn.repositories.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;

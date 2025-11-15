@@ -1,4 +1,4 @@
-package com.example.eduhubvn.entities;
+package com.example.eduhubvn.enums;
 
 public enum Scale {
     INSTITUTIONAL,   // Institutional level

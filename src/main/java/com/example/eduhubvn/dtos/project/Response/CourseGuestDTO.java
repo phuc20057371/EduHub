@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.eduhubvn.entities.CourseLevel;
+import com.example.eduhubvn.enums.CourseLevel;
 
 import lombok.Builder;
 import lombok.Data;

@@ -5,6 +5,8 @@ import com.example.eduhubvn.dtos.subadmin.SubAdminAuditDTO;
 import com.example.eduhubvn.dtos.subadmin.request.AssignPermissionsRequest;
 import com.example.eduhubvn.dtos.subadmin.request.CreateSubAdminRequest;
 import com.example.eduhubvn.entities.*;
+import com.example.eduhubvn.enums.Permission;
+import com.example.eduhubvn.enums.Role;
 import com.example.eduhubvn.repositories.SubAdminPermissionRepository;
 import com.example.eduhubvn.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

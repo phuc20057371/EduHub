@@ -11,6 +11,11 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.eduhubvn.enums.TrainingProgramLevel;
+import com.example.eduhubvn.enums.TrainingProgramMode;
+import com.example.eduhubvn.enums.TrainingProgramStatus;
+import com.example.eduhubvn.enums.TrainingProgramType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;

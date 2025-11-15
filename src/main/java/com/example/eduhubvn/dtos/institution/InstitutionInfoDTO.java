@@ -1,7 +1,8 @@
 package com.example.eduhubvn.dtos.institution;
 
-import com.example.eduhubvn.entities.EducationInstitutionType;
-import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.enums.EducationInstitutionType;
+import com.example.eduhubvn.enums.PendingStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

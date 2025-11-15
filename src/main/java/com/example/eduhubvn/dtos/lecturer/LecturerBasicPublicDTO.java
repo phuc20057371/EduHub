@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.eduhubvn.entities.AcademicRank;
-import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.enums.AcademicRank;
+import com.example.eduhubvn.enums.PendingStatus;
 
 import lombok.Builder;
 import lombok.Data;

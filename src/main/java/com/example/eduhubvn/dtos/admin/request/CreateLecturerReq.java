@@ -2,7 +2,7 @@ package com.example.eduhubvn.dtos.admin.request;
 
 import java.time.LocalDate;
 
-import com.example.eduhubvn.entities.AcademicRank;
+import com.example.eduhubvn.enums.AcademicRank;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

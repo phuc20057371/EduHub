@@ -19,9 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
+import static com.example.eduhubvn.enums.Permission.*;
 
-import static com.example.eduhubvn.entities.Permission.*;
+import java.util.List;
 
 
 @Configuration

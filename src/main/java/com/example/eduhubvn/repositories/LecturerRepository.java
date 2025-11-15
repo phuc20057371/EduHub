@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.eduhubvn.entities.Lecturer;
-import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.enums.PendingStatus;
 
 public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
     List<Lecturer> findByStatus(PendingStatus status);

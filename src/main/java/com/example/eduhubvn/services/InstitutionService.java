@@ -12,6 +12,8 @@ import com.example.eduhubvn.dtos.institution.request.InstitutionCreateReq;
 import com.example.eduhubvn.dtos.institution.request.InstitutionUpdateReq;
 import com.example.eduhubvn.dtos.lecturer.LecturerInfoDTO;
 import com.example.eduhubvn.entities.*;
+import com.example.eduhubvn.enums.PendingStatus;
+import com.example.eduhubvn.enums.Role;
 import com.example.eduhubvn.mapper.InstitutionMapper;
 import com.example.eduhubvn.repositories.InstitutionRepository;
 import com.example.eduhubvn.repositories.EducationInstitutionUpdateRepository;

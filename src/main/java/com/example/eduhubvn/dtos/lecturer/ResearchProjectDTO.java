@@ -1,8 +1,9 @@
 package com.example.eduhubvn.dtos.lecturer;
 
-import com.example.eduhubvn.entities.PendingStatus;
-import com.example.eduhubvn.entities.ProjectType;
-import com.example.eduhubvn.entities.Scale;
+import com.example.eduhubvn.enums.PendingStatus;
+import com.example.eduhubvn.enums.ProjectType;
+import com.example.eduhubvn.enums.Scale;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

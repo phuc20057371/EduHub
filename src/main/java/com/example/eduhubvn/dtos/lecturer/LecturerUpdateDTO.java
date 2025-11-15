@@ -1,8 +1,8 @@
 package com.example.eduhubvn.dtos.lecturer;
 
 
-import com.example.eduhubvn.entities.AcademicRank;
-import com.example.eduhubvn.entities.PendingStatus;
+import com.example.eduhubvn.enums.AcademicRank;
+import com.example.eduhubvn.enums.PendingStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

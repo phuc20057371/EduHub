@@ -2,7 +2,7 @@ package com.example.eduhubvn.dtos.program.pub;
 
 import java.util.UUID;
 
-import com.example.eduhubvn.entities.AcademicRank;
+import com.example.eduhubvn.enums.AcademicRank;
 
 import lombok.Builder;
 import lombok.Data;

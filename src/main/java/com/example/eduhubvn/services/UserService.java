@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.eduhubvn.dtos.UserProfileDTO;
 import com.example.eduhubvn.dtos.lecturer.LecturerDTO;
-import com.example.eduhubvn.entities.AcademicRank;
 import com.example.eduhubvn.entities.Lecturer;
 import com.example.eduhubvn.entities.User;
+import com.example.eduhubvn.enums.AcademicRank;
 import com.example.eduhubvn.mapper.InstitutionMapper;
 import com.example.eduhubvn.mapper.LecturerMapper;
 import com.example.eduhubvn.mapper.NotificationMapper;
